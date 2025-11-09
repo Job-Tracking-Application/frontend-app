@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_REPO = "bhosalevivek04/jobtracking-frontend" // change this to your actual Docker Hub repo
+        DOCKERHUB_REPO = "bhosalevivek04/jobtracking_frontend"
     }
 
     stages {
