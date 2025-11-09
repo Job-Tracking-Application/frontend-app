@@ -219,9 +219,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
-
-मराठीत: Multi-stage Dockerfile — build with Node 20, serve with nginx.
-
 ---
 
 ## 10) ngrok (for local development webhook)
