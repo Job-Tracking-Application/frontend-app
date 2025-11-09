@@ -1,12 +1,14 @@
 pipeline {
     agent {
         docker {
-            image 'node:18-alpine'
-            args '-p 3000:3000'
+            // Using Node 20 because your Vite and React packages require it
+            image 'node:20-alpine'
+            args '--user root -p 3000:3000'
         }
     }
 
     environment {
+        // Your actual Docker Hub repo
         DOCKERHUB_REPO = "bhosalevivek04/jobtracking_frontend"
     }
 
@@ -20,7 +22,8 @@ pipeline {
         stage('Build Project') {
             steps {
                 echo "Installing dependencies and building project..."
-                sh 'npm ci'
+                // Fixes npm permission issue and uses local cache
+                sh 'npm ci --unsafe-perm --no-audit --cache .npm-cache'
                 sh 'npm run build'
             }
         }
