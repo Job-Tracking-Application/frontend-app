@@ -1,34 +1,27 @@
 pipeline {
-    agent {
-        docker {
-            // Using Node 20 because your Vite and React packages require it
-            image 'node:20-alpine'
-            args '--user root -p 3000:3000'
-        }
-    }
+    agent none
 
     environment {
-        // Your actual Docker Hub repo
         DOCKERHUB_REPO = "bhosalevivek04/jobtracking_frontend"
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build Project') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    args '--user root -p 3000:3000'
+                }
+            }
             steps {
                 echo "Installing dependencies and building project..."
-                // Fixes npm permission issue and uses local cache
                 sh 'npm ci --unsafe-perm --no-audit --cache .npm-cache'
                 sh 'npm run build'
             }
         }
 
         stage('Build Docker Image') {
+            agent any  // Runs on Jenkins host, where Docker is installed
             steps {
                 script {
                     def imageTag = "${DOCKERHUB_REPO}:${BUILD_NUMBER}"
@@ -38,6 +31,7 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
+            agent any
             steps {
                 script {
                     def imageTag = "${DOCKERHUB_REPO}:${BUILD_NUMBER}"
@@ -49,6 +43,7 @@ pipeline {
         }
 
         stage('Deploy Container') {
+            agent any
             steps {
                 script {
                     def imageTag = "${DOCKERHUB_REPO}:${BUILD_NUMBER}"
