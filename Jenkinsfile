@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-p 3000:3000'
+        }
+    }
 
     environment {
         DOCKERHUB_REPO = "bhosalevivek04/jobtracking_frontend"
@@ -24,7 +29,6 @@ pipeline {
             steps {
                 script {
                     def imageTag = "${DOCKERHUB_REPO}:${BUILD_NUMBER}"
-                    echo "Building Docker image ${imageTag}"
                     sh "docker build -t ${imageTag} ."
                 }
             }
