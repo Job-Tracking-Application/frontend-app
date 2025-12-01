@@ -69,7 +69,7 @@ frontend-app/
 │   │
 │   ├── context/
 │   │   ├── AuthContext.jsx
-│   │   └── LanguageContext.jsx
+│   │   └── LanguageContext.js
 │   │
 │   ├── routes/
 │   │   ├── ProtectedRoute.jsx

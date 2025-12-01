@@ -1,0 +1,12 @@
+{
+  "admin_dashboard": "प्रशासन पॅनेल",
+  "manage_users": "युजर्स व्यवस्थापन",
+  "manage_companies": "कंपनी व्यवस्थापन",
+  "manage_jobs": "जॉब व्यवस्थापन",
+  "system_logs": "सिस्टम लॉग्स",
+  "settings": "सेटिंग्स",
+  "total_users": "एकूण युजर्स",
+  "total_companies": "एकूण कंपन्या",
+  "total_jobs": "एकूण नोकऱ्या",
+  "total_applications": "एकूण अर्ज"
+}
