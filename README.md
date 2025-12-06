@@ -56,7 +56,7 @@ VITE_APP_ENV=development
 
 # 📁 **Folder Structure**
 
-```
+```bash
 src/
 │
 ├── assets/            # Images, icons, global styles
