@@ -1,246 +1,106 @@
-# 🚀 **Job Tracking Application — Frontend (React)**
+# 💼 **JobSync — Your Career Partner**
 
-This is the **React-based frontend** for the **Job Tracking Application**, designed for Job Seekers, Recruiters, and Admin users.
-The UI is built according to the Figma design and supports **English + Marathi**, role-based pages, modular components, and a scalable architecture.
-
----
-
-# ✅ **Tech Stack**
-
-* **React + Vite**
-* **React Router**
-* **Axios (API calls)**
-* **Context API (Auth & Language)**
-* **i18n (English + Marathi)**
-* **Bootstrap / Custom CSS**
-* **Reusable Components Architecture**
+**JobSync** is a modern, responsive, and feature-rich Job Tracking Application designed to connect Job Seekers, Recruiters, and Administrators. 
+Built with **React 19**, it offers a premium user experience with role-based dashboards, multi-language support (English & Marathi), and comprehensive job management tools.
 
 ---
 
-# ⚙️ **Getting Started**
+## ✨ **Key Features**
 
-## 1️⃣ Install dependencies
+### 🔹 **Core Functionality**
+*   **Role-Based Access**: Specialized dashboards for **Job Seekers**, **Recruiters**, and **Admins**.
+*   **Smart Dashboards**: Personalized recommendations, recent activity tracking, and dynamic stats.
+*   **Job Management**: Create, edit, view, and apply for jobs with detailed descriptions and salary ranges (₹).
+*   **Responsive Design**: Fully optimized for Desktop, Tablet, and Mobile with a smart **Toggleable Sidebar**.
 
+### 🔹 **Premium Features**
+*   **Admin Portal**: A "Premium" redesign with card-based tables, search filters, badges, and timeline logs.
+*   **Localization 🇮🇳**: Full support for **Marathi (मराठी)** translation and **Indian Currency (₹)** formatting.
+*   **Demo Profiles**: One-click mock login for Admin (`admin@...`), Recruiter (`recruiter@...`), and User.
+*   **System Logs**: Visual audit trails for all system activities.
+
+---
+
+## 🛠️ **Tech Stack**
+
+*   **Frontend**: React 19, Vite
+*   **Styling**: Bootstrap 5, Bootstrap Icons, Custom CSS
+*   **State Management**: React Context API (Auth & Language)
+*   **Routing**: React Router v6 (Future Flags Enabled)
+*   **HTTP Client**: Axios (Modular Service Layer)
+*   **Internationalization**: Custom i18n implementation
+
+---
+
+## 🚀 **Getting Started**
+
+### 1️⃣ Install Dependencies
 ```bash
 npm install
 ```
 
-## 2️⃣ Start development server
-
+### 2️⃣ Run Development Server
 ```bash
 npm run dev
 ```
 
-## 3️⃣ Build production bundle
-
+### 3️⃣ Build for Production
 ```bash
 npm run build
 ```
 
-## 4️⃣ Preview production build
+---
 
-```bash
-npm run preview
-```
+## 🔐 **Demo Credentials**
 
-## 5️⃣ Environment Variables
+To test different roles without registration, simply use the following email patterns (password can be anything):
 
-Create a `.env` file:
+| Role | Email Pattern | Access |
+| :--- | :--- | :--- |
+| **Admin** | `admin@demo.com` | Manage Users, Companies, Jobs, Logs |
+| **Recruiter** | `recruiter@demo.com` | Post Jobs, View Applicants |
+| **Job Seeker** | `user@demo.com` | Apply for Jobs, Recommendations |
 
-```
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_APP_ENV=development
-```
+*(Note: Any email containing "admin" becomes Admin, "recruiter" becomes Recruiter, else Job Seeker)*
 
 ---
 
-# 📁 **Folder Structure**
+## 📁 **Project Structure**
 
-```bash
+```
 src/
-│
-├── assets/            # Images, icons, global styles
-│
+├── assets/            # Static assets (images, fonts)
 ├── components/        # Reusable UI components
-│   ├── common/        # Buttons, inputs, modals, loaders, etc.
-│   ├── layout/        # Navbar, Sidebar, Dashboard layout
-│   └── cards/         # JobCard, ApplicationCard, CompanyCard
-│
-├── pages/             # Page-level components (screen views)
+│   ├── cards/         # JobCard, ApplicationCard, etc.
+│   ├── common/        # Buttons, PageHero, Loaders
+│   └── layout/        # Navbar, Sidebar, Layout wrappers
+├── context/           # Global State (Auth, Language)
+├── hooks/             # Custom hooks (useAuth, etc.)
+├── i18n/              # Translation files (en.json, mr.json)
+├── pages/             # Route Components
+│   ├── admin/         # Admin Panel (Manage Users, Jobs, Logs)
+│   ├── applications/  # My Applications, Manage Apps
 │   ├── auth/          # Login, Register
-│   ├── dashboard/     # Job Seeker / Recruiter dashboards
-│   ├── jobs/          # Job list, details, create job
-│   ├── applications/  # Apply, manage applications
-│   ├── profile/       # User / company profile
-│   ├── admin/         # Admin panel pages
-│   └── settings/      # Language settings, preferences
-│
-├── services/          # All API request functions
-│   ├── api.js         # axios setup
-│   ├── authService.js
-│   ├── jobService.js
-│   ├── userService.js
-│   └── applicationService.js
-│
-├── context/           # Global state management
-│   ├── AuthContext.jsx
-│   └── LanguageContext.jsx
-│
-├── hooks/             # Custom hooks (useAuth, useFetch, etc.)
-│
-├── routes/            # App routing (Protected, Role-based)
-│   ├── ProtectedRoute.jsx
-│   └── RoleRoute.jsx
-│
-├── i18n/              # Multi-language support
-│   ├── en.json
-│   └── mr.json
-│
-├── utils/             # Helper functions, constants
-│   ├── helpers.js
-│   └── validators.js
-│
-├── App.jsx            # Root app component
-├── main.jsx           # App entry point
-└── index.css          # Global styles
+│   ├── dashboard/     # Role-specific Dashboards
+│   ├── jobs/          # Job Listings, Create Job, Details
+│   └── profile/       # User/Company Profiles
+├── services/          # API Service Layer
+├── routes/            # Route Definitions & Protection Logic
+└── main.jsx           # Entry Point
 ```
 
 ---
 
-# 🔐 **Authentication Flow**
+## 🌍 **Localization (i18n)**
 
-The frontend is fully role-based:
+Switch languages easily using the toggle in the top-right corner.
+*   **EN**: English (Default)
+*   **FMR**: Marathi
 
-* **Job Seeker**
-* **Recruiter**
-* **Admin**
-
-Authentication is handled using:
-
-* `AuthContext.jsx`
-* JWT stored in **localStorage**
-* Protected routes using `ProtectedRoute`
-
-Example:
-
-```jsx
-<Route
-  path="/dashboard"
-  element={<ProtectedRoute><JobSeekerDashboard /></ProtectedRoute>}
-/>
-```
+Currency is localized to **Rupees (₹)** with Lakhs formatting (e.g., `₹5L`).
 
 ---
 
-# 🌐 **API Integration**
+## 📝 **License**
 
-All API calls are grouped inside `/src/services/`.
-
-Example:
-
-```js
-// jobService.js
-import api from "./api";
-
-export const getJobs = () => api.get("/jobs");
-export const getJobById = (id) => api.get(`/jobs/${id}`);
-export const createJob = (data) => api.post("/jobs", data);
-```
-
-Central Axios Configuration:
-
-```js
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
-```
-
----
-
-# 🌍 **Multi-Language Support (EN + MR)**
-
-Located in:
-
-```
-src/i18n/en.json
-src/i18n/mr.json
-```
-
-Language selection stored in:
-
-```
-LanguageContext.jsx
-```
-
-Usage example:
-
-```jsx
-const { t } = useLanguage();
-<p>{t("login.welcome")}</p>
-```
-
----
-
-# 🎨 **UI Guidelines (Based on Figma)**
-
-* Consistent card designs for jobs & applications
-* Sidebar + Navbar layout for Dashboard
-* Simple theme: white, blue, and grey
-* Clean form components (Input, Select, Button)
-* Performance optimized (lazy-loaded pages)
-
----
-
-# 🧪 **Testing (optional future integration)**
-
-You may add:
-
-* Jest
-* React Testing Library
-
----
-
-# 🧩 **How to Contribute (Team Guidelines)**
-
-1. Create a feature branch
-
-   ```
-   git checkout -b feature/<name>
-   ```
-2. Write clean, modular code
-3. Follow folder structure strictly
-4. Make meaningful commit messages
-5. Push & create PR
-
-   ```
-   git push origin feature/<name>
-   ```
-
-Example Commit Messages:
-
-* `feat(auth): add login page`
-* `fix(job-list): improve search filter`
-* `refactor(components): move card to separate folder`
-
----
-
-# 🔮 **Future Enhancements**
-
-✔ Dark mode
-✔ Resume builder
-✔ Notification system
-✔ Chat between recruiter & applicant
-✔ Email/SMS alerts
-
----
-
-# 🙌 **Team Notes**
-
-This project includes:
-
-* Role-based UI
-* Summary & matrix report support
-* Log tracking (frontend + backend)
-* Figma-based responsive design
-* Fully modular architecture
-
+This project is for educational purposes.

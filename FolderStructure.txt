@@ -16,13 +16,15 @@ frontend-app/
 │   │   │   ├── Select.jsx
 │   │   │   ├── Loader.jsx
 │   │   │   ├── Modal.jsx
-│   │   │   └── EmptyState.jsx
+│   │   │   ├── EmptyState.jsx
+│   │   │   └── PageHero.jsx
 │   │   │
 │   │   ├── layout/
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Sidebar.jsx
 │   │   │   ├── AdminSidebar.jsx
-│   │   │   └── DashboardHeader.jsx
+│   │   │   ├── DashboardHeader.jsx
+│   │   │   └── Layout.jsx
 │   │   │
 │   │   └── cards/
 │   │       ├── JobCard.jsx
@@ -82,12 +84,14 @@ frontend-app/
 │   │   ├── userService.js
 │   │   ├── jobService.js
 │   │   ├── companyService.js
-│   │   └── applicationService.js
+│   │   ├── applicationService.js
+│   │   └── adminService.js
 │   │
 │   ├── utils/
 │   │   ├── validators.js
 │   │   ├── helpers.js
-│   │   └── constants.js
+│   │   ├── constants.js
+│   │   └── menuItems.js
 │   │
 │   ├── i18n/
 │   │   ├── index.js

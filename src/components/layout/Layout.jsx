@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 export default function Layout() {
     // Default open on larger screens, closed on mobile could be better but let's stick to simple state
     // Ideally use media query hook, but for now we default to true.
-    const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);

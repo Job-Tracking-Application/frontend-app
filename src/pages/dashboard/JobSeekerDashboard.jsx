@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHero from "../../components/common/PageHero";
 import JobCard from "../../components/cards/JobCard";
 import { getJobs } from "../../services/jobService";
 import { getMyApplications } from "../../services/applicationService";
 
 export default function JobSeekerDashboard() {
+    const { t } = useLanguage();
     const [jobs, setJobs] = useState([]);
     const [appliedJobs, setAppliedJobs] = useState([]);
     const [recommendedJobs, setRecommendedJobs] = useState([]);
@@ -46,13 +48,13 @@ export default function JobSeekerDashboard() {
 
     return (
         <div>
-            <PageHero title="Smart Dashboard" subtitle="Jobs curated just for you." />
+            <PageHero title={t('hero_title')} subtitle={t('hero_subtitle')} />
 
             <div className="container pb-5">
                 {loading ? (
                     <div className="text-center py-5">
                         <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
+                            <span className="visually-hidden">{t('loading')}</span>
                         </div>
                     </div>
                 ) : (
@@ -60,8 +62,8 @@ export default function JobSeekerDashboard() {
                         {/* Recent Activity Section */}
                         <section className="mb-5">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="fw-bold"><i className="bi bi-clock-history me-2 text-primary"></i>Recent Activity</h4>
-                                <Link to="/applications" className="text-decoration-none fw-medium">View All</Link>
+                                <h4 className="fw-bold"><i className="bi bi-clock-history me-2 text-primary"></i>{t('recent_activity')}</h4>
+                                <Link to="/applications" className="text-decoration-none fw-medium">{t('view_all')}</Link>
                             </div>
                             <div className="row g-3">
                                 {appliedJobs.slice(0, 3).map((app) => (
@@ -73,7 +75,7 @@ export default function JobSeekerDashboard() {
                                                     <small className="text-muted">{app.company}</small>
                                                 </div>
                                                 <span className={`badge rounded-pill ${app.status === 'Selected' ? 'bg-success' :
-                                                        app.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary'
+                                                    app.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary'
                                                     }`}>
                                                     {app.status}
                                                 </span>
@@ -87,7 +89,7 @@ export default function JobSeekerDashboard() {
                         {/* Recommended Jobs Section */}
                         <section className="mb-5">
                             <div className="d-flex align-items-center mb-3">
-                                <h4 className="fw-bold"><i className="bi bi-stars me-2 text-warning"></i>Recommended for You</h4>
+                                <h4 className="fw-bold"><i className="bi bi-stars me-2 text-warning"></i>{t('recommended_jobs')}</h4>
                             </div>
                             <div className="row g-4">
                                 {recommendedJobs.map((job) => (
@@ -95,15 +97,15 @@ export default function JobSeekerDashboard() {
                                         <JobCard job={job} />
                                     </div>
                                 ))}
-                                {recommendedJobs.length === 0 && <p className="text-muted">Apply to more jobs to get better recommendations!</p>}
+                                {recommendedJobs.length === 0 && <p className="text-muted">{t('apply_more_msg')}</p>}
                             </div>
                         </section>
 
                         {/* Explore All Jobs Section */}
                         <section>
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="fw-bold">Explore All Jobs</h4>
-                                <Link to="/jobs" className="btn btn-outline-primary btn-sm">See More</Link>
+                                <h4 className="fw-bold">{t('explore_jobs')}</h4>
+                                <Link to="/jobs" className="btn btn-outline-primary btn-sm">{t('see_more')}</Link>
                             </div>
                             <div className="row g-4">
                                 {jobs.map((job) => (

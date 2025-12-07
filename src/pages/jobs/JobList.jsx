@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getJobs } from "../../services/jobService";
+import { useLanguage } from "../../context/LanguageContext";
 import JobCard from "../../components/cards/JobCard";
 import PageHero from "../../components/common/PageHero";
 
 export default function JobList() {
+    const { t } = useLanguage();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -26,7 +28,7 @@ export default function JobList() {
     if (loading) return (
         <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('loading')}</span>
             </div>
         </div>
     );
@@ -34,15 +36,15 @@ export default function JobList() {
     return (
         <div className="job-list-page">
             <PageHero
-                title="Find Your Dream Job"
-                subtitle="Discover opportunities that match your skills and aspirations."
+                title={t('find_dream_job')}
+                subtitle={t('dream_job_subtitle')}
             >
                 <div className="bg-white p-2 rounded-pill shadow-lg d-inline-flex align-items-center w-100 mx-auto" style={{ maxWidth: "600px" }}>
                     <i className="bi bi-search text-muted ms-3 fs-5"></i>
                     <input
                         type="text"
                         className="form-control border-0 shadow-none ms-2"
-                        placeholder="Search by job title or company..."
+                        placeholder={t('search_placeholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ fontSize: "1.1rem" }}
@@ -52,7 +54,7 @@ export default function JobList() {
 
             <div className="container pb-5">
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h3 className="fw-bold mb-0 text-dark">Latest Openings</h3>
+                    <h3 className="fw-bold mb-0 text-dark">{t('latest_openings')}</h3>
                     <select
                         className="form-select w-auto shadow-sm border-0 bg-light"
                         value={filterType}

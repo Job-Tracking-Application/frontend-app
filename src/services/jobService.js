@@ -5,7 +5,7 @@ export const dummyJobs = [
         company: "Tech Corp",
         location: "Remote",
         type: "Full-time",
-        salary: "$80000 - $110000",
+        salary: "₹8,00,000 - ₹12,00,000",
         description: "We are looking for a skilled React developer..."
     },
     {
@@ -14,7 +14,7 @@ export const dummyJobs = [
         company: "Data Systems",
         location: "New York, NY",
         type: "Full-time",
-        salary: "$90000 - $130000",
+        salary: "₹9L - ₹13L",
         description: "Experience with Node.js and MongoDB required."
     },
     {
@@ -23,7 +23,7 @@ export const dummyJobs = [
         company: "Creative Studio",
         location: "San Francisco, CA",
         type: "Contract",
-        salary: "$60/hr",
+        salary: "₹800/hr",
         description: "Design beautiful interfaces for mobile apps."
     }
 ];

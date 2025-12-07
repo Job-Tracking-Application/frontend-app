@@ -1,10 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { menuItems } from "../../utils/menuItems";
 
 export default function Sidebar() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const role = user?.role || "guest";
 
@@ -26,7 +28,7 @@ export default function Sidebar() {
                 style={{ transition: 'all 0.2s' }}
               >
                 <i className={`bi ${item.icon} me-3`}></i>
-                {item.label}
+                {t(item.label)}
               </Link>
             </li>
           )

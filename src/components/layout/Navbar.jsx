@@ -6,7 +6,7 @@ import { menuItems } from "../../utils/menuItems";
 
 export default function Navbar({ toggleSidebar, isSidebarOpen }) {
   const { user, logout } = useAuth();
-  const { lang, toggle } = useLanguage();
+  const { lang, toggle, t } = useLanguage();
   const navigate = useNavigate();
   const role = user?.role || "guest";
   const menu = menuItems[role] || menuItems.guest;
@@ -29,7 +29,7 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
           </button>
 
           <a className="navbar-brand d-flex align-items-center gap-2" href="#" onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
-            <i className="bi bi-briefcase-fill"></i> MyJobs
+            <i className="bi bi-briefcase-fill"></i> JobSync
           </a>
 
           {/* Desktop Menu Links */}
@@ -43,13 +43,11 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
                 style={{ transition: 'opacity 0.2s' }}
               >
                 <i className={`bi ${item.icon}`}></i>
-                {item.label}
+                {t(item.label)}
               </a>
             ))}
           </div>
         </div>
-
-
 
         <div className="d-flex align-items-center gap-3">
           <button className="btn btn-sm btn-outline-light opacity-75" onClick={toggle} title="Switch Language">
@@ -67,17 +65,17 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
               <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                 <li><h6 className="dropdown-header text-muted">Signed in as <br /><strong>{user.email}</strong></h6></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item" onClick={() => navigate('/dashboard')}><i className="bi bi-speedometer2 me-2"></i> Dashboard</button></li>
-                <li><button className="dropdown-item" onClick={() => navigate('/profile')}><i className="bi bi-person me-2"></i> Profile</button></li>
-                <li><button className="dropdown-item" onClick={() => navigate('/settings')}><i className="bi bi-gear me-2"></i> Settings</button></li>
+                <li><button className="dropdown-item" onClick={() => navigate('/dashboard')}><i className="bi bi-speedometer2 me-2"></i> {t('nav_dashboard')}</button></li>
+                <li><button className="dropdown-item" onClick={() => navigate('/profile')}><i className="bi bi-person me-2"></i> {t('nav_profile')}</button></li>
+                <li><button className="dropdown-item" onClick={() => navigate('/settings')}><i className="bi bi-gear me-2"></i> {t('nav_settings')}</button></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item text-danger" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> Logout</button></li>
+                <li><button className="dropdown-item text-danger" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> {t('nav_logout')}</button></li>
               </ul>
             </div>
           ) : (
             <div className="d-flex gap-2">
-              <button className="btn btn-outline-light" onClick={() => navigate('/login')}>Login</button>
-              <button className="btn btn-light text-primary fw-bold" onClick={() => navigate('/register')}>Register</button>
+              <button className="btn btn-outline-light" onClick={() => navigate('/login')}>{t('nav_login')}</button>
+              <button className="btn btn-light text-primary fw-bold" onClick={() => navigate('/register')}>{t('nav_register')}</button>
             </div>
           )}
         </div>

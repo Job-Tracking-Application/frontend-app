@@ -93,7 +93,7 @@ export default function CreateJob() {
                                             type="text"
                                             name="salary"
                                             className="form-control"
-                                            placeholder="e.g. $50k - $80k"
+                                            placeholder="e.g. ₹3L - ₹6L"
                                             required
                                             value={formData.salary}
                                             onChange={handleChange}

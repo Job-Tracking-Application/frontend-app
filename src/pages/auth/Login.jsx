@@ -11,8 +11,8 @@ export default function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log({ email, password });
-        // dummy login default role jobseeker (mock logic)
-        login({ email, password, role: 'jobseeker' });
+        // Login with email/pass, role is determined by AuthContext
+        login({ email, password });
         navigate('/dashboard');
     };
 

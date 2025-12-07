@@ -14,8 +14,13 @@ export default function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
 
-    const login = ({ email, password, role = "jobseeker" }) => {
-        // For now, just set a dummy user object. In real app call API.
+    const login = ({ email, password }) => {
+        // Mock Login Logic for Demo
+        let role = "jobseeker";
+        if (email.includes("admin")) role = "admin";
+        else if (email.includes("recruiter")) role = "recruiter";
+
+        // Use email prefix as name
         const dummyUser = { id: 1, name: email.split('@')[0], email, role };
         setUser(dummyUser);
         return dummyUser;
