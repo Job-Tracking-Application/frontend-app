@@ -84,7 +84,7 @@ src/
 │
 ├── context/           # Global state management
 │   ├── AuthContext.jsx
-│   └── LanguageContext.js
+│   └── LanguageContext.jsx
 │
 ├── hooks/             # Custom hooks (useAuth, useFetch, etc.)
 │
