@@ -19,6 +19,9 @@ import ManageCompanies from "../pages/admin/ManageCompanies";
 import ManageJobs from "../pages/admin/ManageJobs";
 import ViewLogs from "../pages/admin/ViewLogs";
 import LanguageSettings from "../pages/settings/LanguageSettings";
+import JobList from "../pages/jobs/JobList";
+import JobDetails from "../pages/jobs/JobDetails";
+import CreateJob from "../pages/jobs/CreateJob";
 
 export default function AppRoutes() {
   return (
@@ -36,6 +39,15 @@ export default function AppRoutes() {
             <Route path="default" element={<div className="p-4">Select your dashboard from menu.</div>} />
             <Route path="jobseeker" element={<JobSeekerDashboard />} />
             <Route path="recruiter" element={<RecruiterDashboard />} />
+          </Route>
+
+          {/* Job Routes */}
+          <Route element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
+            <Route path="/jobs" element={<JobList />} />
+            <Route path="/jobs/:id" element={<JobDetails />} />
+          </Route>
+          <Route element={<RoleRoute allowedRoles={["recruiter"]} />}>
+            <Route path="/jobs/create" element={<CreateJob />} />
           </Route>
 
           {/* Admin Routes */}
