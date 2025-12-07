@@ -7,16 +7,16 @@ import LanguageProvider from "./context/LanguageContext";
 import './index.css';
 
 
-function Root(){
-return (
-<BrowserRouter>
-<AuthProvider>
-<LanguageProvider>
-<Router />
-</LanguageProvider>
-</AuthProvider>
-</BrowserRouter>
-);
+function Root() {
+    return (
+        <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+            <AuthProvider>
+                <LanguageProvider>
+                    <Router />
+                </LanguageProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    );
 }
 
 

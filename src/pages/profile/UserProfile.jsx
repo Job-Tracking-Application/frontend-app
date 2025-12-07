@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
+import PageHero from "../../components/common/PageHero";
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -80,171 +81,142 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="profile-page container my-4">
-      {/* Header */}
-      <div className="d-flex align-items-start justify-content-between mb-3">
-        <div>
-          <h1 className="mb-1 me-5">My Profile</h1>
-          <div className="text-muted small">
-          </div>
+    <div>
+      <PageHero title="My Profile" subtitle="Manage your personal information and resume." />
+
+      <div className="container pb-5">
+        <div className="d-flex justify-content-end mb-4">
+          {isEditing ? (
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-success"
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={toggleEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button className="btn btn-primary" onClick={toggleEdit}>
+              <i className="bi bi-pencil me-2"></i> Edit Profile
+            </button>
+          )}
         </div>
 
-        {isEditing ? (
-          <div>
-            <button
-              className="btn btn-success me-2"
-              onClick={handleSave}
-              disabled={saving}
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-            <button
-              className="btn btn-outline-secondary"
-              onClick={toggleEdit}
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-             <div class="d-flex justify-content-end">
-          <button className="btn btn-primary " onClick={toggleEdit}>
-            Edit Profile
-          </button>
-          </div>
-        )}
-      </div>
+        <div className="row g-4">
+          {/* Basic Info */}
+          <div className="col-lg-8">
+            <div className="card shadow-sm border-0 mb-4">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 className="fw-bold mb-0">Basic Information</h5>
+              </div>
+              <div className="card-body p-4">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Full Name</label>
+                    {isEditing ? (
+                      <input name="fullName" value={formData.fullName} onChange={handleChange} className="form-control" />
+                    ) : (
+                      <p className="fw-medium">{user.fullName}</p>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Email</label>
+                    {isEditing ? (
+                      <input name="email" value={formData.email} onChange={handleChange} className="form-control" />
+                    ) : (
+                      <p className="fw-medium">{user.email}</p>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Username</label>
+                    {isEditing ? (
+                      <input name="userName" value={formData.userName} onChange={handleChange} className="form-control" />
+                    ) : (
+                      <p className="fw-medium">{user.userName}</p>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Phone</label>
+                    {isEditing ? (
+                      <input name="phone" value={formData.phone} onChange={handleChange} className="form-control" />
+                    ) : (
+                      <p className="fw-medium">{user.phone}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      {/* Basic Info */}
-      <div className="card profile-card p-4">
-        <h6 className="card-title mb-3">Basic Information</h6>
+            <div className="card shadow-sm border-0 mb-4">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 className="fw-bold mb-0">About Me</h5>
+              </div>
+              <div className="card-body p-4">
+                {isEditing ? (
+                  <textarea name="about" rows={4} value={formData.about} onChange={handleChange} className="form-control" />
+                ) : (
+                  <p className="text-secondary">{user.about || "No description provided."}</p>
+                )}
+              </div>
+            </div>
 
-        <div className="row">
-          {/* Full Name */}
-          <div className="col-md-6 mb-3">
-            <label className="field-label">Full Name</label>
-            {isEditing ? (
-              <input
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="form-control soft-box"
-              />
-            ) : (
-              <div className="soft-box">{user.fullName}</div>
-            )}
-          </div>
-
-          {/* Email */}
-          <div className="col-md-6 mb-3">
-            <label className="field-label">Email</label>
-            {isEditing ? (
-              <input
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="form-control soft-box"
-              />
-            ) : (
-              <div className="soft-box">{user.email}</div>
-            )}
-          </div>
-
-          {/* Username */}
-          <div className="col-md-6 mb-3">
-            <label className="field-label">Username</label>
-            {isEditing ? (
-              <input
-                name="userName"
-                value={formData.userName}
-                onChange={handleChange}
-                className="form-control soft-box"
-              />
-            ) : (
-              <div className="soft-box">{user.userName}</div>
-            )}
+            <div className="card shadow-sm border-0 mb-4">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 className="fw-bold mb-0">Education</h5>
+              </div>
+              <div className="card-body p-4">
+                {isEditing ? (
+                  <textarea name="education" rows={3} value={formData.education} onChange={handleChange} className="form-control" />
+                ) : (
+                  <p className="text-secondary">{user.education || "No education details."}</p>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Phone */}
-          <div className="col-md-6 mb-3">
-            <label className="field-label">Phone</label>
-            {isEditing ? (
-              <input
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="form-control soft-box"
-              />
-            ) : (
-              <div className="soft-box">{user.phone}</div>
-            )}
+          {/* Sidebar like Cards */}
+          <div className="col-lg-4">
+            <div className="card shadow-sm border-0 mb-4">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 className="fw-bold mb-0">Skills</h5>
+              </div>
+              <div className="card-body p-4">
+                {isEditing ? (
+                  <input name="skills" value={formData.skills.join(", ")} onChange={handleSkillsChange} className="form-control" placeholder="Comma separated" />
+                ) : (
+                  <div className="d-flex flex-wrap gap-2">
+                    {user.skills && user.skills.length > 0 ? user.skills.map((skill, i) => (
+                      <span key={i} className="badge bg-light text-dark border">{skill}</span>
+                    )) : <span className="text-muted small">No skills listed</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="card shadow-sm border-0">
+              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 className="fw-bold mb-0">Resume</h5>
+              </div>
+              <div className="card-body p-4">
+                {isEditing ? (
+                  <input type="file" className="form-control" onChange={handleFileChange} />
+                ) : (
+                  <div className="p-3 bg-light rounded text-center">
+                    <i className="bi bi-file-earmark-pdf fs-3 text-danger d-block mb-2"></i>
+                    {user.resume ? <span>{user.resume}</span> : <span className="text-muted small">No resume uploaded</span>}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* About */}
-      <div className="card profile-card p-4 mt-4">
-        <h6 className="card-title mb-3">About Me</h6>
-        {isEditing ? (
-          <textarea
-            name="about"
-            rows={3}
-            value={formData.about}
-            onChange={handleChange}
-            className="form-control soft-box"
-          />
-        ) : (
-          <div className="soft-box">{user.about}</div>
-        )}
-      </div>
-
-      {/* Education */}
-      <div className="card profile-card p-4 mt-4">
-        <h6 className="card-title mb-3">Education</h6>
-        {isEditing ? (
-          <textarea
-            name="education"
-            rows={2}
-            value={formData.education}
-            onChange={handleChange}
-            className="form-control soft-box"
-          />
-        ) : (
-          <div className="soft-box">{user.education}</div>
-        )}
-      </div>
-
-      {/* Skills */}
-      <div className="card profile-card p-4 mt-4">
-        <h6 className="card-title mb-3">Skills</h6>
-        {isEditing ? (
-          <input
-            name="skills"
-            value={formData.skills.join(", ")}
-            onChange={handleSkillsChange}
-            className="form-control soft-box"
-          />
-        ) : (
-          <div className="d-flex flex-wrap gap-2">
-            {user.skills.map((skill, i) => (
-              <span key={i} className="badge skill-badge">
-                {skill}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Resume */}
-      <div className="card profile-card p-4 mt-4">
-        <h6 className="card-title mb-3">Resume</h6>
-
-        {isEditing ? (
-          <input type="file" className="form-control" onChange={handleFileChange} />
-        ) : (
-          <div className="text-muted">
-            {user.resume ? user.resume : "No Resume Uploaded"}
-          </div>
-        )}
       </div>
     </div>
   );

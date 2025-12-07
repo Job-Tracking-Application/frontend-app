@@ -29,6 +29,15 @@ import ManageApplications from "../pages/applications/ManageApplications";
 import UserProfile from "../pages/profile/UserProfile";
 import CompanyProfile from "../pages/profile/CompanyProfile";
 
+const DashboardRedirect = () => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin" replace />;
+  if (user.role === 'recruiter') return <Navigate to="/dashboard/recruiter" replace />;
+  // Default to jobseeker
+  return <Navigate to="/dashboard/jobseeker" replace />;
+};
+
 export default function AppRoutes() {
   const { user } = useAuth();
   return (
@@ -42,7 +51,8 @@ export default function AppRoutes() {
 
           {/* Dashboard - visible to all, redirects based on role or shows default */}
           <Route path="/dashboard" element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
-            <Route index element={<Navigate to="/dashboard/default" replace />} />
+            {/* Dashboard Redirect Logic */}
+            <Route index element={<DashboardRedirect />} />
             <Route path="default" element={<div className="p-4">Select your dashboard from menu.</div>} />
             <Route path="jobseeker" element={<JobSeekerDashboard />} />
             <Route path="recruiter" element={<RecruiterDashboard />} />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import adminService from "../../services/adminService";
+import PageHero from "../../components/common/PageHero";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -24,45 +25,67 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <div className="p-5 text-center">Loading admin stats...</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="h3 mb-4">Admin Dashboard</h1>
+    <div>
+      <PageHero title="Admin Portal" subtitle="System analytics and management overview." />
 
-      <div className="row g-3">
-        <div className="col-12 col-md-6 col-lg-3">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <p className="text-muted mb-1">Total Users</p>
-              <h2 className="h2">{stats?.totalUsers ?? 0}</h2>
+      <div className="container pb-5">
+        <div className="row g-4">
+          <div className="col-12 col-md-6 col-lg-3">
+            <div className="card shadow-sm border-0 h-100">
+              <div className="card-body d-flex align-items-center">
+                <div className="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
+                  <i className="bi bi-people fs-4"></i>
+                </div>
+                <div>
+                  <p className="text-muted mb-0 small text-uppercase fw-bold">Total Users</p>
+                  <h2 className="h3 fw-bold mb-0">{stats?.totalUsers ?? 0}</h2>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-lg-3">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <p className="text-muted mb-1">Total Companies</p>
-              <h2 className="h2">{stats?.totalCompanies ?? 0}</h2>
+          <div className="col-12 col-md-6 col-lg-3">
+            <div className="card shadow-sm border-0 h-100">
+              <div className="card-body d-flex align-items-center">
+                <div className="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success">
+                  <i className="bi bi-building fs-4"></i>
+                </div>
+                <div>
+                  <p className="text-muted mb-0 small text-uppercase fw-bold">Companies</p>
+                  <h2 className="h3 fw-bold mb-0">{stats?.totalCompanies ?? 0}</h2>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-lg-3">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <p className="text-muted mb-1">Total Jobs</p>
-              <h2 className="h2">{stats?.totalJobs ?? 0}</h2>
+          <div className="col-12 col-md-6 col-lg-3">
+            <div className="card shadow-sm border-0 h-100">
+              <div className="card-body d-flex align-items-center">
+                <div className="bg-warning bg-opacity-10 p-3 rounded-circle me-3 text-warning">
+                  <i className="bi bi-briefcase fs-4"></i>
+                </div>
+                <div>
+                  <p className="text-muted mb-0 small text-uppercase fw-bold">Active Jobs</p>
+                  <h2 className="h3 fw-bold mb-0">{stats?.totalJobs ?? 0}</h2>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-lg-3">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <p className="text-muted mb-1">Total Applications</p>
-              <h2 className="h2">{stats?.totalApplications ?? 0}</h2>
+          <div className="col-12 col-md-6 col-lg-3">
+            <div className="card shadow-sm border-0 h-100">
+              <div className="card-body d-flex align-items-center">
+                <div className="bg-info bg-opacity-10 p-3 rounded-circle me-3 text-info">
+                  <i className="bi bi-file-text fs-4"></i>
+                </div>
+                <div>
+                  <p className="text-muted mb-0 small text-uppercase fw-bold">Applications</p>
+                  <h2 className="h3 fw-bold mb-0">{stats?.totalApplications ?? 0}</h2>
+                </div>
+              </div>
             </div>
           </div>
         </div>

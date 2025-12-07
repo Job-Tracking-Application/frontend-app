@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getJobs } from "../../services/jobService";
 import JobCard from "../../components/cards/JobCard";
+import PageHero from "../../components/common/PageHero";
 
 export default function JobList() {
     const [jobs, setJobs] = useState([]);
@@ -22,30 +23,32 @@ export default function JobList() {
         return matchesSearch && matchesType;
     });
 
-    if (loading) return <div className="p-5 text-center">Loading jobs...</div>;
+    if (loading) return (
+        <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    );
 
     return (
         <div className="job-list-page">
-            {/* Hero Section */}
-            <div className="bg-primary text-white py-5 mb-5 shadow-sm" style={{ background: "linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)" }}>
-                <div className="container text-center">
-                    <h1 className="display-4 fw-bold mb-3">Find Your Dream Job</h1>
-                    <p className="lead opacity-75 mb-4">Discover opportunities that match your skills and aspirations.</p>
-
-                    {/* Search Bar in Hero */}
-                    <div className="bg-white p-2 rounded-pill shadow-lg d-inline-flex align-items-center w-100" style={{ maxWidth: "600px" }}>
-                        <i className="bi bi-search text-muted ms-3 fs-5"></i>
-                        <input
-                            type="text"
-                            className="form-control border-0 shadow-none ms-2"
-                            placeholder="Search by job title or company..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{ fontSize: "1.1rem" }}
-                        />
-                    </div>
+            <PageHero
+                title="Find Your Dream Job"
+                subtitle="Discover opportunities that match your skills and aspirations."
+            >
+                <div className="bg-white p-2 rounded-pill shadow-lg d-inline-flex align-items-center w-100 mx-auto" style={{ maxWidth: "600px" }}>
+                    <i className="bi bi-search text-muted ms-3 fs-5"></i>
+                    <input
+                        type="text"
+                        className="form-control border-0 shadow-none ms-2"
+                        placeholder="Search by job title or company..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ fontSize: "1.1rem" }}
+                    />
                 </div>
-            </div>
+            </PageHero>
 
             <div className="container pb-5">
                 <div className="d-flex justify-content-between align-items-center mb-4">

@@ -1,54 +1,36 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
+import { menuItems } from "../../utils/menuItems";
 
 export default function Sidebar() {
   const { user } = useAuth();
+  const location = useLocation();
   const role = user?.role || "guest";
 
-
-  const lists = {
-    jobseeker: [
-      ["Dashboard", "/dashboard"],
-      ["Jobs", "/jobs"],
-      ["My Applications", "/applications"],
-      ["Profile", "/profile"],
-      ["Settings", "/settings"],
-    ],
-    recruiter: [
-      ["Dashboard", "/dashboard"],
-      ["Create Job", "/jobs/create"],
-      ["Manage Applications", "/applications/manage"],
-      ["Profile", "/profile"],
-      ["Settings", "/settings"],
-    ],
-    admin: [
-      ["Dashboard", "/admin"],
-      ["Manage Users", "/admin/users"],
-      ["Manage Companies", "/admin/companies"],
-      ["Manage Jobs", "/admin/jobs"],
-      ["View Logs", "/admin/logs"],
-      ["Settings", "/settings"],
-    ],
-    guest: [
-      ["Login", "/login"],
-      ["Register", "/register"],
-    ],
-  };
-
-
-  const menu = lists[role] || lists.guest;
-
+  const menu = menuItems[role] || menuItems.guest;
 
   return (
-    <div className="bg-light" style={{ minHeight: "100vh" }}>
-      <ul className="nav flex-column p-3">
-        {menu.map(([label, path]) => (
-          <li key={path} className="nav-item mb-2">
-            <Link className="nav-link" to={path}>{label}</Link>
-          </li>
-        ))}
+    <div className="bg-white h-100" style={{ boxShadow: "inset -1px 0 0 rgba(0,0,0,0.1)" }}>
+      <div className="p-3">
+        <small className="text-muted text-uppercase fw-bold" style={{ fontSize: '0.75rem' }}>Menu</small>
+      </div>
+      <ul className="nav flex-column px-2">
+        {menu.map((item) => {
+          const isActive = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+          return (
+            <li key={item.path} className="nav-item mb-1">
+              <Link
+                className={`nav-link d-flex align-items-center rounded ${isActive ? 'bg-primary text-white' : 'text-dark'}`}
+                to={item.path}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className={`bi ${item.icon} me-3`}></i>
+                {item.label}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </div>
   );
