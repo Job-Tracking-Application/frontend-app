@@ -1,0 +1,28 @@
+
+> frontend-app@0.0.0 build
+> vite build
+
+[36mvite v7.2.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 64 modules transformed.
+Γ£ù Build failed in 600ms
+error during build:
+src/pages/settings/LanguageSettings.jsx (2:9): "LanguageContext" is not exported by "src/context/LanguageContext.jsx", imported by "src/pages/settings/LanguageSettings.jsx".
+file: E:/Job-Tracking-Application/frontend-app/src/pages/settings/LanguageSettings.jsx:2:9
+
+1: import React, { useContext } from "react";
+2: import { LanguageContext } from "../../context/LanguageContext";
+            ^
+3: 
+4: const LanguageSettings = () => {
+
+    at getRollupError (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:16946:16)
+    at Module.traceVariable (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:17400:29)
+    at ModuleScope.findVariable (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:15067:39)
+    at ReturnValueScope.findVariable (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:5641:38)
+    at FunctionBodyScope.findVariable (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:5641:38)
+    at Identifier.bind (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:5415:40)
+    at CallExpression.bind (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:2802:28)
+    at CallExpression.bind (file:///E:/Job-Tracking-Application/frontend-app/node_modules/rollup/dist/es/shared/node-entry.js:12114:15)
