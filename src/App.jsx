@@ -1,12 +1,12 @@
-import './App.css'
+import AppRoutes from "./routes/index";
+import LanguageProvider from "./context/LanguageProvider";
 
 function App() {
-
   return (
-      <div>
-        <h1>Job Tracking Application</h1>
-      </div>
-  )
+    <LanguageProvider>
+      <AppRoutes />
+    </LanguageProvider>
+  );
 }
 
-export default App
+export default App;

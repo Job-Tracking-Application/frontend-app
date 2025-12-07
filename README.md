@@ -12,7 +12,7 @@ The UI is built according to the Figma design and supports **English + Marathi**
 * **Axios (API calls)**
 * **Context API (Auth & Language)**
 * **i18n (English + Marathi)**
-* **TailwindCSS / Custom CSS**
+* **Bootstrap / Custom CSS**
 * **Reusable Components Architecture**
 
 ---
@@ -84,7 +84,7 @@ src/
 │
 ├── context/           # Global state management
 │   ├── AuthContext.jsx
-│   └── LanguageContext.jsx
+│   └── LanguageContext.js
 │
 ├── hooks/             # Custom hooks (useAuth, useFetch, etc.)
 │
