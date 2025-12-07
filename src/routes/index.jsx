@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
+import { useAuth } from "../context/AuthContext";
 
 // auth pages
 import Login from "../pages/auth/Login";
@@ -23,7 +24,13 @@ import JobList from "../pages/jobs/JobList";
 import JobDetails from "../pages/jobs/JobDetails";
 import CreateJob from "../pages/jobs/CreateJob";
 
+import MyApplications from "../pages/applications/MyApplications";
+import ManageApplications from "../pages/applications/ManageApplications";
+import UserProfile from "../pages/profile/UserProfile";
+import CompanyProfile from "../pages/profile/CompanyProfile";
+
 export default function AppRoutes() {
+  const { user } = useAuth();
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -48,6 +55,15 @@ export default function AppRoutes() {
           </Route>
           <Route element={<RoleRoute allowedRoles={["recruiter"]} />}>
             <Route path="/jobs/create" element={<CreateJob />} />
+            <Route path="/applications/manage" element={<ManageApplications />} />
+          </Route>
+
+          {/* Applications & Profile */}
+          <Route element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
+            <Route path="/profile" element={user?.role === 'recruiter' ? <CompanyProfile /> : <UserProfile />} />
+          </Route>
+          <Route element={<RoleRoute allowedRoles={["jobseeker"]} />}>
+            <Route path="/applications" element={<MyApplications />} />
           </Route>
 
           {/* Admin Routes */}
