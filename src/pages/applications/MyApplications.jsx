@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import { getMyApplications } from "../../services/applicationService";
 import PageHero from "../../components/common/PageHero";
 
+/**
+ * MyApplications
+ * Renders the list of job applications submitted by the current user.
+ */
 const MyApplications = () => {
+  // Holds the user's application records
   const [applications, setApplications] = useState([]);
 
+
+  // Fetch applications on initial render
   useEffect(() => {
     const loadData = async () => {
       const data = await getMyApplications();
@@ -28,8 +35,9 @@ const MyApplications = () => {
                       <h5 className="fw-bold mb-1">{app.jobTitle}</h5>
                       <h6 className="text-secondary">{app.company}</h6>
                     </div>
+                    {/* Status indicator with semantic styling */}
                     <span className={`badge rounded-pill px-3 py-2 ${app.status === 'Hired' ? 'bg-success' :
-                        app.status === 'Rejected' ? 'bg-danger' : 'bg-primary'
+                      app.status === 'Rejected' ? 'bg-danger' : 'bg-primary'
                       }`}>
                       {app.status}
                     </span>
@@ -44,6 +52,7 @@ const MyApplications = () => {
                     </div>
                     <div className="col-sm-6">
                       <p className="text-muted small mb-1 fw-bold text-uppercase">Resume</p>
+                      {/* External resume link */}
                       <a href={app.resume} target="_blank" rel="noreferrer" className="text-decoration-none">
                         View Resume <i className="bi bi-box-arrow-up-right ms-1 small"></i>
                       </a>
@@ -53,7 +62,7 @@ const MyApplications = () => {
               </div>
             </div>
           ))}
-
+          {/* Empty state */}
           {applications.length === 0 && (
             <div className="col-12 mt-4 text-center">
               <div className="p-5 bg-light rounded-3">

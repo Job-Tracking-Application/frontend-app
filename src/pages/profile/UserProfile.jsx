@@ -2,12 +2,19 @@ import React, { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
 import PageHero from "../../components/common/PageHero";
 import "./UserProfile.css";
-
+/**
+ * UserProfile
+ * Displays and manages the authenticated user's profile information.
+ * Supports view and edit modes with server-side persistence.
+ */
 const UserProfile = () => {
+  // Stores original user profile data
   const [user, setUser] = useState(null);
+  // Controls edit/view mode
   const [isEditing, setIsEditing] = useState(false);
+  // Tracks save operation state
   const [saving, setSaving] = useState(false);
-
+  // Stores editable form state
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -18,8 +25,7 @@ const UserProfile = () => {
     about: "",
     education: "",
   });
-
-  // Load user from API
+  // Fetch and initialize user profile on initial render
   useEffect(() => {
     async function loadUser() {
       const data = await getUserProfile();
@@ -39,24 +45,24 @@ const UserProfile = () => {
 
     loadUser();
   }, []);
-
+  // Fallback UI during initial data load
   if (!user) return <div className="text-center mt-4">Loading...</div>;
-
+  // Toggles edit mode
   const toggleEdit = () => setIsEditing(!isEditing);
 
-  // Input handlers
+  // Generic input change handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  // Handles comma-separated skills input
   const handleSkillsChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       skills: e.target.value.split(",").map((s) => s.trim()),
     }));
   };
-
+  // Handles resume file selection
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -64,7 +70,7 @@ const UserProfile = () => {
     }));
   };
 
-  // Save handler
+  // Persists updated profile data to the server
   const handleSave = async () => {
     setSaving(true);
 
