@@ -41,7 +41,7 @@ export default function CreateJob() {
       <div
         className="shadow-sm p-4 rounded-3"
         style={{
-          background: "#fff",
+          background: "#e8f1ff",   
           width: "100%",
           maxWidth: 700,
           fontSize: "14px",

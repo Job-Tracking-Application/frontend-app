@@ -12,23 +12,51 @@ const JOBS = [
     jobType: "Full-time",
     postedDate: "2025-11-28",
     skills: ["React", "JavaScript", "CSS", "HTML", "Bootstrap"],
-    description: "We are looking for a creative frontend developer skilled in React. You will work on responsive web applications, implement UI components, and collaborate with backend developers to integrate APIs.",
-    perks: ["Work from home", "Health insurance", "Flexible hours"],
+    description:
+      "We are looking for a creative Frontend Developer skilled in React and modern web technologies. You will build responsive UI components, implement designs from Figma, and ensure high performance and accessibility standards. You will collaborate closely with designers and backend developers to create seamless user experiences.",
     companyWebsite: "https://techcorp.com"
   },
   {
     id: 2,
-    title: "Senior Full Stack Developer",
+    title: "Full Stack Developer",
     company: "CloudNine",
     location: "Bangalore",
     salary: "₹15,00,000 / yr",
-    experience: "4 - 8 yrs",
+    experience: "3 - 6 yrs",
     jobType: "Full-time",
-    postedDate: "2025-11-20",
-    skills: ["React", "Node.js", "MongoDB", "AWS", "Docker"],
-    description: "A senior developer role focusing on scalable full-stack applications. Responsibilities include designing APIs, optimizing backend performance, mentoring junior developers, and leading project modules.",
-    perks: ["Performance bonus", "Remote work", "Health & wellness programs"],
+    postedDate: "2025-11-25",
+    skills: ["React", "Node.js", "MongoDB", "Express", "REST APIs"],
+    description:
+      "We are seeking a Full Stack Developer proficient in React for frontend and Node.js for backend. You will design, develop, and maintain web applications, integrate APIs, optimize database queries, and ensure scalable architecture. Ideal candidates have experience with cloud services and agile workflows.",
     companyWebsite: "https://cloudnine.com"
+  },
+  {
+    id: 3,
+    title: "UI/UX Designer",
+    company: "PixelWorks",
+    location: "Hyderabad",
+    salary: "₹8,20,000 / yr",
+    experience: "1 - 4 yrs",
+    jobType: "Part-time",
+    postedDate: "2025-11-22",
+    skills: ["Figma", "Sketch", "Wireframes", "Prototyping", "User Research"],
+    description:
+      "PixelWorks is looking for a talented UI/UX Designer to craft intuitive and visually appealing digital experiences. Responsibilities include creating wireframes, prototypes, and high-fidelity designs, conducting user research, and collaborating with developers to implement design solutions.",
+    companyWebsite: "https://pixelworks.com"
+  },
+  {
+    id: 4,
+    title: "Backend Engineer",
+    company: "SoftLogic",
+    location: "Mumbai",
+    salary: "₹12,50,000 / yr",
+    experience: "2 - 5 yrs",
+    jobType: "Contract",
+    postedDate: "2025-11-20",
+    skills: ["Node.js", "SQL", "API Development", "Microservices", "Docker"],
+    description:
+      "SoftLogic is hiring a Backend Engineer to design, implement, and maintain server-side applications and APIs. The role involves working with databases, ensuring system scalability, integrating third-party services, and writing clean and maintainable code. Experience with microservices architecture and Docker is a plus.",
+    companyWebsite: "https://softlogic.com"
   }
 ];
 
@@ -36,61 +64,150 @@ export default function JobDetails() {
   const { id } = useParams();
   const job = JOBS.find((j) => j.id === Number(id));
 
-  if (!job) return <div className="text-center py-5" style={{ fontSize: "14px" }}>Job not found</div>;
+  if (!job) return <div className="text-center py-5">Job not found</div>;
 
   return (
-    <div style={{ background: "#f5f7fa", minHeight: "100vh" }}>
-      <div className="container py-4" style={{ maxWidth: 900 }}>
-        <div className="card p-4 rounded-4 shadow-sm" style={{ fontSize: "14px", lineHeight: "1.5" }}>
-          
-          
-          <h2 className="fw-bold mb-2" style={{ fontSize: "18px" }}>{job.title}</h2>
-          <p className="text-muted mb-3" style={{ fontSize: "13px" }}>
-            {job.company} • {job.location} • <a href={job.companyWebsite} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>Company Website</a>
-          </p>
+    <div
+      style={{
+        backgroundColor: "#eef4ff",
+        minHeight: "100vh",
+        paddingTop: "40px",
+        display: "flex",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          background: "#ffffff",
+          width: "100%",
+          maxWidth: "650px",
+          padding: "20px 24px",
+          borderRadius: "12px",
+          boxShadow: "0px 2px 6px rgba(0,0,0,0.1)"
+        }}
+      >
+        
+        <h2
+          style={{
+            color: "#0d6efd",
+            marginBottom: "4px",
+            fontSize: "20px",
+            textAlign: "center"
+          }}
+        >
+          {job.title}
+        </h2>
 
-          
-          <ul className="d-flex gap-3 mb-3 flex-wrap" style={{ fontSize: "13px", paddingLeft: "20px" }}>
-            <li>Experience: {job.experience}</li>
-            <li>Salary: {job.salary}</li>
-            <li>Job Type: {job.jobType}</li>
-            <li>Posted on: {new Date(job.postedDate).toLocaleDateString()}</li>
-          </ul>
+        <p
+          style={{
+            fontSize: "12px",
+            color: "#666",
+            marginBottom: "16px",
+            textAlign: "center"
+          }}
+        >
+          {job.company}
+        </p>
 
-         
-          <div className="mb-3">
-            {job.skills.map((skill, i) => (
-              <span key={i} className="badge bg-primary-subtle text-primary me-2 px-2 py-1 rounded-3" style={{ fontSize: "12px" }}>
-                {skill}
-              </span>
-            ))}
+        <div
+          style={{
+            display: "flex",
+            gap: "14px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            fontSize: "13px",
+            color: "#444",
+            marginBottom: "10px"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" fill="none" stroke="gray" strokeWidth="2">
+              <path d="M2 10h12M2 6h12M4 2h8v12H4z" />
+            </svg>
+            {job.experience}
           </div>
 
-          
-          <h5 className="mb-2 fw-semibold" style={{ fontSize: "14px" }}>Job Description</h5>
-          <p style={{ fontSize: "13px", marginBottom: "1.2rem" }}>{job.description}</p>
-
-          
-          {job.perks && job.perks.length > 0 && (
-            <>
-              <h5 className="mb-2 fw-semibold" style={{ fontSize: "14px" }}>Perks & Benefits</h5>
-              <div style={{ fontSize: "13px", marginBottom: "1.5rem" }}>
-                {job.perks.map((perk, i) => (
-                  <div key={i} className="mb-1">• {perk}</div>
-                ))}
-              </div>
-            </>
-          )}
-
-          
-          <div className="d-flex gap-2 mt-3">
-            <Link to={`/apply/${job.id}`} className="btn btn-primary btn-sm rounded-3" style={{ fontSize: "13px", padding: "5px 12px" }}>
-              Apply Now
-            </Link>
-            <Link to="/jobs" className="btn btn-outline-secondary btn-sm rounded-3" style={{ fontSize: "13px", padding: "5px 12px" }}>
-              Back
-            </Link>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" fill="none" stroke="gray" strokeWidth="2">
+              <path d="M8 2v12M4 5h6a2 2 0 010 4H4a2 2 0 100 4h6" />
+            </svg>
+            {job.salary}
           </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" fill="none" stroke="gray" strokeWidth="2">
+              <path d="M8 15s5-4.5 5-8.5A5 5 0 003 6.5C3 10.5 8 15 8 15z" />
+              <circle cx="8" cy="6.5" r="2" />
+            </svg>
+            {job.location}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" fill="none" stroke="gray" strokeWidth="2">
+              <rect x="3" y="3" width="10" height="10" rx="2" />
+            </svg>
+            {job.jobType}
+          </div>
+
+  
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" fill="none" stroke="gray" strokeWidth="2">
+              <rect x="2" y="3" width="12" height="11" rx="2" />
+              <path d="M2 7h12" />
+            </svg>
+            {job.postedDate}
+          </div>
+        </div>
+
+        <hr style={{ margin: "14px 0" }} />
+
+        <h4 style={{ fontSize: "15px", marginBottom: "6px", textAlign: "center" }}>
+          Description
+        </h4>
+
+        <p style={{ lineHeight: "1.4", fontSize: "13px", color: "#333" }}>
+          {job.description}
+        </p>
+
+        <h4 style={{ fontSize: "15px", marginTop: "12px", textAlign: "center" }}>
+          Skills Required
+        </h4>
+
+        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+          {job.skills.map((skill, idx) => (
+            <span
+              key={idx}
+              style={{
+                display: "inline-block",
+                background: "#eef4ff",
+                color: "#0d6efd",
+                padding: "4px 8px",
+                borderRadius: "12px",
+                fontSize: "11px",
+                marginRight: "5px",
+                marginBottom: "5px"
+              }}
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <Link
+            to={`/apply/${job.id}`}
+            style={{
+              background: "#0d6efd",
+              color: "white",
+              padding: "8px 18px",
+              borderRadius: "6px",
+              textDecoration: "none",
+              fontSize: "13px",
+              fontWeight: "500"
+            }}
+          >
+            Apply Now
+          </Link>
         </div>
       </div>
     </div>

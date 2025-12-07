@@ -5,6 +5,7 @@ export default function ApplyJob() {
     name: "",
     email: "",
     phone: "",
+    qualification: "",
     experience: "",
     resume: null,
     coverLetter: ""
@@ -34,7 +35,7 @@ export default function ApplyJob() {
       <div
         className="shadow-sm p-4 rounded-3"
         style={{
-          background: "#fff",
+          background: "#e8f1ff",   
           width: "100%",
           maxWidth: 500,
           fontSize: "14px",
@@ -55,6 +56,7 @@ export default function ApplyJob() {
                 placeholder="Full Name"
                 value={form.name}
                 onChange={onChange}
+                required
               />
             </div>
 
@@ -66,6 +68,7 @@ export default function ApplyJob() {
                 placeholder="Email"
                 value={form.email}
                 onChange={onChange}
+                required
               />
             </div>
 
@@ -76,7 +79,25 @@ export default function ApplyJob() {
                 placeholder="Phone Number"
                 value={form.phone}
                 onChange={onChange}
+                required
               />
+            </div>
+
+            <div className="col-12">
+              <select
+                name="qualification"
+                className="form-select form-select-sm"
+                value={form.qualification}
+                onChange={onChange}
+                required
+              >
+                <option value="">Select Highest Qualification</option>
+                <option value="High School">High School</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Bachelor's">Bachelor's</option>
+                <option value="Master's">Master's</option>
+                <option value="PhD">PhD</option>
+              </select>
             </div>
 
             <div className="col-12">
@@ -87,16 +108,19 @@ export default function ApplyJob() {
                 placeholder="Total Experience (Years)"
                 value={form.experience}
                 onChange={onChange}
+                required
               />
             </div>
 
             <div className="col-12">
+              <label className="form-label small text-muted">Upload Resume</label>
               <input
                 name="resume"
                 type="file"
                 accept=".pdf,.doc,.docx"
                 className="form-control form-control-sm"
                 onChange={onChange}
+                required
               />
             </div>
 
