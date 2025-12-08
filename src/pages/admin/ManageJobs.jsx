@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import adminService from "../../services/adminService";
 import PageHero from "../../components/common/PageHero";
 
 const ManageJobs = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +25,12 @@ const ManageJobs = () => {
     fetchJobs();
     return () => (mounted = false);
   }, []);
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to remove this job?")) {
+      setJobs(prev => prev.filter(j => j.id !== id));
+    }
+  };
 
   const filteredJobs = jobs.filter(j =>
     j.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,8 +92,8 @@ const ManageJobs = () => {
                       </span>
                     </td>
                     <td className="pe-4 text-end">
-                      <button className="btn btn-sm btn-light border me-2"><i className="bi bi-eye"></i></button>
-                      <button className="btn btn-sm btn-light border text-danger"><i className="bi bi-trash"></i></button>
+                      <button onClick={() => navigate(`/jobs/${j.id}`)} className="btn btn-sm btn-light border me-2" title="View Job"><i className="bi bi-eye"></i></button>
+                      <button onClick={() => handleDelete(j.id)} className="btn btn-sm btn-light border text-danger" title="Delete Job"><i className="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 ))}

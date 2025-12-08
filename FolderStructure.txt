@@ -38,7 +38,8 @@ frontend-app/
 │   │   │
 │   │   ├── dashboard/
 │   │   │   ├── JobSeekerDashboard.jsx
-│   │   │   └── RecruiterDashboard.jsx
+│   │   │   ├── RecruiterDashboard.jsx
+│   │   │   └── AdminDashboard.jsx
 │   │   │
 │   │   ├── jobs/
 │   │   │   ├── JobList.jsx
@@ -54,7 +55,6 @@ frontend-app/
 │   │   │   └── CompanyProfile.jsx
 │   │   │
 │   │   ├── admin/
-│   │   │   ├── AdminDashboard.jsx
 │   │   │   ├── ManageUsers.jsx
 │   │   │   ├── ManageCompanies.jsx
 │   │   │   ├── ManageJobs.jsx

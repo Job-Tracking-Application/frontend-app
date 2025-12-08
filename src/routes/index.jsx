@@ -14,7 +14,7 @@ import Layout from "../components/layout/Layout";
 // pages
 import JobSeekerDashboard from "../pages/dashboard/JobSeekerDashboard";
 import RecruiterDashboard from "../pages/dashboard/RecruiterDashboard";
-import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageCompanies from "../pages/admin/ManageCompanies";
 import ManageJobs from "../pages/admin/ManageJobs";

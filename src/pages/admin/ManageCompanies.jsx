@@ -29,6 +29,16 @@ const ManageCompanies = () => {
     c.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to remove this company?")) {
+      setCompanies(prev => prev.filter(c => c.id !== id));
+    }
+  };
+
+  const handleEdit = (company) => {
+    alert(`Edit feature for ${company.name} coming soon!`);
+  };
+
   if (loading) return (
     <div className="text-center py-5">
       <div className="spinner-border text-primary" role="status">
@@ -91,8 +101,8 @@ const ManageCompanies = () => {
                       <span className="fw-medium">{c.jobs} Active Jobs</span>
                     </td>
                     <td className="pe-4 text-end">
-                      <button className="btn btn-sm btn-light border me-2"><i className="bi bi-pencil"></i></button>
-                      <button className="btn btn-sm btn-light border text-danger"><i className="bi bi-trash"></i></button>
+                      <button onClick={() => handleEdit(c)} className="btn btn-sm btn-light border me-2" title="Edit Company"><i className="bi bi-pencil"></i></button>
+                      <button onClick={() => handleDelete(c.id)} className="btn btn-sm btn-light border text-danger" title="Delete Company"><i className="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 ))}

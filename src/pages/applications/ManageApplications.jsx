@@ -58,26 +58,52 @@ const ManageApplications = () => {
                     </a>
                   </div>
 
-                  <div className="d-grid gap-2 d-md-flex">
-                    <button
-                      onClick={() => handleAction(app.id, "Shortlisted")}
-                      className="btn btn-outline-warning flex-grow-1"
-                    >
-                      Shortlist
-                    </button>
-                    <button
-                      onClick={() => handleAction(app.id, "Rejected")}
-                      className="btn btn-outline-danger flex-grow-1"
-                    >
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => handleAction(app.id, "Hired")}
-                      className="btn btn-primary flex-grow-1"
-                    >
-                      Hire
-                    </button>
-                  </div>
+                  {(!app.status || app.status === "Pending") ? (
+                    <div className="d-grid gap-2 d-md-flex">
+                      <button
+                        onClick={() => handleAction(app.id, "Shortlisted")}
+                        className="btn btn-outline-warning flex-grow-1"
+                        title="Shortlist Candidate"
+                      >
+                        <i className="bi bi-star me-2"></i> Shortlist
+                      </button>
+                      <button
+                        onClick={() => handleAction(app.id, "Rejected")}
+                        className="btn btn-outline-danger flex-grow-1"
+                        title="Reject Application"
+                      >
+                        <i className="bi bi-x-circle me-2"></i> Reject
+                      </button>
+                      <button
+                        onClick={() => handleAction(app.id, "Hired")}
+                        className="btn btn-primary flex-grow-1"
+                        title="Hire Candidate"
+                      >
+                        <i className="bi bi-check-circle me-2"></i> Hire
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="d-flex align-items-center justify-content-between p-3 bg-light rounded border">
+                      <div>
+                        <span className="text-muted small text-uppercase">Current Status</span>
+                        <h6 className={`mb-0 fw-bold ${app.status === "Hired" ? "text-success" :
+                            app.status === "Shortlisted" ? "text-warning" :
+                              "text-danger"
+                          }`}>
+                          {app.status === "Hired" && <i className="bi bi-check-circle-fill me-2"></i>}
+                          {app.status === "Shortlisted" && <i className="bi bi-star-fill me-2"></i>}
+                          {app.status === "Rejected" && <i className="bi bi-x-circle-fill me-2"></i>}
+                          {app.status}
+                        </h6>
+                      </div>
+                      <button
+                        className="btn btn-sm btn-link text-decoration-none"
+                        onClick={() => handleAction(app.id, "Pending")}
+                      >
+                        Change
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

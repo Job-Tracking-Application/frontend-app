@@ -24,6 +24,7 @@ export const getApplicationsForJob = async (jobId) => {
       name: "Vivek",
       email: "test@mail.com",
       skills: ["React", "Node"],
+      status: "Pending",
       resume: "#",
     },
     {
@@ -31,6 +32,7 @@ export const getApplicationsForJob = async (jobId) => {
       name: "Ravi",
       email: "ravi@mail.com",
       skills: ["JavaScript", "Express"],
+      status: "Shortlisted",
       resume: "#",
     },
   ];
