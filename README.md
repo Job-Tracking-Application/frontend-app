@@ -103,4 +103,88 @@ Currency is localized to **Rupees (₹)** with Lakhs formatting (e.g., `₹5L`).
 
 ## 📝 **License**
 
-This project is for educational purposes.
+
+---
+
+## 📂 **Detailed File Documentation**
+
+### **Contexts (`/src/context`)**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `AuthContext.jsx` | Manages global authentication state, storing current user and login/logout methods. | `useState`, `useContext`, `createContext` |
+| `LanguageContext.jsx` | Manages global language state (switches between English/Marathi) and provides translation helper `t()`. | `useState`, `useContext`, `createContext` |
+
+### **Custom Hooks**
+*(Note: Custom hooks are currently exported directly from their respective Context files)*
+| Hook | Source | Purpose |
+| :--- | :--- | :--- |
+| `useAuth` | `AuthContext.jsx` | Provides access to `user` object, `login()`, `logout()`, and `isAuthenticated` flag. |
+| `useLanguage` | `LanguageContext.jsx` | Provides access to `lang` (current language), `setLang`, and `t` (translate function). |
+
+### **Pages (`/src/pages`)**
+#### **Auth**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `Login.jsx` | Handles user login with email/password and redirects based on role. | `useState`, `useAuth`, `useNavigate` |
+| `Register.jsx` | Handles new user registration (job seeker/recruiter). | `useState`, `useNavigate` |
+
+#### **Dashboard**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `JobSeekerDashboard.jsx` | Main view for candidates; shows recommended & applied jobs. | `useState`, `useEffect`, `useLanguage` |
+| `RecruiterDashboard.jsx` | Main view for recruiters; shows posted jobs and applicant stats. | `useState`, `useEffect`, `useLanguage` |
+| `AdminDashboard.jsx` | Overview for admins; statistics on users, jobs, and system health. | `useState`, `useEffect` |
+
+#### **Jobs**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `JobList.jsx` | Displays all available jobs with Search and Category filters. | `useState`, `useEffect`, `useLanguage` |
+| `JobDetails.jsx` | Shows full details of a specific job and allows applying. | `useState`, `useEffect`, `useParams`, `useNavigate` |
+| `CreateJob.jsx` | Form for recruiters to post a new job opening. | `useState`, `useNavigate` |
+
+#### **Profile**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `UserProfile.jsx` | View and edit user personal details, skills, and resume. | `useState`, `useEffect` |
+| `CompanyProfile.jsx` | View and edit company details (for recruiters). | `useState`, `useEffect` |
+
+#### **Admin**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `ManageUsers.jsx` | Admin table to view, edit, or delete registered users. | `useState`, `useEffect` |
+| `ManageJobs.jsx` | Admin view to moderate job postings. | `useState`, `useEffect` |
+| `ViewLogs.jsx` | visual audit log of system activities. | `useState`, `useEffect` |
+
+### **Components (`/src/components`)**
+#### **Layout**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `Navbar.jsx` | Top header with Logo, Language Toggle, and User Profile menu. | `useAuth`, `useLanguage`, `useNavigate` |
+| `Sidebar.jsx` | Vertical navigation menu responsive to user role. | `useAuth`, `useLocation` |
+| `Layout.jsx` | Wrapper component that applies the standard page structure (Sidebar + Content). | `None` |
+| `ProtectedRoute.jsx` | Guard component; redirects unauthenticated users to Login. | `useAuth`, `useNavigate` |
+| `RoleRoute.jsx` | Guard component; restricts access based on user role (e.g., Admin only). | `useAuth`, `useNavigate` |
+
+#### **Common**
+| File | Purpose | Hooks Used |
+| :--- | :--- | :--- |
+| `Button.jsx`, `Input.jsx` | Reusable UI elements for consistent styling. | `None` |
+| `PageHero.jsx` | Standard page header with title and breadcrumbs. | `None` |
+| `Loader.jsx` | Loading spinner/skeleton state. | `None` |
+
+### **Services (`/src/services`)**
+*(API Layer - mocked for now)*
+| File | Purpose |
+| :--- | :--- |
+| `api.js` | Axios instance configuration (base URL, interceptors). |
+| `authService.js` | Authentication API calls (Login/Register). |
+| `jobService.js` | Operations for fetching, creating, and managing jobs. |
+| `userService.js` | Operations for user profile data. |
+| `adminService.js` | Admin-specific operations (User management, Logs). |
+
+### **Utils (`/src/utils`)**
+| File | Purpose |
+| :--- | :--- |
+| `validators.js` | Form validation helper functions (email, password strength). |
+| `helpers.js` | General utility functions (date formatting, currency). |
+| `constants.js` | App-wide constants (Roles, Job Types). |

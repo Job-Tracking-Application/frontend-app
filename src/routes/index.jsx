@@ -32,7 +32,7 @@ import CompanyProfile from "../pages/profile/CompanyProfile";
 const DashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role === 'admin') return <Navigate to="/admin" replace />;
+  if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
   if (user.role === 'recruiter') return <Navigate to="/dashboard/recruiter" replace />;
   // Default to jobseeker
   return <Navigate to="/dashboard/jobseeker" replace />;
@@ -78,7 +78,7 @@ export default function AppRoutes() {
 
           {/* Admin Routes */}
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/dashboard/admin/" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/companies" element={<ManageCompanies />} />
             <Route path="/admin/jobs" element={<ManageJobs />} />

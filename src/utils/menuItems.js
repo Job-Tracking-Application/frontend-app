@@ -14,7 +14,7 @@ export const menuItems = {
         { label: "nav_settings", path: "/settings", icon: "bi-gear" },
     ],
     admin: [
-        { label: "nav_dashboard", path: "/admin", icon: "bi-speedometer2" },
+        { label: "nav_dashboard", path: "/dashboard/admin", icon: "bi-speedometer2" },
         { label: "nav_manage_users", path: "/admin/users", icon: "bi-people" },
         { label: "nav_manage_companies", path: "/admin/companies", icon: "bi-building" },
         { label: "nav_manage_jobs", path: "/admin/jobs", icon: "bi-briefcase" },
