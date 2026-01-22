@@ -1,123 +1,128 @@
 import React, { useEffect, useState } from "react";
-import adminService from "../../services/adminService";
+import { getCompanies, verifyCompany } from "../../services/adminService";
 import PageHero from "../../components/common/PageHero";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+
+  // Confirmation modal states
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    companyId: null,
+    verified: null
+  });
 
   useEffect(() => {
     let mounted = true;
     const fetchCompanies = async () => {
       try {
-        const res = await adminService.getCompanies();
+        const res = await getCompanies();
         if (mounted) setCompanies(res.data || []);
       } catch (err) {
-        console.error("Failed to load companies:", err);
+        console.error(err);
+        showErrorToast("Failed to load companies");
       } finally {
         if (mounted) setLoading(false);
       }
     };
-
     fetchCompanies();
     return () => (mounted = false);
   }, []);
 
-  const filteredCompanies = companies.filter(c =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const showVerifyConfirmation = (id, verified) => {
+    setConfirmModal({
+      show: true,
+      title: verified ? "Mark Unverified" : "Verify Company",
+      message: `Are you sure you want to ${verified ? "mark this company as unverified" : "verify this company"}?`,
+      companyId: id,
+      verified: verified
+    });
+  };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to remove this company?")) {
-      setCompanies(prev => prev.filter(c => c.id !== id));
+  const handleConfirm = async () => {
+    try {
+      await verifyCompany(confirmModal.companyId, !confirmModal.verified);
+      setCompanies(prev =>
+        prev.map(c =>
+          c.id === confirmModal.companyId
+            ? { ...c, verified: !confirmModal.verified }
+            : c
+        )
+      );
+      showSuccessToast(`Company ${confirmModal.verified ? "unverified" : "verified"} successfully`);
+    } catch (err) {
+      console.error("Error verifying company:", err);
+      showErrorToast("Failed to verify company");
     }
+    setConfirmModal({ show: false, title: "", message: "", companyId: null, verified: null });
   };
 
-  const handleEdit = (company) => {
-    alert(`Edit feature for ${company.name} coming soon!`);
-  };
-
-  if (loading) return (
-    <div className="text-center py-5">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
-  );
+  if (loading) return <div className="text-center py-5">Loading...</div>;
 
   return (
     <div>
-      <PageHero title="Manage Companies" subtitle="Oversee registered companies and employers." />
+      <PageHero title="Manage Companies" subtitle="Registered organizations." />
 
       <div className="container pb-5">
-        <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div className="card-header bg-white p-4 border-0 border-bottom">
-            <div className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0 fw-bold">Registered Companies ({filteredCompanies.length})</h5>
-              <div className="input-group" style={{ maxWidth: '300px' }}>
-                <span className="input-group-text bg-light border-0"><i className="bi bi-search text-muted"></i></span>
-                <input
-                  type="text"
-                  className="form-control bg-light border-0 shadow-none"
-                  placeholder="Search companies..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="bg-light">
-                <tr>
-                  <th className="ps-4 py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Company</th>
-                  <th className="py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Location</th>
-                  <th className="py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Jobs Posted</th>
-                  <th className="pe-4 py-3 text-end text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Actions</th>
+        <div className="card shadow-sm border-0 rounded-4">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="bg-light">
+              <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>Email</th>
+                <th>Verified</th>
+                <th className="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {companies.map(c => (
+                <tr key={c.id}>
+                  <td>{c.name}</td>
+                  <td>{c.city}</td>
+                  <td>{c.contactEmail}</td>
+                  <td>
+                    <span className={`badge ${c.verified ? "bg-success" : "bg-warning"}`}>
+                      {c.verified ? "Verified" : "Pending"}
+                    </span>
+                  </td>
+                  <td className="text-end">
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => showVerifyConfirmation(c.id, c.verified)}
+                    >
+                      {c.verified ? "Unverify" : "Verify"}
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredCompanies.map((c) => (
-                  <tr key={c.id}>
-                    <td className="ps-4 py-3">
-                      <div className="d-flex align-items-center">
-                        <div className="bg-light border rounded-3 d-flex align-items-center justify-content-center me-3" style={{ width: '48px', height: '48px' }}>
-                          <i className="bi bi-building text-secondary fs-5"></i>
-                        </div>
-                        <div>
-                          <p className="mb-0 fw-bold text-dark">{c.name}</p>
-                          <small className="text-muted">ID: {c.id}</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10">
-                        <i className="bi bi-geo-alt me-1"></i>{c.location}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="fw-medium">{c.jobs} Active Jobs</span>
-                    </td>
-                    <td className="pe-4 text-end">
-                      <button onClick={() => handleEdit(c)} className="btn btn-sm btn-light border me-2" title="Edit Company"><i className="bi bi-pencil"></i></button>
-                      <button onClick={() => handleDelete(c.id)} className="btn btn-sm btn-light border text-danger" title="Delete Company"><i className="bi bi-trash"></i></button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredCompanies.length === 0 && (
-                  <tr>
-                    <td colSpan="4" className="text-center py-5 text-muted">
-                      No companies found matching "{searchTerm}"
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))}
+              {companies.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-muted">
+                    No companies found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+
+      <ConfirmationModal
+        show={confirmModal.show}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmModal({ show: false, title: "", message: "", companyId: null, verified: null })}
+        confirmText="Yes, Confirm"
+        cancelText="Cancel"
+        variant="primary"
+      />
     </div>
   );
 };

@@ -1,54 +1,97 @@
 import React, { useEffect, useState } from "react";
-import adminService from "../../services/adminService";
+import { getUsers, toggleUserStatus, changeUserRole }
+  from "../../services/adminService";
 import PageHero from "../../components/common/PageHero";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
+import { getRoleName, getRoleOptions } from "../../utils/roleMap";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingRoleId, setEditingRoleId] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  // Confirmation modal states
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    action: null,
+    userId: null
+  });
 
   useEffect(() => {
     let mounted = true;
     const fetchUsers = async () => {
       try {
-        const res = await adminService.getUsers();
+        const res = await getUsers();
         if (mounted) setUsers(res.data || []);
       } catch (err) {
         console.error("Failed to load users:", err);
+        showErrorToast("Failed to load users");
       } finally {
         if (mounted) setLoading(false);
       }
     };
-
     fetchUsers();
-    return () => {
-      mounted = false;
-    };
+    return () => (mounted = false);
   }, []);
 
   const filteredUsers = users.filter(u =>
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers(prev => prev.filter(u => u.id !== id));
+  const showStatusConfirmation = (id, active) => {
+    setConfirmModal({
+      show: true,
+      title: "Confirm Status Change",
+      message: `Are you sure you want to ${active ? "disable" : "enable"} this user?`,
+      action: "toggle-status",
+      userId: id,
+      active: active
+    });
+  };
+
+  const handleConfirm = async () => {
+    try {
+      if (confirmModal.action === "toggle-status") {
+        await toggleUserStatus(confirmModal.userId, !confirmModal.active);
+        setUsers(prev =>
+          prev.map(u =>
+            u.id === confirmModal.userId
+              ? { ...u, active: !confirmModal.active }
+              : u
+          )
+        );
+        showSuccessToast(`User ${confirmModal.active ? "disabled" : "enabled"} successfully`);
+      }
+    } catch (err) {
+      console.error("Error updating user:", err);
+      showErrorToast("Failed to update user status");
+    }
+    setConfirmModal({ show: false, title: "", message: "", action: null, userId: null });
+  };
+
+  const handleChangeRole = async (id) => {
+    if (selectedRole === null) return;
+    try {
+      await changeUserRole(id, selectedRole);
+      setUsers(prev =>
+        prev.map(u => (u.id === id ? { ...u, role: selectedRole.toString() } : u))
+      );
+      showSuccessToast("User role updated successfully");
+      setEditingRoleId(null);
+      setSelectedRole(null);
+    } catch (err) {
+      console.error("Error changing role:", err);
+      showErrorToast("Failed to update user role");
     }
   };
 
-  const handleEdit = (user) => {
-    // Placeholder for edit functionality
-    alert(`Edit feature for ${user.name} coming soon!`);
-  };
-
-  if (loading) return (
-    <div className="text-center py-5">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
-  );
+  if (loading) return <div className="text-center py-5">Loading...</div>;
 
   return (
     <div>
@@ -56,74 +99,118 @@ const ManageUsers = () => {
 
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div className="card-header bg-white p-4 border-0 border-bottom">
-            <div className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0 fw-bold">All Users ({filteredUsers.length})</h5>
-              <div className="input-group" style={{ maxWidth: '300px' }}>
-                <span className="input-group-text bg-light border-0"><i className="bi bi-search text-muted"></i></span>
-                <input
-                  type="text"
-                  className="form-control bg-light border-0 shadow-none"
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+          <div className="card-header bg-white p-4 border-bottom">
+            <div className="d-flex justify-content-between">
+              <h5 className="fw-bold mb-0">All Users ({filteredUsers.length})</h5>
+              <input
+                className="form-control w-25"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="bg-light">
-                <tr>
-                  <th className="ps-4 py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>User</th>
-                  <th className="py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Role</th>
-                  <th className="py-3 text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Status</th>
-                  <th className="pe-4 py-3 text-end text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((u) => (
-                  <tr key={u.id}>
-                    <td className="ps-4 py-3">
-                      <div className="d-flex align-items-center">
-                        <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style={{ width: '40px', height: '40px' }}>
-                          {u.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="mb-0 fw-bold text-dark">{u.name}</p>
-                          <small className="text-muted">{u.email}</small>
-                        </div>
+
+          <table className="table table-hover align-middle mb-0">
+            <thead className="bg-light">
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th className="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(u => (
+                <tr key={u.id}>
+                  <td>
+                    <strong>{u.username}</strong>
+                    <br />
+                    <small>{u.email}</small>
+                  </td>
+                  <td>
+                    {editingRoleId === u.id ? (
+                      <div className="d-flex gap-2">
+                        <select
+                          className="form-select form-select-sm"
+                          value={selectedRole || ""}
+                          onChange={(e) => setSelectedRole(parseInt(e.target.value))}
+                        >
+                          <option value="">Select role</option>
+                          {getRoleOptions().map(opt => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() => handleChangeRole(u.id)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-sm btn-secondary"
+                          onClick={() => {
+                            setEditingRoleId(null);
+                            setSelectedRole(null);
+                          }}
+                        >
+                          Cancel
+                        </button>
                       </div>
-                    </td>
-                    <td>
-                      <span className={`badge rounded-pill ${u.role === 'admin' ? 'bg-danger bg-opacity-10 text-danger' :
-                        u.role === 'recruiter' ? 'bg-info bg-opacity-10 text-info' :
-                          'bg-success bg-opacity-10 text-success'
-                        }`}>
-                        {u.role.toUpperCase()}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="badge bg-success rounded-pill">Active</span>
-                    </td>
-                    <td className="pe-4 text-end">
-                      <button onClick={() => handleEdit(u)} className="btn btn-sm btn-light border me-2" title="Edit User"><i className="bi bi-pencil"></i></button>
-                      <button onClick={() => handleDelete(u.id)} className="btn btn-sm btn-light border text-danger" title="Delete User"><i className="bi bi-trash"></i></button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredUsers.length === 0 && (
-                  <tr>
-                    <td colSpan="4" className="text-center py-5 text-muted">
-                      No users found matching "{searchTerm}"
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                    ) : (
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span>{getRoleName(parseInt(u.role))}</span>
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => {
+                            setEditingRoleId(u.id);
+                            setSelectedRole(parseInt(u.role));
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <span className={`badge ${u.active ? "bg-success" : "bg-danger"}`}>
+                      {u.active ? "Active" : "Disabled"}
+                    </span>
+                  </td>
+                  <td className="text-end">
+                    <button
+                      className="btn btn-sm btn-warning"
+                      onClick={() => showStatusConfirmation(u.id, u.active)}
+                    >
+                      {u.active ? "Disable" : "Enable"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="text-center py-4 text-muted">
+                    No users found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+
+      <ConfirmationModal
+        show={confirmModal.show}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmModal({ show: false, title: "", message: "", action: null, userId: null })}
+        confirmText="Yes, Confirm"
+        cancelText="Cancel"
+        variant="warning"
+      />
     </div>
   );
 };

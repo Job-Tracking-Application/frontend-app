@@ -2,8 +2,12 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+export default function ProtectedRoute() {
+    const { isAuthenticated, loading } = useAuth();
 
-export default function ProtectedRoute(){
-const { isAuthenticated } = useAuth();
-return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+    if (loading) {
+        return <div className="text-center py-5">Loading...</div>;
+    }
+
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }

@@ -5,15 +5,25 @@ import { useAuth } from "../../context/AuthContext";
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log({ email, password });
-        // Login with email/pass, role is determined by AuthContext
-        login({ email, password });
-        navigate('/dashboard');
+        setError("");
+        setLoading(true);
+
+        try {
+            await login({ email, password });
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+            console.error("Login error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -26,6 +36,12 @@ export default function Login() {
                         <p className="text-muted">Sign in to continue</p>
                     </div>
 
+                    {error && (
+                        <div className="alert alert-danger" role="alert">
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="form-label fw-medium">Email Address</label>
@@ -36,6 +52,7 @@ export default function Login() {
                                 placeholder="name@example.com"
                                 type="email"
                                 required
+                                disabled={loading}
                             />
                         </div>
                         <div className="mb-4">
@@ -47,11 +64,16 @@ export default function Login() {
                                 className="form-control form-control-lg"
                                 placeholder="Enter password"
                                 required
+                                disabled={loading}
                             />
                         </div>
 
-                        <button className="btn btn-primary w-100 btn-lg mb-3" type="submit">
-                            Sign In
+                        <button
+                            className="btn btn-primary w-100 btn-lg mb-3"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? "Signing in..." : "Sign In"}
                         </button>
                     </form>
 

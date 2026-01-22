@@ -58,9 +58,9 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
             <div className="dropdown">
               <button className="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
                 <div className="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: "32px", height: "32px" }}>
-                  {user.name.charAt(0).toUpperCase()}
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <span className="d-none d-sm-inline opacity-90">{user.name}</span>
+                <span className="d-none d-sm-inline opacity-90">{user.email?.split('@')[0] || 'User'}</span>
               </button>
               <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                 <li><h6 className="dropdown-header text-muted">Signed in as <br /><strong>{user.email}</strong></h6></li>

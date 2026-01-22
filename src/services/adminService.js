@@ -1,59 +1,42 @@
-// src/services/adminService.js (Mocked version for testing)
+import api from "./api";
 
-const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-
-const adminService = {
-  getDashboardStats: async () => {
-    await wait(500);
-    return {
-      data: {
-        totalUsers: 120,
-        totalCompanies: 30,
-        totalJobs: 85,
-        totalApplications: 400,
-      }
-    };
-  },
-
-  getUsers: async () => {
-    await wait(400);
-    return {
-      data: [
-        { id: 1, name: "Vivek", email: "vivek@mail.com", role: "Job Seeker" },
-        { id: 2, name: "Kiran", email: "kiran@mail.com", role: "Recruiter" }
-      ]
-    };
-  },
-
-  getCompanies: async () => {
-    await wait(400);
-    return {
-      data: [
-        { id: 1, name: "Google", location: "Pune", jobs: 12 },
-        { id: 2, name: "Infosys", location: "Bangalore", jobs: 8 }
-      ]
-    };
-  },
-
-  getJobs: async () => {
-    await wait(400);
-    return {
-      data: [
-        { id: 1, title: "Frontend Dev", company: "Google", applicants: 45 },
-        { id: 2, title: "Backend Dev", company: "Infosys", applicants: 30 }
-      ]
-    };
-  },
-
-  getLogs: async () => {
-    await wait(400);
-    return {
-      data: [
-        { id: 1, action: "User Login", date: "2025-02-20" },
-        { id: 2, action: "Company Update", date: "2025-02-19" }
-      ]
-    };
-  }
+export const getAdminStats = () => {
+  return api.get("/admin/stats");
 };
 
-export default adminService;
+export const getUsers = () => {
+  return api.get("/admin/users");
+};
+
+export const toggleUserStatus = (userId, active) => {
+  return api.patch(`/admin/users/${userId}/status?active=${active}`);
+};
+
+export const changeUserRole = (userId, roleId) => {
+  return api.patch(`/admin/users/${userId}/role?roleId=${roleId}`);
+};
+
+export const getJobs = () => {
+  return api.get("/admin/jobs");
+};
+
+export const verifyJob = (jobId) => {
+  return api.patch(`/admin/jobs/${jobId}/verify`);
+};
+
+export const deleteJob = (jobId) => {
+  return api.delete(`/admin/jobs/${jobId}`);
+};
+
+
+export const getCompanies = () => {
+  return api.get("/admin/companies");
+};
+
+export const verifyCompany = (companyId, verified) => {
+  return api.patch(`/admin/companies/${companyId}/verify?verified=${verified}`);
+};
+
+export const getLogs = () => {
+  return api.get("/admin/logs");
+};

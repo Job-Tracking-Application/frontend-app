@@ -1,97 +1,93 @@
 import React, { useEffect, useState } from "react";
-import adminService from "../../services/adminService";
+import { getAdminStats } from "../../services/adminService"
 import PageHero from "../../components/common/PageHero";
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalJobs: 0,
+    totalCompanies: 0,
+    totalApplications: 0,
+  });
+
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
+
     const fetchStats = async () => {
       try {
-        const res = await adminService.getDashboardStats();
-        if (mounted) setStats(res.data);
+        const res = await getAdminStats();
+
+        if (mounted && res?.data) {
+          setStats(res.data);
+        }
       } catch (err) {
-        console.error("Failed to load dashboard stats:", err);
+        console.error("Failed to load admin stats:", err);
+        if (mounted) setError("Unable to load admin statistics");
       } finally {
         if (mounted) setLoading(false);
       }
     };
 
     fetchStats();
-    return () => {
-      mounted = false;
-    };
+    return () => (mounted = false);
   }, []);
 
-  if (loading) return <div className="p-5 text-center">Loading admin stats...</div>;
+  if (loading) {
+    return <div className="text-center py-5">Loading dashboard...</div>;
+  }
 
   return (
     <div>
-      <PageHero title="Admin Portal" subtitle="System analytics and management overview." />
+      <PageHero
+        title="Admin Dashboard"
+        subtitle="System overview and statistics"
+      />
 
       <div className="container pb-5">
+        {error && (
+          <div className="alert alert-danger text-center">{error}</div>
+        )}
+
         <div className="row g-4">
-          <div className="col-12 col-md-6 col-lg-3">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
-                  <i className="bi bi-people fs-4"></i>
-                </div>
-                <div>
-                  <p className="text-muted mb-0 small text-uppercase fw-bold">Total Users</p>
-                  <h2 className="h3 fw-bold mb-0">{stats?.totalUsers ?? 0}</h2>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-md-6 col-lg-3">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success">
-                  <i className="bi bi-building fs-4"></i>
-                </div>
-                <div>
-                  <p className="text-muted mb-0 small text-uppercase fw-bold">Companies</p>
-                  <h2 className="h3 fw-bold mb-0">{stats?.totalCompanies ?? 0}</h2>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-md-6 col-lg-3">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="bg-warning bg-opacity-10 p-3 rounded-circle me-3 text-warning">
-                  <i className="bi bi-briefcase fs-4"></i>
-                </div>
-                <div>
-                  <p className="text-muted mb-0 small text-uppercase fw-bold">Active Jobs</p>
-                  <h2 className="h3 fw-bold mb-0">{stats?.totalJobs ?? 0}</h2>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-md-6 col-lg-3">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="bg-info bg-opacity-10 p-3 rounded-circle me-3 text-info">
-                  <i className="bi bi-file-text fs-4"></i>
-                </div>
-                <div>
-                  <p className="text-muted mb-0 small text-uppercase fw-bold">Applications</p>
-                  <h2 className="h3 fw-bold mb-0">{stats?.totalApplications ?? 0}</h2>
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatCard
+            title="Total Users"
+            value={stats.totalUsers}
+            icon="bi-people"
+          />
+          <StatCard
+            title="Total Jobs"
+            value={stats.totalJobs}
+            icon="bi-briefcase"
+          />
+          <StatCard
+            title="Total Companies"
+            value={stats.totalCompanies}
+            icon="bi-buildings"
+          />
+          <StatCard
+            title="Total Applications"
+            value={stats.totalApplications}
+            icon="bi-file-earmark-text"
+          />
         </div>
       </div>
     </div>
   );
 };
+
+const StatCard = ({ title, value, icon }) => (
+  <div className="col-md-6 col-lg-3">
+    <div className="card shadow-sm border-0 rounded-4 h-100">
+      <div className="card-body text-center">
+        <i className={`bi ${icon} fs-2 text-primary mb-2`} />
+        <h6 className="text-muted">{title}</h6>
+        <h3 className="fw-bold">{value}</h3>
+      </div>
+    </div>
+  </div>
+);
 
 export default AdminDashboard;
