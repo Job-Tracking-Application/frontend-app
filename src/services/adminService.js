@@ -40,3 +40,18 @@ export const verifyCompany = (companyId, verified) => {
 export const getLogs = () => {
   return api.get("/admin/logs");
 };
+
+// Application management endpoints
+export const getApplications = (page = 0, size = 10, status = null) => {
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  if (status) params.append('status', status);
+  return api.get(`/admin/applications?${params.toString()}`);
+};
+
+export const getApplication = (applicationId) => {
+  return api.get(`/admin/applications/${applicationId}`);
+};
+
+export const deleteApplication = (applicationId) => {
+  return api.delete(`/admin/applications/${applicationId}`);
+};

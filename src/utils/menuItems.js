@@ -18,6 +18,7 @@ export const menuItems = {
         { label: "nav_manage_users", path: "/admin/users", icon: "bi-people" },
         { label: "nav_manage_companies", path: "/admin/companies", icon: "bi-building" },
         { label: "nav_manage_jobs", path: "/admin/jobs", icon: "bi-briefcase" },
+        { label: "nav_manage_applications", path: "/admin/applications", icon: "bi-file-earmark-text" },
         { label: "nav_view_logs", path: "/admin/logs", icon: "bi-journal-text" },
         { label: "nav_settings", path: "/settings", icon: "bi-gear" },
     ],

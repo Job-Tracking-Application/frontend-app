@@ -26,6 +26,7 @@ import CreateJob from "../pages/jobs/CreateJob";
 
 import MyApplications from "../pages/applications/MyApplications";
 import ManageApplications from "../pages/applications/ManageApplications";
+import AdminManageApplications from "../pages/admin/ManageApplications";
 import UserProfile from "../pages/profile/UserProfile";
 import CompanyProfile from "../pages/profile/CompanyProfile";
 
@@ -82,6 +83,7 @@ export default function AppRoutes() {
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/companies" element={<ManageCompanies />} />
             <Route path="/admin/jobs" element={<ManageJobs />} />
+            <Route path="/admin/applications" element={<AdminManageApplications />} />
             <Route path="/admin/logs" element={<ViewLogs />} />
           </Route>
 
