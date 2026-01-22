@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getApplications, deleteApplication } from "../../services/adminService";
+import { getApplications, deleteApplication } from "../../services/adminApplicationService";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -22,13 +22,18 @@ const ManageApplications = () => {
     applicationId: null
   });
 
+  const [viewModal, setViewModal] = useState({
+    show: false,
+    application: null
+  });
+
   const statusOptions = [
     { value: "", label: "All Statuses" },
     { value: "APPLIED", label: "Applied" },
     { value: "UNDER_REVIEW", label: "Under Review" },
     { value: "INTERVIEW_SCHEDULED", label: "Interview Scheduled" },
     { value: "INTERVIEW_COMPLETED", label: "Interview Completed" },
-    { value: "SELECTED", label: "Selected" },
+    { value: "SHORTLISTED", label: "Shortlisted" },
     { value: "REJECTED", label: "Rejected" },
     { value: "WITHDRAWN", label: "Withdrawn" }
   ];
@@ -60,6 +65,13 @@ const ManageApplications = () => {
     app.jobSeekerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const showViewDetails = (application) => {
+    setViewModal({
+      show: true,
+      application: application
+    });
+  };
+
   const showDeleteConfirmation = (applicationId, jobTitle, jobSeekerName) => {
     setConfirmModal({
       show: true,
@@ -90,20 +102,27 @@ const ManageApplications = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case "SELECTED":
-        return "bg-success";
-      case "REJECTED":
-        return "bg-danger";
-      case "WITHDRAWN":
-        return "bg-secondary";
+      case "APPLIED":
+        return "bg-primary"; // blue
+      case "UNDER_REVIEW":
+        return "bg-warning"; // orange/yellow
       case "INTERVIEW_SCHEDULED":
       case "INTERVIEW_COMPLETED":
-        return "bg-info";
-      case "UNDER_REVIEW":
-        return "bg-warning";
+        return "bg-info"; // light blue
+      case "SELECTED":
+        return "bg-success"; // green
+      case "REJECTED":
+        return "bg-danger"; // red
+      case "WITHDRAWN":
+        return "bg-secondary"; // gray
       default:
         return "bg-primary";
     }
+  };
+
+  const shouldDisableDelete = (status) => {
+    // Prevent deletion of selected applications to avoid mistakes
+    return status === "SELECTED";
   };
 
   const formatDate = (dateString) => {
@@ -211,24 +230,49 @@ const ManageApplications = () => {
                       )}
                     </td>
                     <td className="text-end">
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => showDeleteConfirmation(
-                          app.id, 
-                          app.jobTitle, 
-                          app.jobSeekerName
-                        )}
-                        title="Delete abusive application"
-                      >
-                        Delete
-                      </button>
+                      <div className="btn-group" role="group">
+                        <button
+                          className="btn btn-sm btn-outline-info"
+                          onClick={() => showViewDetails(app)}
+                          title="View application details"
+                        >
+                          View
+                        </button>
+                        <button
+                          className={`btn btn-sm ${shouldDisableDelete(app.status) ? 'btn-secondary' : 'btn-outline-danger'}`}
+                          onClick={() => showDeleteConfirmation(
+                            app.id, 
+                            app.jobTitle, 
+                            app.jobSeekerName
+                          )}
+                          disabled={shouldDisableDelete(app.status)}
+                          title={shouldDisableDelete(app.status) ? "Cannot delete selected applications" : "Delete abusive application"}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {filteredApplications.length === 0 && (
                   <tr>
                     <td colSpan="6" className="text-center py-4 text-muted">
-                      {searchTerm ? "No applications match your search" : "No applications found"}
+                      {loading ? (
+                        <div className="d-flex justify-content-center align-items-center">
+                          <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                          Loading applications...
+                        </div>
+                      ) : searchTerm ? (
+                        <>
+                          <i className="bi bi-search mb-2 fs-4 d-block"></i>
+                          No applications match your search criteria
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-file-earmark-text mb-2 fs-4 d-block"></i>
+                          No applications found
+                        </>
+                      )}
                     </td>
                   </tr>
                 )}
@@ -293,6 +337,79 @@ const ManageApplications = () => {
         cancelText="Cancel"
         variant="danger"
       />
+
+      {/* View Details Modal */}
+      {viewModal.show && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Application Details</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => setViewModal({ show: false, application: null })}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {viewModal.application && (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <h6 className="fw-bold">Job Information</h6>
+                      <p><strong>Job Title:</strong> {viewModal.application.jobTitle}</p>
+                      <p><strong>Job ID:</strong> {viewModal.application.jobId}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <h6 className="fw-bold">Applicant Information</h6>
+                      <p><strong>Applicant:</strong> {viewModal.application.jobSeekerName}</p>
+                      <p><strong>Applicant ID:</strong> {viewModal.application.jobSeekerUserId}</p>
+                    </div>
+                    <div className="col-12">
+                      <hr />
+                      <h6 className="fw-bold">Application Status</h6>
+                      <p>
+                        <span className={`badge ${getStatusBadgeClass(viewModal.application.status)}`}>
+                          {viewModal.application.status.replace(/_/g, ' ')}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="col-md-6">
+                      <h6 className="fw-bold">Timeline</h6>
+                      <p><strong>Applied:</strong> {formatDate(viewModal.application.appliedAt)}</p>
+                      <p><strong>Last Updated:</strong> {formatDate(viewModal.application.updatedAt)}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <h6 className="fw-bold">Resume</h6>
+                      {viewModal.application.resumePath ? (
+                        <a 
+                          href={viewModal.application.resumePath} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-primary"
+                        >
+                          <i className="bi bi-download me-1"></i>
+                          Download Resume
+                        </a>
+                      ) : (
+                        <p className="text-muted">No resume uploaded</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={() => setViewModal({ show: false, application: null })}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
