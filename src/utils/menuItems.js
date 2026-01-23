@@ -8,6 +8,7 @@ export const menuItems = {
     ],
     recruiter: [
         { label: "nav_dashboard", path: "/dashboard", icon: "bi-speedometer2" },
+        { label: "nav_my_jobs", path: "/jobs/my-jobs", icon: "bi-briefcase" },
         { label: "nav_create_job", path: "/jobs/create", icon: "bi-plus-circle" },
         { label: "nav_manage_apps", path: "/applications/manage", icon: "bi-people" },
         { label: "nav_profile", path: "/profile", icon: "bi-building" },

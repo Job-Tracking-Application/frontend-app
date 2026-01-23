@@ -1,53 +1,36 @@
-export const dummyJobs = [
-    {
-        id: 1,
-        title: "Frontend Developer",
-        company: "Tech Corp",
-        location: "Remote",
-        type: "Full-time",
-        salary: "₹8,00,000 - ₹12,00,000",
-        description: "We are looking for a skilled React developer..."
-    },
-    {
-        id: 2,
-        title: "Backend Engineer",
-        company: "Data Systems",
-        location: "New York, NY",
-        type: "Full-time",
-        salary: "₹9L - ₹13L",
-        description: "Experience with Node.js and MongoDB required."
-    },
-    {
-        id: 3,
-        title: "UI/UX Designer",
-        company: "Creative Studio",
-        location: "San Francisco, CA",
-        type: "Contract",
-        salary: "₹800/hr",
-        description: "Design beautiful interfaces for mobile apps."
-    }
-];
+import api from './api';
 
-export const getJobs = () => {
-    // Simulate API call
-    return new Promise((resolve) => setTimeout(() => resolve(dummyJobs), 500));
+export const getJobs = async () => {
+    const response = await api.get('/jobs');
+    return response.data;
 };
 
-export const getJobById = (id) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const job = dummyJobs.find(j => j.id === parseInt(id));
-            resolve(job);
-        }, 500);
-    });
+export const getMyJobs = async () => {
+    const response = await api.get('/recruiter/jobs/my-jobs');
+    return response.data;
 };
 
-export const addJob = (job) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const newJob = { ...job, id: dummyJobs.length + 1 };
-            dummyJobs.push(newJob);
-            resolve(newJob);
-        }, 500);
-    });
+export const getJobById = async (id) => {
+    const response = await api.get(`/jobs/${id}`);
+    return response.data;
+};
+
+export const addJob = async (jobData, skillIds = []) => {
+    // Create query string for skillIds
+    const skillParams = skillIds.length > 0 ? `?${skillIds.map(id => `skillIds=${id}`).join('&')}` : '';
+    
+    const response = await api.post(`/jobs${skillParams}`, jobData);
+    return response.data;
+};
+
+export const updateJob = async (id, jobData, skillIds = []) => {
+    const skillParams = skillIds.length > 0 ? `?${skillIds.map(id => `skillIds=${id}`).join('&')}` : '';
+    
+    const response = await api.put(`/jobs/${id}${skillParams}`, jobData);
+    return response.data;
+};
+
+export const deleteJob = async (id) => {
+    const response = await api.delete(`/jobs/${id}`);
+    return response.data;
 };

@@ -1,45 +1,38 @@
 import api from "./api";
 
+// Get all companies (for job posting dropdown)
+export const getCompanies = async () => {
+  const response = await api.get("/organizations");
+  return response.data;
+};
+
 // Get company profile by ID (public access)
 export const getCompanyById = async (companyId) => {
-  return api.get(`/organization/${companyId}`);
+  return api.get(`/organizations/${companyId}`);
 };
 
 // Get current recruiter's company profile
 export const getMyCompanyProfile = async () => {
-  return api.get("/organization/my");
+  return api.get("/organizations/my");
 };
 
 // Create company profile (recruiter only)
 export const createCompanyProfile = async (companyData) => {
-  return api.post("/organization", companyData);
+  return api.post("/organizations", companyData);
 };
 
 // Update company profile (recruiter only)
 export const updateCompanyProfile = async (companyId, companyData) => {
-  return api.put(`/organization/${companyId}`, companyData);
+  return api.put(`/organizations/${companyId}`, companyData);
 };
 
 // Check if recruiter has a company profile
 export const hasCompanyProfile = async () => {
-  return api.get("/organization/exists");
+  return api.get("/organizations/exists");
 };
 
 // Legacy method for backward compatibility - now uses real API
 export const getCompanyProfile = async () => {
-  try {
-    const response = await getMyCompanyProfile();
-    return response.data.data; // Extract data from ApiResponse wrapper
-  } catch (error) {
-    // Return mock data if no company profile exists (for demo purposes)
-    return {
-      companyName: "TechSoft Innovations Pvt. Ltd.",
-      address: "2nd Floor, Cyber Park, Pune, Maharashtra, India",
-      email: "techsoft@gmail.com",
-      website: "https://techsoft.in",
-      description: "TechSoft Innovations is a leading provider of enterprise software solutions, specializing in cloud products, AI-driven automation, and scalable web applications."
-    };
-  }
+  const response = await getMyCompanyProfile();
+  return response.data.data; // Extract data from ApiResponse wrapper
 };
-
-

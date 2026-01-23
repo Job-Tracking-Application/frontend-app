@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { addJob } from "../../services/jobService";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getJobById, updateJob } from "../../services/jobService";
 import { getCompanies } from "../../services/companyService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import Loader from "../../components/common/Loader";
 
-export default function CreateJob() {
+export default function EditJob() {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({
@@ -20,23 +22,45 @@ export default function CreateJob() {
         deadline: ""
     });
     const [skillIds, setSkillIds] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [companiesLoading, setCompaniesLoading] = useState(true);
 
     useEffect(() => {
-        loadCompanies();
-    }, []);
+        loadData();
+    }, [id]);
 
-    const loadCompanies = async () => {
+    const loadData = async () => {
         try {
-            setCompaniesLoading(true);
-            const response = await getCompanies();
-            setCompanies(response.data || []);
+            setLoading(true);
+            
+            // Load companies and job data in parallel
+            const [companiesResponse, jobResponse] = await Promise.all([
+                getCompanies(),
+                getJobById(id)
+            ]);
+
+            setCompanies(companiesResponse.data || []);
+            
+            const job = jobResponse.data;
+            setFormData({
+                title: job.title || "",
+                description: job.description || "",
+                location: job.location || "",
+                minSalary: job.minSalary || "",
+                maxSalary: job.maxSalary || "",
+                minExperience: job.minExperience || "",
+                maxExperience: job.maxExperience || "",
+                jobType: job.jobType || "Full-time",
+                companyId: job.companyId || "",
+                deadline: job.deadline ? job.deadline.split('T')[0] : ""
+            });
+
         } catch (error) {
-            console.error("Error loading companies:", error);
-            showErrorToast("Failed to load companies. Please check backend connection.");
-            setCompanies([]);
+            console.error("Error loading data:", error);
+            showErrorToast("Failed to load job data. Please try again.");
         } finally {
+            setLoading(false);
             setCompaniesLoading(false);
         }
     };
@@ -60,7 +84,7 @@ export default function CreateJob() {
             return;
         }
 
-        setLoading(true);
+        setSaving(true);
         try {
             const jobData = {
                 ...formData,
@@ -72,23 +96,25 @@ export default function CreateJob() {
                 deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null
             };
             
-            await addJob(jobData, skillIds);
-            showSuccessToast("Job posted successfully!");
-            navigate('/jobs/my-jobs');
+            await updateJob(id, jobData, skillIds);
+            showSuccessToast("Job updated successfully!");
+            navigate(`/jobs/${id}`);
         } catch (error) {
-            console.error("Error creating job:", error);
-            const errorMessage = error.response?.data?.message || error.message || "Failed to post job";
+            console.error("Error updating job:", error);
+            const errorMessage = error.response?.data?.message || error.message || "Failed to update job";
             showErrorToast(errorMessage);
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
+
+    if (loading) return <Loader />;
 
     return (
         <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-lg-8">
-                    <h2 className="mb-4">Post a New Job</h2>
+                    <h2 className="mb-4">Edit Job</h2>
                     <div className="card shadow-sm">
                         <div className="card-body p-4">
                             <form onSubmit={handleSubmit}>
@@ -125,12 +151,6 @@ export default function CreateJob() {
                                                 </option>
                                             ))}
                                         </select>
-                                        {companiesLoading && (
-                                            <small className="text-muted">Loading companies from backend...</small>
-                                        )}
-                                        {!companiesLoading && companies.length === 0 && (
-                                            <small className="text-danger">No companies available. Please check backend connection.</small>
-                                        )}
                                     </div>
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">Location</label>
@@ -243,17 +263,17 @@ export default function CreateJob() {
                                     <button 
                                         type="button" 
                                         className="btn btn-outline-secondary" 
-                                        onClick={() => navigate('/jobs/my-jobs')}
-                                        disabled={loading}
+                                        onClick={() => navigate(`/jobs/${id}`)}
+                                        disabled={saving}
                                     >
                                         Cancel
                                     </button>
                                     <button 
                                         type="submit" 
                                         className="btn btn-primary" 
-                                        disabled={loading || companiesLoading || companies.length === 0}
+                                        disabled={saving || companiesLoading}
                                     >
-                                        {loading ? "Posting..." : "Post Job"}
+                                        {saving ? "Updating..." : "Update Job"}
                                     </button>
                                 </div>
                             </form>

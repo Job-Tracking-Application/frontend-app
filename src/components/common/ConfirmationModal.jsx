@@ -8,7 +8,8 @@ const ConfirmationModal = ({
     onCancel,
     confirmText = "Confirm",
     cancelText = "Cancel",
-    variant = "danger"
+    confirmVariant = "danger",
+    loading = false
 }) => {
     if (!show) return null;
 
@@ -16,12 +17,13 @@ const ConfirmationModal = ({
         <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content border-0 shadow">
-                    <div className={`modal-header bg-${variant} text-white border-0`}>
+                    <div className={`modal-header bg-${confirmVariant} text-white border-0`}>
                         <h5 className="modal-title">{title}</h5>
                         <button
                             type="button"
                             className="btn-close btn-close-white"
                             onClick={onCancel}
+                            disabled={loading}
                         />
                     </div>
                     <div className="modal-body">
@@ -32,15 +34,24 @@ const ConfirmationModal = ({
                             type="button"
                             className="btn btn-secondary"
                             onClick={onCancel}
+                            disabled={loading}
                         >
                             {cancelText}
                         </button>
                         <button
                             type="button"
-                            className={`btn btn-${variant}`}
+                            className={`btn btn-${confirmVariant}`}
                             onClick={onConfirm}
+                            disabled={loading}
                         >
-                            {confirmText}
+                            {loading ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </>
+                            ) : (
+                                confirmText
+                            )}
                         </button>
                     </div>
                 </div>

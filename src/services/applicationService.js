@@ -1,44 +1,31 @@
+import api from './api';
+
 export const getMyApplications = async () => {
-  return [
-    {
-      id: 1,
-      jobTitle: "UI/UX Designer",
-      company: "Adobe",
-      status: "Selected",
-      appliedDate: "24 Feb 2025",
-    },
-    {
-      id: 2,
-      jobTitle: "Frontend Developer",
-      company: "Google",
-      status: "Pending",
-      appliedDate: "20 Feb 2025",
-    },
-  ];
+  const response = await api.get('/applications/me');
+  return response.data;
 };
 
 export const getApplicationsForJob = async (jobId) => {
-  return [
-    {
-      id: 1,
-      name: "Vivek",
-      email: "test@mail.com",
-      skills: ["React", "Node"],
-      status: "Pending",
-      resume: "#",
-    },
-    {
-      id: 2,
-      name: "Ravi",
-      email: "ravi@mail.com",
-      skills: ["JavaScript", "Express"],
-      status: "Shortlisted",
-      resume: "#",
-    },
-  ];
+  const response = await api.get(`/applications/job/${jobId}`);
+  return response.data;
 };
 
 export const updateApplicationStatus = async (id, status) => {
-  console.log(`Status Updated: ${id} → ${status}`);
-  return true;
+  const response = await api.put(`/applications/${id}/status`, { status });
+  return response.data;
+};
+
+export const applyForJob = async (jobId, applicationData) => {
+  const response = await api.post(`/applications/apply/${jobId}`, applicationData);
+  return response.data;
+};
+
+export const getApplicationById = async (id) => {
+  const response = await api.get(`/applications/${id}`);
+  return response.data;
+};
+
+export const withdrawApplication = async (id) => {
+  const response = await api.delete(`/applications/${id}`);
+  return response.data;
 };

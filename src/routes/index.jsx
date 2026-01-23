@@ -23,6 +23,8 @@ import LanguageSettings from "../pages/settings/LanguageSettings";
 import JobList from "../pages/jobs/JobList";
 import JobDetails from "../pages/jobs/JobDetails";
 import CreateJob from "../pages/jobs/CreateJob";
+import EditJob from "../pages/jobs/EditJob";
+import MyJobs from "../pages/jobs/MyJobs";
 
 import MyApplications from "../pages/applications/MyApplications";
 import ManageApplications from "../pages/applications/ManageApplications";
@@ -66,6 +68,8 @@ export default function AppRoutes() {
           </Route>
           <Route element={<RoleRoute allowedRoles={["recruiter"]} />}>
             <Route path="/jobs/create" element={<CreateJob />} />
+            <Route path="/jobs/edit/:id" element={<EditJob />} />
+            <Route path="/jobs/my-jobs" element={<MyJobs />} />
             <Route path="/applications/manage" element={<ManageApplications />} />
           </Route>
 

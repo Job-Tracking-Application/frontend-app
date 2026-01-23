@@ -1,31 +1,55 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getJobs } from "../../services/jobService";
-import { showErrorToast } from "../../utils/toast";
+import { getMyJobs, deleteJob } from "../../services/jobService";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
 
-export default function JobList() {
+export default function MyJobs() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [deleteModal, setDeleteModal] = useState({ show: false, job: null });
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
-        loadJobs();
+        loadMyJobs();
     }, []);
 
-    const loadJobs = async () => {
+    const loadMyJobs = async () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await getJobs();
+            const response = await getMyJobs();
             setJobs(response.data || []);
         } catch (error) {
-            console.error("Error loading jobs:", error);
-            setError("Failed to load jobs");
-            showErrorToast("Failed to load jobs. Please try again.");
+            console.error("Error loading my jobs:", error);
+            setError("Failed to load your jobs");
+            showErrorToast("Failed to load your jobs. Please try again.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteClick = (job) => {
+        setDeleteModal({ show: true, job });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteModal.job) return;
+
+        try {
+            setDeleting(true);
+            await deleteJob(deleteModal.job.id);
+            showSuccessToast("Job deleted successfully!");
+            setJobs(jobs.filter(job => job.id !== deleteModal.job.id));
+        } catch (error) {
+            console.error("Error deleting job:", error);
+            showErrorToast("Failed to delete job. Please try again.");
+        } finally {
+            setDeleting(false);
+            setDeleteModal({ show: false, job: null });
         }
     };
 
@@ -57,7 +81,7 @@ export default function JobList() {
                 <div className="alert alert-danger" role="alert">
                     <h4 className="alert-heading">Error Loading Jobs</h4>
                     <p>{error}</p>
-                    <button className="btn btn-outline-danger" onClick={loadJobs}>
+                    <button className="btn btn-outline-danger" onClick={loadMyJobs}>
                         Try Again
                     </button>
                 </div>
@@ -68,18 +92,20 @@ export default function JobList() {
     return (
         <div className="container py-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Available Jobs</h2>
+                <h2>My Job Postings</h2>
                 <Link to="/jobs/create" className="btn btn-primary">
+                    <i className="fas fa-plus me-2"></i>
                     Post New Job
                 </Link>
             </div>
 
             {jobs.length === 0 ? (
                 <EmptyState 
-                    title="No Jobs Available"
-                    message="There are no job postings at the moment. Be the first to post a job!"
-                    actionText="Post Job"
+                    title="No Jobs Posted Yet"
+                    message="You haven't posted any jobs yet. Start by creating your first job posting!"
+                    actionText="Post Your First Job"
                     actionLink="/jobs/create"
+                    icon="fas fa-briefcase"
                 />
             ) : (
                 <div className="row">
@@ -138,12 +164,26 @@ export default function JobList() {
                                         <small className="text-muted">
                                             Posted: {formatDate(job.postedAt)}
                                         </small>
-                                        <Link 
-                                            to={`/jobs/${job.id}`} 
-                                            className="btn btn-outline-primary btn-sm"
-                                        >
-                                            View Details
-                                        </Link>
+                                        <div className="btn-group">
+                                            <Link 
+                                                to={`/jobs/${job.id}`} 
+                                                className="btn btn-outline-primary btn-sm"
+                                            >
+                                                View
+                                            </Link>
+                                            <Link 
+                                                to={`/jobs/edit/${job.id}`} 
+                                                className="btn btn-outline-secondary btn-sm"
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button 
+                                                className="btn btn-outline-danger btn-sm"
+                                                onClick={() => handleDeleteClick(job)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -151,6 +191,17 @@ export default function JobList() {
                     ))}
                 </div>
             )}
+
+            <ConfirmationModal
+                show={deleteModal.show}
+                title="Delete Job"
+                message={`Are you sure you want to delete "${deleteModal.job?.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                confirmVariant="danger"
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => setDeleteModal({ show: false, job: null })}
+                loading={deleting}
+            />
         </div>
     );
 }
