@@ -1,0 +1,103 @@
+frontend-app/
+│
+├── public/
+│   └── favicon.ico
+│
+├── src/
+│   ├── assets/
+│   │   ├── images/
+│   │   ├── icons/
+│   │   └── styles/
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Select.jsx
+│   │   │   ├── Loader.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   └── EmptyState.jsx
+│   │   │
+│   │   ├── layout/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── AdminSidebar.jsx
+│   │   │   └── DashboardHeader.jsx
+│   │   │
+│   │   └── cards/
+│   │       ├── JobCard.jsx
+│   │       ├── ApplicationCard.jsx
+│   │       └── CompanyCard.jsx
+│   │
+│   ├── pages/
+│   │   ├── auth/
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── JobSeekerDashboard.jsx
+│   │   │   └── RecruiterDashboard.jsx
+│   │   │
+│   │   ├── jobs/
+│   │   │   ├── JobList.jsx
+│   │   │   ├── JobDetails.jsx
+│   │   │   └── CreateJob.jsx
+│   │   │
+│   │   ├── applications/
+│   │   │   ├── MyApplications.jsx
+│   │   │   └── ManageApplications.jsx
+│   │   │
+│   │   ├── profile/
+│   │   │   ├── UserProfile.jsx
+│   │   │   └── CompanyProfile.jsx
+│   │   │
+│   │   ├── admin/
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── ManageUsers.jsx
+│   │   │   ├── ManageCompanies.jsx
+│   │   │   ├── ManageJobs.jsx
+│   │   │   └── ViewLogs.jsx
+│   │   │
+│   │   └── settings/
+│   │       └── LanguageSettings.jsx
+│   │
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── useUserRole.js
+│   │   ├── useFetch.js
+│   │   └── useLanguage.js
+│   │
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   └── LanguageContext.jsx
+│   │
+│   ├── routes/
+│   │   ├── ProtectedRoute.jsx
+│   │   ├── RoleRoute.jsx
+│   │   └── index.jsx
+│   │
+│   ├── services/
+│   │   ├── api.js              // axios config
+│   │   ├── authService.js
+│   │   ├── userService.js
+│   │   ├── jobService.js
+│   │   ├── companyService.js
+│   │   └── applicationService.js
+│   │
+│   ├── utils/
+│   │   ├── validators.js
+│   │   ├── helpers.js
+│   │   └── constants.js
+│   │
+│   ├── i18n/
+│   │   ├── index.js
+│   │   ├── en.json
+│   │   └── mr.json
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
+├── .env
+├── package.json
+└── vite.config.js
