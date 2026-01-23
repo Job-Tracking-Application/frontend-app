@@ -2,27 +2,27 @@ import api from "./api";
 
 // Get company profile by ID (public access)
 export const getCompanyById = async (companyId) => {
-  return api.get(`/api/organization/${companyId}`);
+  return api.get(`/organization/${companyId}`);
 };
 
 // Get current recruiter's company profile
 export const getMyCompanyProfile = async () => {
-  return api.get("/api/organization/my");
+  return api.get("/organization/my");
 };
 
 // Create company profile (recruiter only)
 export const createCompanyProfile = async (companyData) => {
-  return api.post("/api/organization", companyData);
+  return api.post("/organization", companyData);
 };
 
 // Update company profile (recruiter only)
 export const updateCompanyProfile = async (companyId, companyData) => {
-  return api.put(`/api/organization/${companyId}`, companyData);
+  return api.put(`/organization/${companyId}`, companyData);
 };
 
 // Check if recruiter has a company profile
 export const hasCompanyProfile = async () => {
-  return api.get("/api/organization/exists");
+  return api.get("/organization/exists");
 };
 
 // Legacy method for backward compatibility - now uses real API
