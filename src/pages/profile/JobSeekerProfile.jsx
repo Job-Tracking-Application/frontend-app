@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import PageHero from "../../components/common/PageHero";
@@ -21,7 +21,11 @@ const JobSeekerProfile = () => {
     skills: [],
     resume: "",
     about: "",
-    education: "",
+    education: {
+      degree: "",
+      college: "",
+      year: ""
+    },
   });
 
   // Load user profile from API
@@ -37,11 +41,21 @@ const JobSeekerProfile = () => {
       
       setProfile(data);
 
-      const educationString = data.education 
-        ? (typeof data.education === 'string' 
-            ? data.education 
-            : `${data.education.degree} from ${data.education.college} (${data.education.year})`)
-        : "";
+      // Handle education data properly
+      let educationObj = { degree: "", college: "", year: "" };
+      if (data.education) {
+        if (typeof data.education === 'string') {
+          // If it's a string, put it in the degree field
+          educationObj.degree = data.education;
+        } else {
+          // If it's an object, use the individual fields
+          educationObj = {
+            degree: data.education.degree || "",
+            college: data.education.college || "",
+            year: data.education.year ? String(data.education.year) : ""
+          };
+        }
+      }
 
       setFormData({
         fullName: data.fullName || "",
@@ -50,7 +64,7 @@ const JobSeekerProfile = () => {
         skills: data.skills || [],
         resume: data.resume || "",
         about: data.about || "",
-        education: educationString,
+        education: educationObj,
       });
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -109,6 +123,17 @@ const JobSeekerProfile = () => {
     }));
   };
 
+  const handleEducationChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      education: {
+        ...prev.education,
+        [name]: value
+      }
+    }));
+  };
+
   // Save handler
   const handleSave = async () => {
     try {
@@ -121,13 +146,24 @@ const JobSeekerProfile = () => {
         skills: formData.skills,
         resume: formData.resume,
         about: formData.about,
-        education: formData.education,
+        education: JSON.stringify(formData.education), // Convert education object to JSON string
       };
 
       await updateUserProfile(updateData);
 
-      // Update local state
-      setProfile({ ...profile, ...updateData });
+      // Update local state with the correct education object (not the JSON string)
+      const updatedProfile = {
+        ...profile,
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        skills: formData.skills,
+        resume: formData.resume,
+        about: formData.about,
+        education: formData.education, // Keep as object for display
+      };
+      
+      setProfile(updatedProfile);
       setIsEditing(false);
       showSuccessToast("Profile updated successfully!");
     } catch (error) {
@@ -248,6 +284,13 @@ const JobSeekerProfile = () => {
                     )}
                   </div>
                   <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Username</label>
+                    <p className="fw-medium">
+                      <span className="badge bg-secondary">{profile.userName || "Not set"}</span>
+                    </p>
+                    <small className="text-muted">Username cannot be changed</small>
+                  </div>
+                  <div className="col-md-6">
                     <label className="form-label text-muted small fw-bold">Email</label>
                     {isEditing ? (
                       <input 
@@ -322,24 +365,73 @@ const JobSeekerProfile = () => {
               </div>
               <div className="card-body p-4">
                 {isEditing ? (
-                  <textarea 
-                    name="education" 
-                    rows={3} 
-                    value={formData.education} 
-                    onChange={handleChange} 
-                    className="form-control"
-                    placeholder="Enter your educational background..."
-                  />
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Degree</label>
+                      <input 
+                        name="degree" 
+                        value={formData.education.degree} 
+                        onChange={handleEducationChange} 
+                        className="form-control"
+                        placeholder="e.g., Bachelor of Computer Science"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">College/University</label>
+                      <input 
+                        name="college" 
+                        value={formData.education.college} 
+                        onChange={handleEducationChange} 
+                        className="form-control"
+                        placeholder="e.g., Tech University"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Year of Graduation</label>
+                      <input 
+                        name="year" 
+                        type="number"
+                        value={formData.education.year} 
+                        onChange={handleEducationChange} 
+                        className="form-control"
+                        placeholder="e.g., 2020"
+                        min="1950"
+                        max="2030"
+                      />
+                    </div>
+                  </div>
                 ) : (
                   <div>
-                    <p className="text-secondary">
-                      {profile.education 
-                        ? (typeof profile.education === 'string' 
-                            ? profile.education 
-                            : `${profile.education.degree} from ${profile.education.college} (${profile.education.year})`)
-                        : "No education details provided."
-                      }
-                    </p>
+                    {profile.education ? (
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <label className="form-label text-muted small fw-bold">Degree</label>
+                          <p className="fw-medium">
+                            {typeof profile.education === 'string' 
+                              ? profile.education 
+                              : (profile.education.degree || "Not specified")}
+                          </p>
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label text-muted small fw-bold">College/University</label>
+                          <p className="fw-medium">
+                            {typeof profile.education === 'object' && profile.education.college && profile.education.college.trim() !== ""
+                              ? profile.education.college 
+                              : "Not specified"}
+                          </p>
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label text-muted small fw-bold">Year of Graduation</label>
+                          <p className="fw-medium">
+                            {typeof profile.education === 'object' && profile.education.year && profile.education.year > 0
+                              ? profile.education.year 
+                              : "Not specified"}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-secondary">No education details provided.</p>
+                    )}
                   </div>
                 )}
               </div>

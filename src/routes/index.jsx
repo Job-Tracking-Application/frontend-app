@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 // auth pages
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import AdminLogin from "../pages/auth/AdminLogin";
 
 // layout
 import Layout from "../components/layout/Layout";
@@ -48,6 +49,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Protected area uses Layout */}
       <Route element={<ProtectedRoute />}>
