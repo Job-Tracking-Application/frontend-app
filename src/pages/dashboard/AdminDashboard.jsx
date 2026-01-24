@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAdminStats } from "../../services/adminService"
+import { useLanguage } from "../../context/LanguageContext";
 import PageHero from "../../components/common/PageHero";
 
 const AdminDashboard = () => {
+  const { t } = useLanguage();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalJobs: 0,
@@ -25,7 +27,7 @@ const AdminDashboard = () => {
         }
       } catch (err) {
         console.error("Failed to load admin stats:", err);
-        if (mounted) setError("Unable to load admin statistics");
+        if (mounted) setError(t("Unable to load admin statistics"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -33,17 +35,17 @@ const AdminDashboard = () => {
 
     fetchStats();
     return () => (mounted = false);
-  }, []);
+  }, [t]);
 
   if (loading) {
-    return <div className="text-center py-5">Loading dashboard...</div>;
+    return <div className="text-center py-5">{t("Loading dashboard...")}</div>;
   }
 
   return (
     <div>
       <PageHero
-        title="Admin Dashboard"
-        subtitle="System overview and statistics"
+        title={t("Admin Dashboard")}
+        subtitle={t("System overview and statistics")}
       />
 
       <div className="container pb-5">
@@ -53,22 +55,22 @@ const AdminDashboard = () => {
 
         <div className="row g-4">
           <StatCard
-            title="Total Users"
+            title={t("Total Users")}
             value={stats.totalUsers}
             icon="bi-people"
           />
           <StatCard
-            title="Total Jobs"
+            title={t("Total Jobs")}
             value={stats.totalJobs}
             icon="bi-briefcase"
           />
           <StatCard
-            title="Total Companies"
+            title={t("Total Companies")}
             value={stats.totalCompanies}
             icon="bi-buildings"
           />
           <StatCard
-            title="Total Applications"
+            title={t("Total Applications")}
             value={stats.totalApplications}
             icon="bi-file-earmark-text"
           />

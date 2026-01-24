@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUsers, toggleUserStatus, changeUserRole }
   from "../../services/adminService";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { getRoleName, getRoleOptions } from "../../utils/roleMap";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageUsers = () => {
+  const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,14 +32,14 @@ const ManageUsers = () => {
         if (mounted) setUsers(res.data || []);
       } catch (err) {
         console.error("Failed to load users:", err);
-        showErrorToast("Failed to load users");
+        showErrorToast(t("Failed to load users"));
       } finally {
         if (mounted) setLoading(false);
       }
     };
     fetchUsers();
     return () => (mounted = false);
-  }, []);
+  }, [t]);
 
   const filteredUsers = users.filter(u =>
     u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,10 +47,11 @@ const ManageUsers = () => {
   );
 
   const showStatusConfirmation = (id, active) => {
+    const action = active ? t("disable") : t("enable");
     setConfirmModal({
       show: true,
-      title: "Confirm Status Change",
-      message: `Are you sure you want to ${active ? "disable" : "enable"} this user?`,
+      title: t("Confirm Status Change"),
+      message: t("Are you sure you want to {{action}} this user?", { action }),
       action: "toggle-status",
       userId: id,
       active: active
@@ -66,11 +69,12 @@ const ManageUsers = () => {
               : u
           )
         );
-        showSuccessToast(`User ${confirmModal.active ? "disabled" : "enabled"} successfully`);
+        const action = confirmModal.active ? t("disabled") : t("enabled");
+        showSuccessToast(t("User {{action}} successfully", { action }));
       }
     } catch (err) {
       console.error("Error updating user:", err);
-      showErrorToast("Failed to update user status");
+      showErrorToast(t("Failed to update user status"));
     }
     setConfirmModal({ show: false, title: "", message: "", action: null, userId: null });
   };
@@ -82,29 +86,29 @@ const ManageUsers = () => {
       setUsers(prev =>
         prev.map(u => (u.id === id ? { ...u, role: selectedRole.toString() } : u))
       );
-      showSuccessToast("User role updated successfully");
+      showSuccessToast(t("User role updated successfully"));
       setEditingRoleId(null);
       setSelectedRole(null);
     } catch (err) {
       console.error("Error changing role:", err);
-      showErrorToast("Failed to update user role");
+      showErrorToast(t("Failed to update user role"));
     }
   };
 
-  if (loading) return <div className="text-center py-5">Loading...</div>;
+  if (loading) return <div className="text-center py-5">{t("Loading...")}</div>;
 
   return (
     <div>
-      <PageHero title="Manage Users" subtitle="View and manage system users." />
+      <PageHero title={t("Manage Users")} subtitle={t("View and manage system users.")} />
 
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
           <div className="card-header bg-white p-4 border-bottom">
             <div className="d-flex justify-content-between">
-              <h5 className="fw-bold mb-0">All Users ({filteredUsers.length})</h5>
+              <h5 className="fw-bold mb-0">{t("All Users")} ({filteredUsers.length})</h5>
               <input
                 className="form-control w-25"
-                placeholder="Search users..."
+                placeholder={t("Search users...")}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -114,10 +118,10 @@ const ManageUsers = () => {
           <table className="table table-hover align-middle mb-0">
             <thead className="bg-light">
               <tr>
-                <th>User</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th className="text-end">Action</th>
+                <th>{t("User")}</th>
+                <th>{t("Role")}</th>
+                <th>{t("Status")}</th>
+                <th className="text-end">{t("Action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +140,7 @@ const ManageUsers = () => {
                           value={selectedRole || ""}
                           onChange={(e) => setSelectedRole(parseInt(e.target.value))}
                         >
-                          <option value="">Select role</option>
+                          <option value="">{t("Select role")}</option>
                           {getRoleOptions().map(opt => (
                             <option key={opt.value} value={opt.value}>
                               {opt.label}
@@ -147,7 +151,7 @@ const ManageUsers = () => {
                           className="btn btn-sm btn-success"
                           onClick={() => handleChangeRole(u.id)}
                         >
-                          Save
+                          {t("Save")}
                         </button>
                         <button
                           className="btn btn-sm btn-secondary"
@@ -156,7 +160,7 @@ const ManageUsers = () => {
                             setSelectedRole(null);
                           }}
                         >
-                          Cancel
+                          {t("Cancel")}
                         </button>
                       </div>
                     ) : (
@@ -169,14 +173,14 @@ const ManageUsers = () => {
                             setSelectedRole(parseInt(u.role));
                           }}
                         >
-                          Edit
+                          {t("Edit")}
                         </button>
                       </div>
                     )}
                   </td>
                   <td>
                     <span className={`badge ${u.active ? "bg-success" : "bg-danger"}`}>
-                      {u.active ? "Active" : "Disabled"}
+                      {u.active ? t("Active") : t("Disabled")}
                     </span>
                   </td>
                   <td className="text-end">
@@ -184,7 +188,7 @@ const ManageUsers = () => {
                       className="btn btn-sm btn-warning"
                       onClick={() => showStatusConfirmation(u.id, u.active)}
                     >
-                      {u.active ? "Disable" : "Enable"}
+                      {u.active ? t("Disable") : t("Enable")}
                     </button>
                   </td>
                 </tr>
@@ -192,7 +196,7 @@ const ManageUsers = () => {
               {filteredUsers.length === 0 && (
                 <tr>
                   <td colSpan="4" className="text-center py-4 text-muted">
-                    No users found
+                    {t("No users found")}
                   </td>
                 </tr>
               )}
@@ -207,8 +211,8 @@ const ManageUsers = () => {
         message={confirmModal.message}
         onConfirm={handleConfirm}
         onCancel={() => setConfirmModal({ show: false, title: "", message: "", action: null, userId: null })}
-        confirmText="Yes, Confirm"
-        cancelText="Cancel"
+        confirmText={t("Yes, Confirm")}
+        cancelText={t("Cancel")}
         variant="warning"
       />
     </div>

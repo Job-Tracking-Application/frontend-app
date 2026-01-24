@@ -140,7 +140,7 @@ export default function ApplyJob() {
 
             await applyForJob(id, applicationData);
             showSuccessToast("Application submitted successfully!");
-            navigate("/applications/my");
+            navigate("/applications");
         } catch (error) {
             console.error("Error applying for job:", error);
             

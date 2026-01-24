@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getLogs } from "../../services/adminService";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHero from "../../components/common/PageHero";
 
 const ViewLogs = () => {
+  const { t } = useLanguage();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,11 +24,11 @@ const ViewLogs = () => {
     return () => (mounted = false);
   }, []);
 
-  if (loading) return <div className="text-center py-5">Loading...</div>;
+  if (loading) return <div className="text-center py-5">{t("Loading...")}</div>;
 
   return (
     <div>
-      <PageHero title="System Logs" subtitle="Audit trail of system activities." />
+      <PageHero title={t("System Logs")} subtitle={t("Audit trail of system activities.")} />
 
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4">
@@ -42,7 +44,7 @@ const ViewLogs = () => {
             ))}
             {logs.length === 0 && (
               <li className="list-group-item text-center text-muted">
-                No logs available
+                {t("No logs available")}
               </li>
             )}
           </ul>

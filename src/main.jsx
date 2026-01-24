@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import Router from "./routes";
 import AuthProvider from "./context/AuthContext";
 import LanguageProvider from "./context/LanguageContext";
+import './i18n'; // Initialize i18n
 import './index.css';
 
 

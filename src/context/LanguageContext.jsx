@@ -1,22 +1,38 @@
-import React, { createContext, useContext, useState } from "react";
-import { languages } from "../i18n";
+import { createContext, useContext, useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 const LanguageContext = createContext();
 
 export function useLanguage() { return useContext(LanguageContext); }
 
 export default function LanguageProvider({ children }) {
-    const [lang, setLang] = useState("en");
+    const { i18n } = useTranslation();
+    const [lang, setLang] = useState(i18n.language || "en");
 
-    const toggle = () => setLang((l) => (l === "en" ? "mr" : "en"));
+    const toggle = () => {
+        const newLang = lang === "en" ? "mr" : "en";
+        setLang(newLang);
+        i18n.changeLanguage(newLang);
+    };
 
-    // Translation helper
-    const t = (key) => {
-        return languages[lang][key] || key;
+    const changeLang = (newLang) => {
+        setLang(newLang);
+        i18n.changeLanguage(newLang);
+    };
+
+    // Enhanced translation helper with fallback
+    const t = (key, options = {}) => {
+        return i18n.t(key, { ...options, fallbackLng: 'en' });
     };
 
     return (
-        <LanguageContext.Provider value={{ lang, setLang, toggle, t }}>
+        <LanguageContext.Provider value={{ 
+            lang, 
+            setLang: changeLang, 
+            toggle, 
+            t,
+            isLoading: !i18n.isInitialized 
+        }}>
             {children}
         </LanguageContext.Provider>
     );

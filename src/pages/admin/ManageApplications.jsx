@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getApplications, deleteApplication } from "../../services/adminApplicationService";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageApplications = () => {
+  const { t } = useLanguage();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,14 +30,14 @@ const ManageApplications = () => {
   });
 
   const statusOptions = [
-    { value: "", label: "All Statuses" },
-    { value: "APPLIED", label: "Applied" },
-    { value: "UNDER_REVIEW", label: "Under Review" },
-    { value: "INTERVIEW_SCHEDULED", label: "Interview Scheduled" },
-    { value: "INTERVIEW_COMPLETED", label: "Interview Completed" },
-    { value: "SHORTLISTED", label: "Shortlisted" },
-    { value: "REJECTED", label: "Rejected" },
-    { value: "WITHDRAWN", label: "Withdrawn" }
+    { value: "", label: t("All Statuses") },
+    { value: "APPLIED", label: t("Applied") },
+    { value: "UNDER_REVIEW", label: t("Under Review") },
+    { value: "INTERVIEW_SCHEDULED", label: t("Interview Scheduled") },
+    { value: "INTERVIEW_COMPLETED", label: t("Interview Completed") },
+    { value: "SHORTLISTED", label: t("Shortlisted") },
+    { value: "REJECTED", label: t("Rejected") },
+    { value: "WITHDRAWN", label: t("Withdrawn") }
   ];
 
   const fetchApplications = async (page = 0, status = null) => {
@@ -50,7 +52,7 @@ const ManageApplications = () => {
       setCurrentPage(data.number || 0);
     } catch (err) {
       console.error("Failed to load applications:", err);
-      showErrorToast("Failed to load applications");
+      showErrorToast(t("Failed to load applications"));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const ManageApplications = () => {
 
   useEffect(() => {
     fetchApplications(currentPage, statusFilter || null);
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, t]);
 
   const filteredApplications = applications.filter(app =>
     app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,8 +77,8 @@ const ManageApplications = () => {
   const showDeleteConfirmation = (applicationId, jobTitle, jobSeekerName) => {
     setConfirmModal({
       show: true,
-      title: "Delete Application",
-      message: `Are you sure you want to delete the application by ${jobSeekerName} for ${jobTitle}? This action cannot be undone.`,
+      title: t("Delete Application"),
+      message: t("Are you sure you want to delete the application by {{name}} for {{job}}? This action cannot be undone.", { name: jobSeekerName, job: jobTitle }),
       applicationId: applicationId
     });
   };
@@ -84,12 +86,12 @@ const ManageApplications = () => {
   const handleDeleteConfirm = async () => {
     try {
       await deleteApplication(confirmModal.applicationId);
-      showSuccessToast("Application deleted successfully");
+      showSuccessToast(t("Application deleted successfully"));
       // Refresh the current page
       fetchApplications(currentPage, statusFilter || null);
     } catch (err) {
       console.error("Error deleting application:", err);
-      showErrorToast("Failed to delete application");
+      showErrorToast(t("Failed to delete application"));
     }
     setConfirmModal({ show: false, title: "", message: "", applicationId: null });
   };
@@ -126,7 +128,7 @@ const ManageApplications = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return t("N/A");
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -137,14 +139,14 @@ const ManageApplications = () => {
   };
 
   if (loading && applications.length === 0) {
-    return <div className="text-center py-5">Loading...</div>;
+    return <div className="text-center py-5">{t("Loading...")}</div>;
   }
 
   return (
     <div>
       <PageHero 
-        title="Manage Applications" 
-        subtitle="View and moderate job applications for abuse prevention." 
+        title={t("Manage Applications")} 
+        subtitle={t("View and moderate job applications for abuse prevention.")} 
       />
 
       <div className="container pb-5">
@@ -153,7 +155,7 @@ const ManageApplications = () => {
             <div className="row align-items-center">
               <div className="col-md-4">
                 <h5 className="fw-bold mb-0">
-                  Applications ({totalElements})
+                  {t("Applications")} ({totalElements})
                 </h5>
               </div>
               <div className="col-md-4">
@@ -175,7 +177,7 @@ const ManageApplications = () => {
               <div className="col-md-4">
                 <input
                   className="form-control"
-                  placeholder="Search by job title or applicant..."
+                  placeholder={t("Search by job title or applicant...")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -187,12 +189,12 @@ const ManageApplications = () => {
             <table className="table table-hover align-middle mb-0">
               <thead className="bg-light">
                 <tr>
-                  <th>Job & Applicant</th>
-                  <th>Status</th>
-                  <th>Applied Date</th>
-                  <th>Last Updated</th>
-                  <th>Resume</th>
-                  <th className="text-end">Actions</th>
+                  <th>{t("Job & Applicant")}</th>
+                  <th>{t("Status")}</th>
+                  <th>{t("Applied Date")}</th>
+                  <th>{t("Last Updated")}</th>
+                  <th>{t("Resume")}</th>
+                  <th className="text-end">{t("Actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -201,12 +203,12 @@ const ManageApplications = () => {
                     <td>
                       <div>
                         <strong className="d-block">{app.jobTitle}</strong>
-                        <small className="text-muted">by {app.jobSeekerName}</small>
+                        <small className="text-muted">{t("by")} {app.jobSeekerName}</small>
                       </div>
                     </td>
                     <td>
                       <span className={`badge ${getStatusBadgeClass(app.status)}`}>
-                        {app.status.replace(/_/g, ' ')}
+                        {t(app.status.replace(/_/g, ' '))}
                       </span>
                     </td>
                     <td>
@@ -223,10 +225,10 @@ const ManageApplications = () => {
                           rel="noopener noreferrer"
                           className="btn btn-sm btn-outline-primary"
                         >
-                          View Resume
+                          {t("View Resume")}
                         </a>
                       ) : (
-                        <span className="text-muted">No resume</span>
+                        <span className="text-muted">{t("No resume")}</span>
                       )}
                     </td>
                     <td className="text-end">
@@ -234,9 +236,9 @@ const ManageApplications = () => {
                         <button
                           className="btn btn-sm btn-outline-info"
                           onClick={() => showViewDetails(app)}
-                          title="View application details"
+                          title={t("View application details")}
                         >
-                          View
+                          {t("View")}
                         </button>
                         <button
                           className={`btn btn-sm ${shouldDisableDelete(app.status) ? 'btn-secondary' : 'btn-outline-danger'}`}
@@ -246,9 +248,9 @@ const ManageApplications = () => {
                             app.jobSeekerName
                           )}
                           disabled={shouldDisableDelete(app.status)}
-                          title={shouldDisableDelete(app.status) ? "Cannot delete selected applications" : "Delete abusive application"}
+                          title={shouldDisableDelete(app.status) ? t("Cannot delete selected applications") : t("Delete abusive application")}
                         >
-                          Delete
+                          {t("Delete")}
                         </button>
                       </div>
                     </td>
@@ -260,17 +262,17 @@ const ManageApplications = () => {
                       {loading ? (
                         <div className="d-flex justify-content-center align-items-center">
                           <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                          Loading applications...
+                          {t("Loading applications...")}
                         </div>
                       ) : searchTerm ? (
                         <>
                           <i className="bi bi-search mb-2 fs-4 d-block"></i>
-                          No applications match your search criteria
+                          {t("No applications match your search criteria")}
                         </>
                       ) : (
                         <>
                           <i className="bi bi-file-earmark-text mb-2 fs-4 d-block"></i>
-                          No applications found
+                          {t("No applications found")}
                         </>
                       )}
                     </td>
@@ -285,7 +287,11 @@ const ManageApplications = () => {
             <div className="card-footer bg-white p-4 border-top">
               <div className="d-flex justify-content-between align-items-center">
                 <div className="text-muted">
-                  Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} applications
+                  {t("Showing {{start}} to {{end}} of {{total}} applications", {
+                    start: currentPage * pageSize + 1,
+                    end: Math.min((currentPage + 1) * pageSize, totalElements),
+                    total: totalElements
+                  })}
                 </div>
                 <nav>
                   <ul className="pagination pagination-sm mb-0">
@@ -295,7 +301,7 @@ const ManageApplications = () => {
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 0}
                       >
-                        Previous
+                        {t("Previous")}
                       </button>
                     </li>
                     
@@ -316,7 +322,7 @@ const ManageApplications = () => {
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages - 1}
                       >
-                        Next
+                        {t("Next")}
                       </button>
                     </li>
                   </ul>
@@ -333,8 +339,8 @@ const ManageApplications = () => {
         message={confirmModal.message}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setConfirmModal({ show: false, title: "", message: "", applicationId: null })}
-        confirmText="Yes, Delete"
-        cancelText="Cancel"
+        confirmText={t("Yes, Delete")}
+        cancelText={t("Cancel")}
         variant="danger"
       />
 
@@ -344,7 +350,7 @@ const ManageApplications = () => {
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Application Details</h5>
+                <h5 className="modal-title">{t("Application Details")}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
@@ -355,31 +361,31 @@ const ManageApplications = () => {
                 {viewModal.application && (
                   <div className="row">
                     <div className="col-md-6">
-                      <h6 className="fw-bold">Job Information</h6>
-                      <p><strong>Job Title:</strong> {viewModal.application.jobTitle}</p>
-                      <p><strong>Job ID:</strong> {viewModal.application.jobId}</p>
+                      <h6 className="fw-bold">{t("Job Information")}</h6>
+                      <p><strong>{t("Job Title")}:</strong> {viewModal.application.jobTitle}</p>
+                      <p><strong>{t("Job ID")}:</strong> {viewModal.application.jobId}</p>
                     </div>
                     <div className="col-md-6">
-                      <h6 className="fw-bold">Applicant Information</h6>
-                      <p><strong>Applicant:</strong> {viewModal.application.jobSeekerName}</p>
-                      <p><strong>Applicant ID:</strong> {viewModal.application.jobSeekerUserId}</p>
+                      <h6 className="fw-bold">{t("Applicant Information")}</h6>
+                      <p><strong>{t("Applicant")}:</strong> {viewModal.application.jobSeekerName}</p>
+                      <p><strong>{t("Applicant ID")}:</strong> {viewModal.application.jobSeekerUserId}</p>
                     </div>
                     <div className="col-12">
                       <hr />
-                      <h6 className="fw-bold">Application Status</h6>
+                      <h6 className="fw-bold">{t("Application Status")}</h6>
                       <p>
                         <span className={`badge ${getStatusBadgeClass(viewModal.application.status)}`}>
-                          {viewModal.application.status.replace(/_/g, ' ')}
+                          {t(viewModal.application.status.replace(/_/g, ' '))}
                         </span>
                       </p>
                     </div>
                     <div className="col-md-6">
-                      <h6 className="fw-bold">Timeline</h6>
-                      <p><strong>Applied:</strong> {formatDate(viewModal.application.appliedAt)}</p>
-                      <p><strong>Last Updated:</strong> {formatDate(viewModal.application.updatedAt)}</p>
+                      <h6 className="fw-bold">{t("Timeline")}</h6>
+                      <p><strong>{t("Applied")}:</strong> {formatDate(viewModal.application.appliedAt)}</p>
+                      <p><strong>{t("Last Updated")}:</strong> {formatDate(viewModal.application.updatedAt)}</p>
                     </div>
                     <div className="col-md-6">
-                      <h6 className="fw-bold">Resume</h6>
+                      <h6 className="fw-bold">{t("Resume")}</h6>
                       {viewModal.application.resumePath ? (
                         <a 
                           href={viewModal.application.resumePath} 
@@ -388,10 +394,10 @@ const ManageApplications = () => {
                           className="btn btn-sm btn-primary"
                         >
                           <i className="bi bi-download me-1"></i>
-                          Download Resume
+                          {t("Download Resume")}
                         </a>
                       ) : (
-                        <p className="text-muted">No resume uploaded</p>
+                        <p className="text-muted">{t("No resume uploaded")}</p>
                       )}
                     </div>
                   </div>
@@ -403,7 +409,7 @@ const ManageApplications = () => {
                   className="btn btn-secondary" 
                   onClick={() => setViewModal({ show: false, application: null })}
                 >
-                  Close
+                  {t("Close")}
                 </button>
               </div>
             </div>
