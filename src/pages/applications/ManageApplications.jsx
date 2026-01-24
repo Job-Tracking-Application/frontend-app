@@ -58,24 +58,24 @@ const ManageApplications = () => {
                     </a>
                   </div>
 
-                  {(!app.status || app.status === "Pending") ? (
+                  {(!app.status || app.status === "PENDING") ? (
                     <div className="d-grid gap-2 d-md-flex">
                       <button
-                        onClick={() => handleAction(app.id, "Shortlisted")}
+                        onClick={() => handleAction(app.id, "SHORTLISTED")}
                         className="btn btn-outline-warning flex-grow-1"
                         title="Shortlist Candidate"
                       >
                         <i className="bi bi-star me-2"></i> Shortlist
                       </button>
                       <button
-                        onClick={() => handleAction(app.id, "Rejected")}
+                        onClick={() => handleAction(app.id, "REJECTED")}
                         className="btn btn-outline-danger flex-grow-1"
                         title="Reject Application"
                       >
                         <i className="bi bi-x-circle me-2"></i> Reject
                       </button>
                       <button
-                        onClick={() => handleAction(app.id, "Hired")}
+                        onClick={() => handleAction(app.id, "HIRED")}
                         className="btn btn-primary flex-grow-1"
                         title="Hire Candidate"
                       >
@@ -87,8 +87,8 @@ const ManageApplications = () => {
                       <div>
                         <span className="text-muted small text-uppercase">Current Status</span>
                         <h6 className={`mb-0 fw-bold ${app.status === "Hired" ? "text-success" :
-                            app.status === "Shortlisted" ? "text-warning" :
-                              "text-danger"
+                          app.status === "Shortlisted" ? "text-warning" :
+                            "text-danger"
                           }`}>
                           {app.status === "Hired" && <i className="bi bi-check-circle-fill me-2"></i>}
                           {app.status === "Shortlisted" && <i className="bi bi-star-fill me-2"></i>}

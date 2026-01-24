@@ -6,12 +6,12 @@ export const getMyApplications = async () => {
 };
 
 export const getApplicationsForJob = async (jobId) => {
-  const response = await api.get(`/applications/job/${jobId}`);
+  const response = await api.get(`/applications/manage/${jobId}`);
   return response.data;
 };
 
 export const updateApplicationStatus = async (id, status) => {
-  const response = await api.put(`/applications/${id}/status`, { status });
+  const response = await api.patch(`/applications/manage/${id}`, { status });
   return response.data;
 };
 

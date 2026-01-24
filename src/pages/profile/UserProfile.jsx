@@ -16,24 +16,33 @@ const UserProfile = () => {
     skills: [],
     resume: null,
     about: "",
-    education: "",
+    education: {
+      degree: "",
+      college: "",
+      year: "",
+    },
   });
 
-  // Load user from API
+  /* ================= LOAD PROFILE ================= */
   useEffect(() => {
     async function loadUser() {
       const data = await getUserProfile();
+
       setUser(data);
 
       setFormData({
-        fullName: data.fullName,
-        email: data.email,
-        userName: data.userName,
-        phone: data.phone,
-        skills: data.skills,
+        fullName: data.fullName || "",
+        email: data.email || "",
+        userName: data.userName || "",
+        phone: data.phone || "",
+        skills: data.skills || [],
         resume: null,
-        about: data.about,
-        education: data.education,
+        about: data.about || "",
+        education: data.education || {
+          degree: "",
+          college: "",
+          year: "",
+        },
       });
     }
 
@@ -44,7 +53,7 @@ const UserProfile = () => {
 
   const toggleEdit = () => setIsEditing(!isEditing);
 
-  // Input handlers
+  /* ================= HANDLERS ================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -57,6 +66,17 @@ const UserProfile = () => {
     }));
   };
 
+  const handleEducationChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      education: {
+        ...prev.education,
+        [name]: value,
+      },
+    }));
+  };
+
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -64,22 +84,23 @@ const UserProfile = () => {
     }));
   };
 
-  // Save handler
+  /* ================= SAVE ================= */
   const handleSave = async () => {
     setSaving(true);
 
-    const updatedUser = {
+    const payload = {
       ...formData,
       resume: formData.resume ? formData.resume.name : user.resume,
     };
 
-    await updateUserProfile(updatedUser);
+    await updateUserProfile(payload);
 
-    setUser(updatedUser);
+    setUser(payload);
     setIsEditing(false);
     setSaving(false);
   };
 
+  /* ================= UI ================= */
   return (
     <div>
       <PageHero title="My Profile" subtitle="Manage your personal information and resume." />
@@ -110,107 +131,131 @@ const UserProfile = () => {
         </div>
 
         <div className="row g-4">
-          {/* Basic Info */}
+          {/* ================= LEFT ================= */}
           <div className="col-lg-8">
+            {/* BASIC INFO */}
             <div className="card shadow-sm border-0 mb-4">
-              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 className="fw-bold mb-0">Basic Information</h5>
-              </div>
               <div className="card-body p-4">
+                <h5 className="fw-bold mb-3">Basic Information</h5>
+
                 <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Full Name</label>
-                    {isEditing ? (
-                      <input name="fullName" value={formData.fullName} onChange={handleChange} className="form-control" />
-                    ) : (
-                      <p className="fw-medium">{user.fullName}</p>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Email</label>
-                    {isEditing ? (
-                      <input name="email" value={formData.email} onChange={handleChange} className="form-control" />
-                    ) : (
-                      <p className="fw-medium">{user.email}</p>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Username</label>
-                    {isEditing ? (
-                      <input name="userName" value={formData.userName} onChange={handleChange} className="form-control" />
-                    ) : (
-                      <p className="fw-medium">{user.userName}</p>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Phone</label>
-                    {isEditing ? (
-                      <input name="phone" value={formData.phone} onChange={handleChange} className="form-control" />
-                    ) : (
-                      <p className="fw-medium">{user.phone}</p>
-                    )}
-                  </div>
+                  {["fullName", "email", "userName", "phone"].map((field) => (
+                    <div key={field} className="col-md-6">
+                      <label className="form-label text-muted small fw-bold">
+                        {field.replace(/([A-Z])/g, " $1")}
+                      </label>
+                      {isEditing ? (
+                        <input
+                          name={field}
+                          value={formData[field]}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      ) : (
+                        <p className="fw-medium">{user[field]}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
+            {/* ABOUT */}
             <div className="card shadow-sm border-0 mb-4">
-              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 className="fw-bold mb-0">About Me</h5>
-              </div>
               <div className="card-body p-4">
+                <h5 className="fw-bold mb-3">About Me</h5>
                 {isEditing ? (
-                  <textarea name="about" rows={4} value={formData.about} onChange={handleChange} className="form-control" />
+                  <textarea
+                    name="about"
+                    rows={4}
+                    value={formData.about}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
                 ) : (
                   <p className="text-secondary">{user.about || "No description provided."}</p>
                 )}
               </div>
             </div>
 
-            <div className="card shadow-sm border-0 mb-4">
-              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 className="fw-bold mb-0">Education</h5>
-              </div>
+            {/* EDUCATION */}
+            <div className="card shadow-sm border-0">
               <div className="card-body p-4">
+                <h5 className="fw-bold mb-3">Education</h5>
+
                 {isEditing ? (
-                  <textarea name="education" rows={3} value={formData.education} onChange={handleChange} className="form-control" />
+                  <>
+                    <input
+                      name="degree"
+                      placeholder="Degree"
+                      value={formData.education.degree}
+                      onChange={handleEducationChange}
+                      className="form-control mb-2"
+                    />
+                    <input
+                      name="college"
+                      placeholder="College"
+                      value={formData.education.college}
+                      onChange={handleEducationChange}
+                      className="form-control mb-2"
+                    />
+                    <input
+                      name="year"
+                      placeholder="Year"
+                      value={formData.education.year}
+                      onChange={handleEducationChange}
+                      className="form-control"
+                    />
+                  </>
+                ) : user.education ? (
+                  <div className="text-secondary">
+                    <p><strong>Degree:</strong> {user.education.degree}</p>
+                    <p><strong>College:</strong> {user.education.college}</p>
+                    <p><strong>Year:</strong> {user.education.year}</p>
+                  </div>
                 ) : (
-                  <p className="text-secondary">{user.education || "No education details."}</p>
+                  <p className="text-muted">No education details.</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Sidebar like Cards */}
+          {/* ================= RIGHT ================= */}
           <div className="col-lg-4">
+            {/* SKILLS */}
             <div className="card shadow-sm border-0 mb-4">
-              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 className="fw-bold mb-0">Skills</h5>
-              </div>
               <div className="card-body p-4">
+                <h5 className="fw-bold mb-3">Skills</h5>
                 {isEditing ? (
-                  <input name="skills" value={formData.skills.join(", ")} onChange={handleSkillsChange} className="form-control" placeholder="Comma separated" />
+                  <input
+                    value={formData.skills.join(", ")}
+                    onChange={handleSkillsChange}
+                    className="form-control"
+                    placeholder="Comma separated"
+                  />
                 ) : (
                   <div className="d-flex flex-wrap gap-2">
-                    {user.skills && user.skills.length > 0 ? user.skills.map((skill, i) => (
-                      <span key={i} className="badge bg-light text-dark border">{skill}</span>
-                    )) : <span className="text-muted small">No skills listed</span>}
+                    {user.skills?.length
+                      ? user.skills.map((s, i) => (
+                        <span key={i} className="badge bg-light text-dark border">
+                          {s}
+                        </span>
+                      ))
+                      : <span className="text-muted small">No skills</span>}
                   </div>
                 )}
               </div>
             </div>
 
+            {/* RESUME */}
             <div className="card shadow-sm border-0">
-              <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 className="fw-bold mb-0">Resume</h5>
-              </div>
               <div className="card-body p-4">
+                <h5 className="fw-bold mb-3">Resume</h5>
                 {isEditing ? (
                   <input type="file" className="form-control" onChange={handleFileChange} />
                 ) : (
                   <div className="p-3 bg-light rounded text-center">
-                    <i className="bi bi-file-earmark-pdf fs-3 text-danger d-block mb-2"></i>
-                    {user.resume ? <span>{user.resume}</span> : <span className="text-muted small">No resume uploaded</span>}
+                    {user.resume || "No resume uploaded"}
                   </div>
                 )}
               </div>
