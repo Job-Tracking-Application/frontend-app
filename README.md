@@ -1,190 +1,799 @@
-# 💼 **JobSync — Your Career Partner**
+# Job Tracking Frontend Application
 
-**JobSync** is a modern, responsive, and feature-rich Job Tracking Application designed to connect Job Seekers, Recruiters, and Administrators. 
-Built with **React 19**, it offers a premium user experience with role-based dashboards, multi-language support (English & Marathi), and comprehensive job management tools.
+A modern React-based web application for job tracking with role-based dashboards, job management, and application tracking.
 
----
+## 🚀 Quick Start
 
-## ✨ **Key Features**
+### Prerequisites
+- Node.js 18+ and npm/yarn
+- Backend API running on `http://localhost:8080`
+- Modern web browser
 
-### 🔹 **Core Functionality**
-*   **Role-Based Access**: Specialized dashboards for **Job Seekers**, **Recruiters**, and **Admins**.
-*   **Smart Dashboards**: Personalized recommendations, recent activity tracking, and dynamic stats.
-*   **Job Management**: Create, edit, view, and apply for jobs with detailed descriptions and salary ranges (₹).
-*   **Responsive Design**: Fully optimized for Desktop, Tablet, and Mobile with a smart **Toggleable Sidebar**.
+### Installation & Setup
 
-### 🔹 **Premium Features**
-*   **Admin Portal**: A "Premium" redesign with card-based tables, search filters, badges, and timeline logs.
-*   **Localization 🇮🇳**: Full support for **Marathi (मराठी)** translation and **Indian Currency (₹)** formatting.
-*   **Demo Profiles**: One-click mock login for Admin (`admin@...`), Recruiter (`recruiter@...`), and User.
-*   **System Logs**: Visual audit trails for all system activities.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Job-Tracking-Application/frontend-app.git
+   cd frontend-app
+   ```
 
----
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## 🛠️ **Tech Stack**
+3. **Configure environment**
+   ```bash
+   # .env file
+   VITE_API_BASE_URL=http://localhost:8080
+   VITE_APP_NAME=Job Tracking System
+   ```
 
-*   **Frontend**: React 19, Vite
-*   **Styling**: Bootstrap 5, Bootstrap Icons, Custom CSS
-*   **State Management**: React Context API (Auth & Language)
-*   **Routing**: React Router v6 (Future Flags Enabled)
-*   **HTTP Client**: Axios (Modular Service Layer)
-*   **Internationalization**: Custom i18n implementation
+4. **Start development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
----
+5. **Access the application**
+   - Frontend: `http://localhost:5173`
+   - Login with demo accounts or register new users
 
-## 🚀 **Getting Started**
+## 🏗️ Architecture
 
-### 1️⃣ Install Dependencies
-```bash
-npm install
+### Technology Stack
+- **Framework**: React 18 with Vite
+- **Routing**: React Router v6
+- **Styling**: Bootstrap 5 + Custom CSS
+- **State Management**: React Context API
+- **HTTP Client**: Axios
+- **Icons**: Bootstrap Icons
+- **Build Tool**: Vite
+- **Package Manager**: npm/yarn
+
+### Project Structure
+```
+src/
+├── components/           # Reusable UI components
+│   ├── common/          # Generic components (Button, Modal, etc.)
+│   ├── cards/           # Card components (JobCard, ApplicationCard)
+│   └── layout/          # Layout components (Header, Sidebar)
+├── pages/               # Page components
+│   ├── auth/           # Authentication pages
+│   ├── dashboard/      # Role-based dashboards
+│   ├── jobs/           # Job management pages
+│   ├── applications/   # Application management pages
+│   ├── profile/        # User profile pages
+│   ├── admin/          # Admin management pages
+│   └── settings/       # Settings pages
+├── services/           # API service functions
+├── context/            # React Context providers
+├── routes/             # Route configuration and protection
+├── utils/              # Utility functions and helpers
+├── i18n/               # Internationalization files
+└── assets/             # Static assets (images, styles)
 ```
 
-### 2️⃣ Run Development Server
+## 🔐 Authentication & Authorization
+
+### User Roles
+- **Job Seeker**: Search jobs, apply, manage applications
+- **Recruiter**: Post jobs, manage applications, view candidates
+- **Admin**: Full system management and analytics
+
+### Authentication Flow
+1. User registers/logs in
+2. JWT token stored in localStorage
+3. Token included in API requests
+4. Role-based route protection
+5. Automatic logout on token expiration
+
+### Protected Routes
+```jsx
+// Role-based route protection
+<Route element={<RoleRoute allowedRoles={["JOB_SEEKER"]} />}>
+  <Route path="/applications" element={<MyApplications />} />
+</Route>
+
+<Route element={<RoleRoute allowedRoles={["RECRUITER"]} />}>
+  <Route path="/jobs/create" element={<CreateJob />} />
+</Route>
+
+<Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
+  <Route path="/admin/*" element={<AdminRoutes />} />
+</Route>
+```
+
+## 📱 User Interface
+
+### Authentication Pages
+
+#### Registration (`/register`)
+- **Fields**: Full Name, Username, Email, Phone, Password, Role
+- **Validation**: Real-time form validation
+- **Roles**: Job Seeker, Recruiter (Admin registration disabled for security)
+- **Features**: 
+  - Username uniqueness validation
+  - Phone number format validation
+  - Password strength requirements
+  - Role-based registration
+
+#### Login (`/login`)
+- **Fields**: Email, Password
+- **Features**: Remember me, error handling
+- **Redirects**: Role-based dashboard redirection
+
+#### Admin Login (`/admin/login`)
+- **Separate secure login** for administrators
+- **Enhanced security**: Hidden from regular users
+- **Direct access**: Must know URL to access
+
+### Dashboard Pages
+
+#### Job Seeker Dashboard (`/dashboard/jobseeker`)
+```jsx
+// Features
+- Profile completion progress
+- Recent job recommendations
+- Application status overview
+- Quick actions (search jobs, update profile)
+```
+
+#### Recruiter Dashboard (`/dashboard/recruiter`)
+```jsx
+// Features
+- Posted jobs statistics
+- Recent applications
+- Candidate pipeline overview
+- Quick actions (post job, review applications)
+```
+
+#### Admin Dashboard (`/dashboard/admin`)
+```jsx
+// Features
+- System-wide statistics
+- User management overview
+- Platform analytics
+- System health monitoring
+```
+
+### Job Management
+
+#### Job List (`/jobs`)
+```jsx
+// Features
+- Search and filter jobs
+- Pagination
+- Sort by date, salary, relevance
+- Job cards with key information
+- Apply button for job seekers
+```
+
+#### Job Details (`/jobs/:id`)
+```jsx
+// Features
+- Complete job description
+- Company information
+- Requirements and qualifications
+- Apply functionality
+- Share job option
+```
+
+#### Create Job (`/jobs/create`) - Recruiter Only
+```jsx
+// Form Fields
+- Job title and description
+- Salary range
+- Location and job type
+- Required skills
+- Company selection
+- Application deadline
+```
+
+### Application Management
+
+#### My Applications (`/applications`) - Job Seeker
+```jsx
+// Features
+- Application status tracking
+- Applied jobs list
+- Application timeline
+- Withdraw application option
+- Status filters (Applied, Shortlisted, Rejected)
+```
+
+#### Manage Applications (`/applications/manage`) - Recruiter
+```jsx
+// Features
+- Candidate applications list
+- Status update functionality
+- Candidate profile preview
+- Bulk actions
+- Application filters and search
+```
+
+### Profile Management
+
+#### Job Seeker Profile (`/profile`)
+```jsx
+// Sections
+- Basic Information (Name, Email, Username, Phone)
+- About Me
+- Education (Degree, College, Year)
+- Skills
+- Resume Upload
+- Profile Completion Progress
+```
+
+#### Recruiter Profile (`/profile`)
+```jsx
+// Sections
+- Basic Information
+- Professional Bio
+- Company Information
+- LinkedIn Profile
+- Years of Experience
+- Specialization
+```
+
+## 🌐 API Integration
+
+### Service Architecture
+```javascript
+// services/api.js - Base API configuration
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 10000,
+});
+
+// Request interceptor for auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+### Authentication Service
+```javascript
+// services/authService.js
+export const loginUser = async (email, password) => {
+  const response = await api.post('/auth/login', { email, password });
+  return response.data;
+};
+
+export const registerUser = async (userData) => {
+  const response = await api.post('/auth/register', userData);
+  return response.data;
+};
+```
+
+### Job Service
+```javascript
+// services/jobService.js
+export const getJobs = async (params) => {
+  const response = await api.get('/jobs', { params });
+  return response.data;
+};
+
+export const createJob = async (jobData) => {
+  const response = await api.post('/jobs', jobData);
+  return response.data;
+};
+
+export const getJobDetails = async (jobId) => {
+  const response = await api.get(`/jobs/${jobId}`);
+  return response.data;
+};
+```
+
+### Application Service
+```javascript
+// services/applicationService.js
+export const applyForJob = async (applicationData) => {
+  const response = await api.post('/applications/apply', applicationData);
+  return response.data;
+};
+
+export const getMyApplications = async (params) => {
+  const response = await api.get('/applications/my-applications', { params });
+  return response.data;
+};
+
+export const updateApplicationStatus = async (applicationId, status) => {
+  const response = await api.put(`/applications/${applicationId}/status`, { status });
+  return response.data;
+};
+```
+
+### Profile Service
+```javascript
+// services/userService.js
+export const getUserProfile = async () => {
+  const response = await api.get('/profile/jobseeker');
+  return response.data;
+};
+
+export const updateUserProfile = async (profileData) => {
+  const response = await api.put('/profile/jobseeker', profileData);
+  return response.data;
+};
+
+// services/recruiterProfileService.js
+export const getRecruiterProfile = async () => {
+  const response = await api.get('/profile/recruiter');
+  return response.data;
+};
+
+export const updateRecruiterProfile = async (profileData) => {
+  const response = await api.put('/profile/recruiter', profileData);
+  return response.data;
+};
+```
+
+## 🎨 Styling & Theming
+
+### Bootstrap Integration
+```css
+/* Custom Bootstrap theme */
+:root {
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+  --bs-success: #198754;
+  --bs-danger: #dc3545;
+  --bs-warning: #ffc107;
+  --bs-info: #0dcaf0;
+}
+```
+
+### Component Styling
+```jsx
+// Consistent styling patterns
+<div className="card shadow-sm border-0">
+  <div className="card-body p-4">
+    <h5 className="fw-bold mb-3">Card Title</h5>
+    <p className="text-muted">Card content</p>
+  </div>
+</div>
+```
+
+### Responsive Design
+- Mobile-first approach
+- Bootstrap grid system
+- Responsive navigation
+- Touch-friendly interfaces
+
+## 🔧 State Management
+
+### Auth Context
+```jsx
+// context/AuthContext.jsx
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+export default function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const login = async ({ email, password }) => {
+    const response = await authService.loginUser(email, password);
+    const { token, userId, roleId, fullname, email: userEmail } = response;
+    
+    const userData = {
+      id: userId,
+      email: userEmail,
+      roleId,
+      role: mapRoleIdToName(roleId),
+      fullname,
+    };
+
+    setToken(token);
+    setUser(userData);
+    authService.setStoredAuth(token, userData);
+    return userData;
+  };
+
+  const logout = () => {
+    authService.logout();
+    setToken(null);
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+### Language Context
+```jsx
+// context/LanguageContext.jsx
+const LanguageContext = createContext();
+
+export const useLanguage = () => useContext(LanguageContext);
+
+export default function LanguageProvider({ children }) {
+  const [language, setLanguage] = useState('en');
+  const [translations, setTranslations] = useState({});
+
+  const changeLanguage = (newLanguage) => {
+    setLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, translations, changeLanguage }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+```
+
+## 🛡️ Form Validation
+
+### Validation Utilities
+```javascript
+// utils/validators.js
+export const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const validatePhone = (phone) => {
+  const phoneRegex = /^[+]?[1-9]\d{1,14}$/;
+  const cleanPhone = phone.replace(/[-\s()]/g, '');
+  return phoneRegex.test(cleanPhone);
+};
+
+export const validateUsername = (username) => {
+  const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+  return usernameRegex.test(username);
+};
+
+export const getValidationErrors = (formData) => {
+  const errors = {};
+  
+  if (!validateEmail(formData.email)) {
+    errors.email = 'Please provide a valid email address';
+  }
+  
+  if (!validatePhone(formData.phone)) {
+    errors.phone = 'Please provide a valid phone number';
+  }
+  
+  return errors;
+};
+```
+
+### Form Implementation
+```jsx
+// Real-time validation example
+const [formData, setFormData] = useState({});
+const [errors, setErrors] = useState({});
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+  
+  // Clear error when user starts typing
+  if (errors[name]) {
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  }
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  const validationErrors = getValidationErrors(formData);
+  
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+  
+  // Submit form
+};
+```
+
+## 🌍 Internationalization
+
+### Language Support
+- English (en)
+- Marathi (mr)
+- Extensible for additional languages
+
+### Translation Files
+```json
+// i18n/en.json
+{
+  "nav_dashboard": "Dashboard",
+  "nav_jobs": "Jobs",
+  "nav_applications": "Applications",
+  "nav_profile": "Profile",
+  "login_title": "Welcome Back",
+  "register_title": "Create Account"
+}
+
+// i18n/mr.json
+{
+  "nav_dashboard": "डॅशबोर्ड",
+  "nav_jobs": "नोकऱ्या",
+  "nav_applications": "अर्ज",
+  "nav_profile": "प्रोफाइल",
+  "login_title": "परत स्वागत",
+  "register_title": "खाते तयार करा"
+}
+```
+
+### Usage
+```jsx
+import { useLanguage } from '../context/LanguageContext';
+
+function Component() {
+  const { t } = useLanguage();
+  
+  return (
+    <h1>{t('nav_dashboard')}</h1>
+  );
+}
+```
+
+## 🧪 Testing
+
+### Test Setup
+```bash
+npm install --save-dev @testing-library/react @testing-library/jest-dom vitest
+```
+
+### Component Testing
+```jsx
+// __tests__/Login.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Login from '../pages/auth/Login';
+
+test('renders login form', () => {
+  render(
+    <BrowserRouter>
+      <Login />
+    </BrowserRouter>
+  );
+  
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+});
+```
+
+### Run Tests
+```bash
+npm run test
+# or
+yarn test
+```
+
+## 🚀 Build & Deployment
+
+### Development Build
 ```bash
 npm run dev
 ```
 
-### 3️⃣ Build for Production
+### Production Build
 ```bash
 npm run build
 ```
 
----
-
-## 🔐 **Demo Credentials**
-
-To test different roles without registration, simply use the following email patterns (password can be anything):
-
-| Role | Email Pattern | Access |
-| :--- | :--- | :--- |
-| **Admin** | `admin@demo.com` | Manage Users, Companies, Jobs, Logs |
-| **Recruiter** | `recruiter@demo.com` | Post Jobs, View Applicants |
-| **Job Seeker** | `user@demo.com` | Apply for Jobs, Recommendations |
-
-*(Note: Any email containing "admin" becomes Admin, "recruiter" becomes Recruiter, else Job Seeker)*
-
----
-
-## 📁 **Project Structure**
-
-```
-src/
-├── assets/            # Static assets (images, fonts)
-├── components/        # Reusable UI components
-│   ├── cards/         # JobCard, ApplicationCard, etc.
-│   ├── common/        # Buttons, PageHero, Loaders
-│   └── layout/        # Navbar, Sidebar, Layout wrappers
-├── context/           # Global State (Auth, Language)
-├── hooks/             # Custom hooks (useAuth, etc.)
-├── i18n/              # Translation files (en.json, mr.json)
-├── pages/             # Route Components
-│   ├── admin/         # Admin Panel (Manage Users, Jobs, Logs)
-│   ├── applications/  # My Applications, Manage Apps
-│   ├── auth/          # Login, Register
-│   ├── dashboard/     # Role-specific Dashboards
-│   ├── jobs/          # Job Listings, Create Job, Details
-│   └── profile/       # User/Company Profiles
-├── services/          # API Service Layer
-├── routes/            # Route Definitions & Protection Logic
-└── main.jsx           # Entry Point
+### Preview Production Build
+```bash
+npm run preview
 ```
 
+### Docker Deployment
+```dockerfile
+# Dockerfile
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### Environment Variables
+```bash
+# .env.production
+VITE_API_BASE_URL=https://api.jobtracking.com
+VITE_APP_NAME=Job Tracking System
+VITE_ENVIRONMENT=production
+```
+
+## 📊 Performance Optimization
+
+### Code Splitting
+```jsx
+// Lazy loading for better performance
+const AdminDashboard = lazy(() => import('../pages/dashboard/AdminDashboard'));
+const JobList = lazy(() => import('../pages/jobs/JobList'));
+
+// Usage with Suspense
+<Suspense fallback={<Loader />}>
+  <AdminDashboard />
+</Suspense>
+```
+
+### Image Optimization
+- WebP format support
+- Lazy loading for images
+- Responsive image sizes
+
+### Bundle Optimization
+- Tree shaking enabled
+- Code splitting by routes
+- Vendor chunk separation
+
+## 🔧 Development Tools
+
+### ESLint Configuration
+```json
+// .eslintrc.json
+{
+  "extends": [
+    "eslint:recommended",
+    "@vitejs/eslint-config-react"
+  ],
+  "rules": {
+    "react/prop-types": "warn",
+    "no-unused-vars": "warn"
+  }
+}
+```
+
+### Prettier Configuration
+```json
+// .prettierrc
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2
+}
+```
+
+## 🐛 Error Handling
+
+### Global Error Boundary
+```jsx
+// components/ErrorBoundary.jsx
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback />;
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+### API Error Handling
+```javascript
+// services/api.js
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+## 📱 Responsive Design
+
+### Breakpoints
+```css
+/* Custom breakpoints */
+@media (max-width: 576px) { /* Mobile */ }
+@media (min-width: 577px) and (max-width: 768px) { /* Tablet */ }
+@media (min-width: 769px) and (max-width: 992px) { /* Desktop */ }
+@media (min-width: 993px) { /* Large Desktop */ }
+```
+
+### Mobile Navigation
+- Collapsible sidebar
+- Touch-friendly buttons
+- Swipe gestures support
+
+## 🔒 Security Features
+
+### XSS Prevention
+- Input sanitization
+- Content Security Policy
+- Safe HTML rendering
+
+### CSRF Protection
+- Token-based authentication
+- SameSite cookie attributes
+- Origin validation
+
+### Data Validation
+- Client-side validation
+- Server-side validation
+- Input sanitization
+
+## 📈 Analytics & Monitoring
+
+### User Analytics
+- Page view tracking
+- User interaction events
+- Performance metrics
+
+### Error Monitoring
+- Error logging
+- Performance monitoring
+- User feedback collection
+
+## 🤝 Contributing
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Run linting and tests
+6. Submit a pull request
+
+### Code Standards
+- Follow ESLint rules
+- Use Prettier for formatting
+- Write meaningful commit messages
+- Add JSDoc comments for functions
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 📞 Support
+
+For support and questions:
+- Create an issue on GitHub
+- Contact the development team
+- Check the documentation
+
 ---
 
-## 🌍 **Localization (i18n)**
-
-Switch languages easily using the toggle in the top-right corner.
-*   **EN**: English (Default)
-*   **FMR**: Marathi
-
-Currency is localized to **Rupees (₹)** with Lakhs formatting (e.g., `₹5L`).
-
----
-
-## 📝 **License**
-
-
----
-
-## 📂 **Detailed File Documentation**
-
-### **Contexts (`/src/context`)**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `AuthContext.jsx` | Manages global authentication state, storing current user and login/logout methods. | `useState`, `useContext`, `createContext` |
-| `LanguageContext.jsx` | Manages global language state (switches between English/Marathi) and provides translation helper `t()`. | `useState`, `useContext`, `createContext` |
-
-### **Custom Hooks**
-*(Note: Custom hooks are currently exported directly from their respective Context files)*
-| Hook | Source | Purpose |
-| :--- | :--- | :--- |
-| `useAuth` | `AuthContext.jsx` | Provides access to `user` object, `login()`, `logout()`, and `isAuthenticated` flag. |
-| `useLanguage` | `LanguageContext.jsx` | Provides access to `lang` (current language), `setLang`, and `t` (translate function). |
-
-### **Pages (`/src/pages`)**
-#### **Auth**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `Login.jsx` | Handles user login with email/password and redirects based on role. | `useState`, `useAuth`, `useNavigate` |
-| `Register.jsx` | Handles new user registration (job seeker/recruiter). | `useState`, `useNavigate` |
-
-#### **Dashboard**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `JobSeekerDashboard.jsx` | Main view for candidates; shows recommended & applied jobs. | `useState`, `useEffect`, `useLanguage` |
-| `RecruiterDashboard.jsx` | Main view for recruiters; shows posted jobs and applicant stats. | `useState`, `useEffect`, `useLanguage` |
-| `AdminDashboard.jsx` | Overview for admins; statistics on users, jobs, and system health. | `useState`, `useEffect` |
-
-#### **Jobs**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `JobList.jsx` | Displays all available jobs with Search and Category filters. | `useState`, `useEffect`, `useLanguage` |
-| `JobDetails.jsx` | Shows full details of a specific job and allows applying. | `useState`, `useEffect`, `useParams`, `useNavigate` |
-| `CreateJob.jsx` | Form for recruiters to post a new job opening. | `useState`, `useNavigate` |
-
-#### **Profile**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `UserProfile.jsx` | View and edit user personal details, skills, and resume. | `useState`, `useEffect` |
-| `CompanyProfile.jsx` | View and edit company details (for recruiters). | `useState`, `useEffect` |
-
-#### **Admin**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `ManageUsers.jsx` | Admin table to view, edit, or delete registered users. | `useState`, `useEffect` |
-| `ManageJobs.jsx` | Admin view to moderate job postings. | `useState`, `useEffect` |
-| `ViewLogs.jsx` | visual audit log of system activities. | `useState`, `useEffect` |
-
-### **Components (`/src/components`)**
-#### **Layout**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `Navbar.jsx` | Top header with Logo, Language Toggle, and User Profile menu. | `useAuth`, `useLanguage`, `useNavigate` |
-| `Sidebar.jsx` | Vertical navigation menu responsive to user role. | `useAuth`, `useLocation` |
-| `Layout.jsx` | Wrapper component that applies the standard page structure (Sidebar + Content). | `None` |
-| `ProtectedRoute.jsx` | Guard component; redirects unauthenticated users to Login. | `useAuth`, `useNavigate` |
-| `RoleRoute.jsx` | Guard component; restricts access based on user role (e.g., Admin only). | `useAuth`, `useNavigate` |
-
-#### **Common**
-| File | Purpose | Hooks Used |
-| :--- | :--- | :--- |
-| `Button.jsx`, `Input.jsx` | Reusable UI elements for consistent styling. | `None` |
-| `PageHero.jsx` | Standard page header with title and breadcrumbs. | `None` |
-| `Loader.jsx` | Loading spinner/skeleton state. | `None` |
-
-### **Services (`/src/services`)**
-*(API Layer - mocked for now)*
-| File | Purpose |
-| :--- | :--- |
-| `api.js` | Axios instance configuration (base URL, interceptors). |
-| `authService.js` | Authentication API calls (Login/Register). |
-| `jobService.js` | Operations for fetching, creating, and managing jobs. |
-| `userService.js` | Operations for user profile data. |
-| `adminService.js` | Admin-specific operations (User management, Logs). |
-
-### **Utils (`/src/utils`)**
-| File | Purpose |
-| :--- | :--- |
-| `validators.js` | Form validation helper functions (email, password strength). |
-| `helpers.js` | General utility functions (date formatting, currency). |
-| `constants.js` | App-wide constants (Roles, Job Types). |
+**Version**: 1.0.0  
+**Last Updated**: January 2024  
+**Maintainer**: Job Tracking Development Team
