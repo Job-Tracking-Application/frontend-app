@@ -6,17 +6,45 @@ export const getMyApplications = async () => {
 };
 
 export const getApplicationsForJob = async (jobId) => {
-  const response = await api.get(`/applications/job/${jobId}`);
-  return response.data;
+  try {
+    const response = await api.get(`/applications/job/${jobId}`);
+    // Handle different response types
+    if (response.status === 204) {
+      return []; // No content, return empty array
+    }
+    
+    // Check if response.data is an array
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    
+    // If it's wrapped in an ApiResponse object
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    
+    // If it's wrapped in an ApiResponse but data is null/undefined
+    if (response.data && response.data.success === false) {
+      console.error('API Error:', response.data.message);
+      return [];
+    }
+    
+    // Fallback: return empty array if data structure is unexpected
+    console.warn('Unexpected response structure:', response.data);
+    return [];
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    return []; // Return empty array on error
+  }
 };
 
 export const updateApplicationStatus = async (id, status) => {
-  const response = await api.put(`/applications/${id}/status`, { status });
+  const response = await api.patch(`/applications/manage/${id}`, { status });
   return response.data;
 };
 
 export const applyForJob = async (jobId, applicationData) => {
-  const response = await api.post(`/applications/apply/${jobId}`, applicationData);
+  const response = await api.post(`/applications/${jobId}`, applicationData);
   return response.data;
 };
 
@@ -27,5 +55,10 @@ export const getApplicationById = async (id) => {
 
 export const withdrawApplication = async (id) => {
   const response = await api.delete(`/applications/${id}`);
+  return response.data;
+};
+
+export const checkApplicationExists = async (jobId) => {
+  const response = await api.get(`/applications/check/${jobId}`);
   return response.data;
 };

@@ -1,12 +1,12 @@
 export const menuItems = {
-    jobseeker: [
+    JOB_SEEKER: [
         { label: "nav_dashboard", path: "/dashboard", icon: "bi-speedometer2" },
         { label: "nav_jobs", path: "/jobs", icon: "bi-search" },
         { label: "nav_applications", path: "/applications", icon: "bi-file-earmark-text" },
         { label: "nav_profile", path: "/profile", icon: "bi-person" },
         { label: "nav_settings", path: "/settings", icon: "bi-gear" },
     ],
-    recruiter: [
+    RECRUITER: [
         { label: "nav_dashboard", path: "/dashboard", icon: "bi-speedometer2" },
         { label: "nav_my_jobs", path: "/jobs/my-jobs", icon: "bi-briefcase" },
         { label: "nav_create_job", path: "/jobs/create", icon: "bi-plus-circle" },
@@ -14,7 +14,7 @@ export const menuItems = {
         { label: "nav_profile", path: "/profile", icon: "bi-building" },
         { label: "nav_settings", path: "/settings", icon: "bi-gear" },
     ],
-    admin: [
+    ADMIN: [
         { label: "nav_dashboard", path: "/dashboard/admin", icon: "bi-speedometer2" },
         { label: "nav_manage_users", path: "/admin/users", icon: "bi-people" },
         { label: "nav_manage_companies", path: "/admin/companies", icon: "bi-building" },

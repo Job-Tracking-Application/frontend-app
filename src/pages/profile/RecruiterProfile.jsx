@@ -4,8 +4,9 @@ import PageHero from "../../components/common/PageHero";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import "./RecruiterProfile.css";
 
-const CompanyProfile = () => {
+const RecruiterProfile = () => {
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -108,7 +109,7 @@ const CompanyProfile = () => {
   return (
     <div>
       <PageHero 
-        title={creating ? "Create Company Profile" : "Company Profile"} 
+        title={creating ? "Create Company Profile" : "Recruiter Profile"} 
         subtitle={creating ? "Set up your company's public information." : "Manage your company's public information."} 
       />
 
@@ -116,13 +117,17 @@ const CompanyProfile = () => {
         <div className="card shadow-sm border-0">
           <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
             <div className="d-flex justify-content-between align-items-center">
-              <h5 className="fw-bold mb-0">Company Information</h5>
+              <h5 className="fw-bold mb-0">
+                <i className="bi bi-building me-2 text-primary"></i>
+                Company Information
+              </h5>
               {!creating && !editing && (
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => setEditing(true)}
                 >
+                  <i className="bi bi-pencil me-2"></i>
                   Edit Profile
                 </Button>
               )}
@@ -250,4 +255,4 @@ const CompanyProfile = () => {
   );
 };
 
-export default CompanyProfile;
+export default RecruiterProfile;

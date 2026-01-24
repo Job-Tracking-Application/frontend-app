@@ -1,0 +1,72 @@
+/* Recruiter Profile Specific Styles */
+
+.recruiter-profile {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.company-profile-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.company-profile-card .card-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.verification-badge {
+  transition: all 0.2s ease;
+}
+
+.verification-badge:hover {
+  transform: scale(1.05);
+}
+
+.company-info-card {
+  transition: all 0.3s ease;
+}
+
+.company-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.company-website-link {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.company-website-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Form styling */
+.company-form .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.company-form .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.company-form .btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .company-header {
+    text-align: center;
+  }
+  
+  .company-actions {
+    justify-content: center !important;
+    margin-top: 1rem;
+  }
+}

@@ -132,7 +132,7 @@ export default function RecruiterDashboard() {
                             </div>
                             <div className="col-md-3">
                                 <Link to="/applications/manage" className="btn btn-outline-dark w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-people me-2"></i> Manage Candidates
+                                    <i className="bi bi-people me-2"></i> Manage Applications
                                 </Link>
                             </div>
                             <div className="col-md-3">

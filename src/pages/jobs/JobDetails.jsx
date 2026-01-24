@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getJobById, deleteJob } from "../../services/jobService";
+import { applyForJob } from "../../services/applicationService";
+import { useAuth } from "../../context/AuthContext";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -8,11 +10,17 @@ import ConfirmationModal from "../../components/common/ConfirmationModal";
 export default function JobDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [applying, setApplying] = useState(false);
+
+    const isRecruiter = user?.role === 'RECRUITER';
+    const isJobSeeker = user?.role === 'JOB_SEEKER';
+    const isOwner = isRecruiter && job?.recruiterUserId === user?.id;
 
     useEffect(() => {
         if (id) {
@@ -50,6 +58,11 @@ export default function JobDetails() {
         }
     };
 
+    const handleApply = () => {
+        // Redirect to application form instead of direct apply
+        navigate(`/jobs/${id}/apply`);
+    };
+
     const formatSalary = (min, max) => {
         if (!min && !max) return "Salary not specified";
         if (!max) return `₹${min?.toLocaleString()}+`;
@@ -82,9 +95,15 @@ export default function JobDetails() {
                 <div className="alert alert-danger" role="alert">
                     <h4 className="alert-heading">Error Loading Job</h4>
                     <p>{error || "Job not found"}</p>
-                    <Link to="/jobs/my-jobs" className="btn btn-outline-danger">
-                        Back to My Jobs
-                    </Link>
+                    {isRecruiter ? (
+                        <Link to="/jobs/my-jobs" className="btn btn-outline-danger">
+                            Back to My Jobs
+                        </Link>
+                    ) : (
+                        <Link to="/jobs" className="btn btn-outline-danger">
+                            Back to Jobs
+                        </Link>
+                    )}
                 </div>
             </div>
         );
@@ -174,24 +193,56 @@ export default function JobDetails() {
                             </div>
 
                             <div className="d-flex gap-3">
-                                <Link to="/jobs/my-jobs" className="btn btn-outline-secondary">
-                                    <i className="fas fa-arrow-left me-2"></i>
-                                    Back to My Jobs
-                                </Link>
-                                <Link 
-                                    to={`/jobs/edit/${job.id}`} 
-                                    className="btn btn-outline-primary"
-                                >
-                                    <i className="fas fa-edit me-2"></i>
-                                    Edit Job
-                                </Link>
-                                <button 
-                                    className="btn btn-outline-danger"
-                                    onClick={() => setShowDeleteModal(true)}
-                                >
-                                    <i className="fas fa-trash me-2"></i>
-                                    Delete Job
-                                </button>
+                                {/* Back button - different for each role */}
+                                {isRecruiter ? (
+                                    <Link to="/jobs/my-jobs" className="btn btn-outline-secondary">
+                                        <i className="fas fa-arrow-left me-2"></i>
+                                        Back to My Jobs
+                                    </Link>
+                                ) : (
+                                    <Link to="/jobs" className="btn btn-outline-secondary">
+                                        <i className="fas fa-arrow-left me-2"></i>
+                                        Back to Jobs
+                                    </Link>
+                                )}
+
+                                {/* Role-specific action buttons */}
+                                {isJobSeeker && (
+                                    <button 
+                                        className="btn btn-primary"
+                                        onClick={handleApply}
+                                        disabled={applying}
+                                    >
+                                        <i className="fas fa-paper-plane me-2"></i>
+                                        Apply for Job
+                                    </button>
+                                )}
+
+                                {isOwner && (
+                                    <>
+                                        <Link 
+                                            to={`/jobs/edit/${job.id}`} 
+                                            className="btn btn-outline-primary"
+                                        >
+                                            <i className="fas fa-edit me-2"></i>
+                                            Edit Job
+                                        </Link>
+                                        <button 
+                                            className="btn btn-outline-danger"
+                                            onClick={() => setShowDeleteModal(true)}
+                                        >
+                                            <i className="fas fa-trash me-2"></i>
+                                            Delete Job
+                                        </button>
+                                    </>
+                                )}
+
+                                {isRecruiter && !isOwner && (
+                                    <div className="text-muted fst-italic">
+                                        <i className="fas fa-info-circle me-2"></i>
+                                        You can only edit jobs you created
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

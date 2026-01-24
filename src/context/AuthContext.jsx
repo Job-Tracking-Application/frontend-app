@@ -27,16 +27,17 @@ export default function AuthProvider({ children }) {
     const login = async ({ email, password }) => {
         try {
             const response = await authService.loginUser(email, password);
-            const { token, userId, roleId } = response;
+            const { token, userId, roleId, fullname, email: userEmail } = response;
 
             // Map roleId to role name
             const role = mapRoleIdToName(roleId);
 
             const userData = {
                 id: userId,
-                email,
+                email: userEmail || email,
                 roleId,
                 role,
+                fullname,
             };
 
             // Store token and user
@@ -59,17 +60,17 @@ export default function AuthProvider({ children }) {
 
     const isAuthenticated = !!user && !!token;
 
-    // Map roleId to role name
+    // Map roleId to role name (must match backend RoleMapper)
     const mapRoleIdToName = (roleId) => {
         switch (roleId) {
             case 1:
-                return "admin";
+                return "ADMIN";
             case 2:
-                return "recruiter";
+                return "RECRUITER";
             case 3:
-                return "jobseeker";
+                return "JOB_SEEKER";
             default:
-                return "jobseeker";
+                return "JOB_SEEKER";
         }
     };
 

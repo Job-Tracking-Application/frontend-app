@@ -28,15 +28,16 @@ import MyJobs from "../pages/jobs/MyJobs";
 
 import MyApplications from "../pages/applications/MyApplications";
 import ManageApplications from "../pages/applications/ManageApplications";
+import ApplyJob from "../pages/applications/ApplyJob";
 import AdminManageApplications from "../pages/admin/ManageApplications";
-import UserProfile from "../pages/profile/UserProfile";
-import CompanyProfile from "../pages/profile/CompanyProfile";
+import JobSeekerProfile from "../pages/profile/JobSeekerProfile";
+import RecruiterProfile from "../pages/profile/RecruiterProfile";
 
 const DashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
-  if (user.role === 'recruiter') return <Navigate to="/dashboard/recruiter" replace />;
+  if (user.role === 'ADMIN') return <Navigate to="/dashboard/admin" replace />;
+  if (user.role === 'RECRUITER') return <Navigate to="/dashboard/recruiter" replace />;
   // Default to jobseeker
   return <Navigate to="/dashboard/jobseeker" replace />;
 };
@@ -53,7 +54,7 @@ export default function AppRoutes() {
         <Route element={<Layout />}>
 
           {/* Dashboard - visible to all, redirects based on role or shows default */}
-          <Route path="/dashboard" element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
+          <Route path="/dashboard" element={<RoleRoute allowedRoles={["JOB_SEEKER", "RECRUITER", "ADMIN"]} />}>
             {/* Dashboard Redirect Logic */}
             <Route index element={<DashboardRedirect />} />
             <Route path="default" element={<div className="p-4">Select your dashboard from menu.</div>} />
@@ -62,11 +63,14 @@ export default function AppRoutes() {
           </Route>
 
           {/* Job Routes */}
-          <Route element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
+          <Route element={<RoleRoute allowedRoles={["JOB_SEEKER", "RECRUITER", "ADMIN"]} />}>
             <Route path="/jobs" element={<JobList />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
           </Route>
-          <Route element={<RoleRoute allowedRoles={["recruiter"]} />}>
+          <Route element={<RoleRoute allowedRoles={["JOB_SEEKER"]} />}>
+            <Route path="/jobs/:id/apply" element={<ApplyJob />} />
+          </Route>
+          <Route element={<RoleRoute allowedRoles={["RECRUITER"]} />}>
             <Route path="/jobs/create" element={<CreateJob />} />
             <Route path="/jobs/edit/:id" element={<EditJob />} />
             <Route path="/jobs/my-jobs" element={<MyJobs />} />
@@ -74,15 +78,15 @@ export default function AppRoutes() {
           </Route>
 
           {/* Applications & Profile */}
-          <Route element={<RoleRoute allowedRoles={["jobseeker", "recruiter", "admin"]} />}>
-            <Route path="/profile" element={user?.role === 'recruiter' ? <CompanyProfile /> : <UserProfile />} />
+          <Route element={<RoleRoute allowedRoles={["JOB_SEEKER", "RECRUITER", "ADMIN"]} />}>
+            <Route path="/profile" element={user?.role === 'RECRUITER' ? <RecruiterProfile /> : <JobSeekerProfile />} />
           </Route>
-          <Route element={<RoleRoute allowedRoles={["jobseeker"]} />}>
+          <Route element={<RoleRoute allowedRoles={["JOB_SEEKER"]} />}>
             <Route path="/applications" element={<MyApplications />} />
           </Route>
 
           {/* Admin Routes */}
-          <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+          <Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
             <Route path="/dashboard/admin/" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/companies" element={<ManageCompanies />} />
