@@ -25,7 +25,7 @@ const UserProfile = () => {
 
   /* ================= LOAD PROFILE ================= */
   useEffect(() => {
-    async function loadUser() {
+    const loadUser = async () => {
       const data = await getUserProfile();
 
       setUser(data);
@@ -44,12 +44,14 @@ const UserProfile = () => {
           year: "",
         },
       });
-    }
+    };
 
     loadUser();
   }, []);
 
-  if (!user) return <div className="text-center mt-4">Loading...</div>;
+  if (!user) {
+    return <div className="text-center mt-4">Loading...</div>;
+  }
 
   const toggleEdit = () => setIsEditing(!isEditing);
 
@@ -62,7 +64,7 @@ const UserProfile = () => {
   const handleSkillsChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      skills: e.target.value.split(",").map((s) => s.trim()),
+      skills: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
     }));
   };
 
@@ -90,12 +92,23 @@ const UserProfile = () => {
 
     const payload = {
       ...formData,
+      education: {
+        ...formData.education,
+        year: Number(formData.education.year) || null,
+      },
       resume: formData.resume ? formData.resume.name : user.resume,
     };
 
     await updateUserProfile(payload);
 
-    setUser(payload);
+    // reload from backend to stay in sync
+    const fresh = await getUserProfile();
+    setUser(fresh);
+    setFormData({
+      ...fresh,
+      resume: null,
+    });
+
     setIsEditing(false);
     setSaving(false);
   };
@@ -103,7 +116,10 @@ const UserProfile = () => {
   /* ================= UI ================= */
   return (
     <div>
-      <PageHero title="My Profile" subtitle="Manage your personal information and resume." />
+      <PageHero
+        title="My Profile"
+        subtitle="Manage your personal information and resume."
+      />
 
       <div className="container pb-5">
         <div className="d-flex justify-content-end mb-4">
@@ -131,7 +147,7 @@ const UserProfile = () => {
         </div>
 
         <div className="row g-4">
-          {/* ================= LEFT ================= */}
+          {/* LEFT */}
           <div className="col-lg-8">
             {/* BASIC INFO */}
             <div className="card shadow-sm border-0 mb-4">
@@ -150,9 +166,10 @@ const UserProfile = () => {
                           value={formData[field]}
                           onChange={handleChange}
                           className="form-control"
+                          type={field === "phone" ? "tel" : "text"}
                         />
                       ) : (
-                        <p className="fw-medium">{user[field]}</p>
+                        <p className="fw-medium">{user[field] || "Not provided"}</p>
                       )}
                     </div>
                   ))}
@@ -173,7 +190,9 @@ const UserProfile = () => {
                     className="form-control"
                   />
                 ) : (
-                  <p className="text-secondary">{user.about || "No description provided."}</p>
+                  <p className="text-secondary">
+                    {user.about || "No description provided."}
+                  </p>
                 )}
               </div>
             </div>
@@ -220,7 +239,7 @@ const UserProfile = () => {
             </div>
           </div>
 
-          {/* ================= RIGHT ================= */}
+          {/* RIGHT */}
           <div className="col-lg-4">
             {/* SKILLS */}
             <div className="card shadow-sm border-0 mb-4">
@@ -235,13 +254,18 @@ const UserProfile = () => {
                   />
                 ) : (
                   <div className="d-flex flex-wrap gap-2">
-                    {user.skills?.length
-                      ? user.skills.map((s, i) => (
-                        <span key={i} className="badge bg-light text-dark border">
+                    {user.skills?.length ? (
+                      user.skills.map((s, i) => (
+                        <span
+                          key={i}
+                          className="badge bg-light text-dark border"
+                        >
                           {s}
                         </span>
                       ))
-                      : <span className="text-muted small">No skills</span>}
+                    ) : (
+                      <span className="text-muted small">No skills</span>
+                    )}
                   </div>
                 )}
               </div>
@@ -252,7 +276,11 @@ const UserProfile = () => {
               <div className="card-body p-4">
                 <h5 className="fw-bold mb-3">Resume</h5>
                 {isEditing ? (
-                  <input type="file" className="form-control" onChange={handleFileChange} />
+                  <input
+                    type="file"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
                 ) : (
                   <div className="p-3 bg-light rounded text-center">
                     {user.resume || "No resume uploaded"}
