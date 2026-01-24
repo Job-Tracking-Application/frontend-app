@@ -17,6 +17,7 @@ const JobSeekerProfile = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phone: "",
     skills: [],
     resume: "",
     about: "",
@@ -45,6 +46,7 @@ const JobSeekerProfile = () => {
       setFormData({
         fullName: data.fullName || "",
         email: data.email || "",
+        phone: data.phone || "",
         skills: data.skills || [],
         resume: data.resume || "",
         about: data.about || "",
@@ -65,6 +67,7 @@ const JobSeekerProfile = () => {
     const fields = [
       profile.fullName,
       profile.email,
+      profile.phone,
       profile.about,
       profile.education, // This is now an EducationDTO object or null
       profile.resume,
@@ -114,6 +117,7 @@ const JobSeekerProfile = () => {
       const updateData = {
         fullName: formData.fullName,
         email: formData.email,
+        phone: formData.phone,
         skills: formData.skills,
         resume: formData.resume,
         about: formData.about,
@@ -257,6 +261,21 @@ const JobSeekerProfile = () => {
                       />
                     ) : (
                       <p className="fw-medium">{profile.email || "Not provided"}</p>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label text-muted small fw-bold">Phone</label>
+                    {isEditing ? (
+                      <input 
+                        name="phone" 
+                        type="tel"
+                        value={formData.phone} 
+                        onChange={handleChange} 
+                        className="form-control"
+                        placeholder="Enter your phone number"
+                      />
+                    ) : (
+                      <p className="fw-medium">{profile.phone || "Not provided"}</p>
                     )}
                   </div>
                   <div className="col-md-6">
