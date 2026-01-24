@@ -25,15 +25,12 @@ export const getApplicationsForJob = async (jobId) => {
     
     // If it's wrapped in an ApiResponse but data is null/undefined
     if (response.data && response.data.success === false) {
-      console.error('API Error:', response.data.message);
       return [];
     }
     
     // Fallback: return empty array if data structure is unexpected
-    console.warn('Unexpected response structure:', response.data);
     return [];
   } catch (error) {
-    console.error('Error fetching applications:', error);
     return []; // Return empty array on error
   }
 };

@@ -13,7 +13,6 @@ export default function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log({ fullname, email, password, role });
         login({ email, password, role });
         navigate('/dashboard');
     };

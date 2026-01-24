@@ -20,9 +20,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token might be expired or invalid
-      console.error("Authentication failed - token might be expired");
-      // Don't automatically logout here, let the component handle it
+      // Token might be expired or invalid - handled by components
     }
     return Promise.reject(error);
   }

@@ -52,11 +52,11 @@ export default function ApplyJob() {
                 setAlreadyApplied(checkResponse.hasApplied);
                 
                 if (checkResponse.hasApplied) {
-                    console.log("User has already applied for this job");
+                    // User has already applied for this job
                 }
             } catch (appError) {
-                console.log("Could not check existing applications:", appError);
-                // Continue anyway - backend will handle duplicate check
+                // Could not check existing applications - continue anyway
+                // Backend will handle duplicate check
             }
         } catch (error) {
             console.error("Error loading job:", error);

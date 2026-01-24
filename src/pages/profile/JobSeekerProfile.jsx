@@ -17,7 +17,6 @@ const JobSeekerProfile = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    userName: "",
     skills: [],
     resume: "",
     about: "",
@@ -34,16 +33,22 @@ const JobSeekerProfile = () => {
       setLoading(true);
       setError(null);
       const data = await getUserProfile();
+      
       setProfile(data);
+
+      const educationString = data.education 
+        ? (typeof data.education === 'string' 
+            ? data.education 
+            : `${data.education.degree} from ${data.education.college} (${data.education.year})`)
+        : "";
 
       setFormData({
         fullName: data.fullName || "",
         email: data.email || "",
-        userName: data.userName || "",
         skills: data.skills || [],
         resume: data.resume || "",
         about: data.about || "",
-        education: data.education || "",
+        education: educationString,
       });
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -60,14 +65,19 @@ const JobSeekerProfile = () => {
     const fields = [
       profile.fullName,
       profile.email,
-      profile.userName,
       profile.about,
-      profile.education,
+      profile.education, // This is now an EducationDTO object or null
       profile.resume,
       profile.skills && profile.skills.length > 0
     ];
     
-    const completedFields = fields.filter(field => field && field !== "").length;
+    const completedFields = fields.filter(field => {
+      if (field === null || field === undefined) return false;
+      if (typeof field === 'string') return field.trim() !== "";
+      if (typeof field === 'boolean') return field;
+      if (typeof field === 'object') return true; // EducationDTO object exists
+      return false;
+    }).length;
     return Math.round((completedFields / fields.length) * 100);
   };
 
@@ -104,7 +114,6 @@ const JobSeekerProfile = () => {
       const updateData = {
         fullName: formData.fullName,
         email: formData.email,
-        userName: formData.userName,
         skills: formData.skills,
         resume: formData.resume,
         about: formData.about,
@@ -124,6 +133,8 @@ const JobSeekerProfile = () => {
       setSaving(false);
     }
   };
+
+
 
   if (loading) return <Loader />;
 
@@ -249,20 +260,6 @@ const JobSeekerProfile = () => {
                     )}
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Username</label>
-                    {isEditing ? (
-                      <input 
-                        name="userName" 
-                        value={formData.userName} 
-                        onChange={handleChange} 
-                        className="form-control"
-                        placeholder="Enter your username"
-                      />
-                    ) : (
-                      <p className="fw-medium">{profile.userName || "Not provided"}</p>
-                    )}
-                  </div>
-                  <div className="col-md-6">
                     <label className="form-label text-muted small fw-bold">Role</label>
                     <p className="fw-medium">
                       <span className="badge bg-primary">Job Seeker</span>
@@ -315,9 +312,16 @@ const JobSeekerProfile = () => {
                     placeholder="Enter your educational background..."
                   />
                 ) : (
-                  <p className="text-secondary">
-                    {profile.education || "No education details provided."}
-                  </p>
+                  <div>
+                    <p className="text-secondary">
+                      {profile.education 
+                        ? (typeof profile.education === 'string' 
+                            ? profile.education 
+                            : `${profile.education.degree} from ${profile.education.college} (${profile.education.year})`)
+                        : "No education details provided."
+                      }
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -384,17 +388,24 @@ const JobSeekerProfile = () => {
                     </small>
                   </div>
                 ) : (
-                  <div className="d-flex flex-wrap gap-2">
-                    {profile.skills && profile.skills.length > 0 ? 
-                      profile.skills.map((skill, i) => (
-                        <span key={i} className="badge bg-light text-dark border">
-                          {skill}
+                  <div>
+                    <div className="d-flex flex-wrap gap-2 mb-3">
+                      {profile.skills && profile.skills.length > 0 ? 
+                        profile.skills.map((skill, i) => (
+                          <span key={i} className="badge bg-light text-dark border">
+                            {skill}
+                          </span>
+                        )) : 
+                        <span className="text-muted small">
+                          No skills listed. Add your technical skills to attract recruiters.
                         </span>
-                      )) : 
+                      }
+                    </div>
+                    {(!profile.skills || profile.skills.length === 0) && (
                       <span className="text-muted small">
                         No skills listed. Add your technical skills to attract recruiters.
                       </span>
-                    }
+                    )}
                   </div>
                 )}
               </div>

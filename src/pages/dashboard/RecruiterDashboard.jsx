@@ -29,7 +29,6 @@ export default function RecruiterDashboard() {
                 setStats(response.data);
             } catch (statsError) {
                 // Fallback: Calculate stats from jobs endpoint
-                console.log("Stats endpoint not available, calculating from jobs...");
                 const jobsResponse = await getJobs();
                 const jobs = jobsResponse.data || [];
                 
@@ -149,31 +148,6 @@ export default function RecruiterDashboard() {
                                     <i className="bi bi-arrow-clockwise me-2"></i> 
                                     {loading ? "Refreshing..." : "Refresh Stats"}
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="col-12 mt-4">
-                        <div className="card shadow-sm">
-                            <div className="card-header bg-light">
-                                <h5 className="mb-0">Recent Activity</h5>
-                            </div>
-                            <div className="card-body">
-                                {loading ? (
-                                    <div className="text-center py-3">
-                                        <div className="spinner-border text-primary" role="status">
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p className="mt-2 text-muted">Loading recent activity...</p>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-4 text-muted">
-                                        <i className="bi bi-clock-history fs-1 mb-3 d-block"></i>
-                                        <p>Recent activity will appear here once backend endpoints are available.</p>
-                                        <small>Connect to backend to see job applications, candidate updates, and more.</small>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>

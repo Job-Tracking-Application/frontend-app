@@ -95,33 +95,6 @@ export default function JobSeekerDashboard() {
                     </div>
                 ) : (
                     <>
-                        {/* Recent Activity Section */}
-                        <section className="mb-5">
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="fw-bold"><i className="bi bi-clock-history me-2 text-primary"></i>{t('recent_activity')}</h4>
-                                <Link to="/applications" className="text-decoration-none fw-medium">{t('view_all')}</Link>
-                            </div>
-                            <div className="row g-3">
-                                {appliedJobs.slice(0, 3).map((app) => (
-                                    <div key={app.id} className="col-md-4">
-                                        <div className="card shadow-sm border-0 h-100">
-                                            <div className="card-body d-flex align-items-center justify-content-between">
-                                                <div>
-                                                    <h6 className="fw-bold mb-1">{app.jobTitle}</h6>
-                                                    <small className="text-muted">{app.company}</small>
-                                                </div>
-                                                <span className={`badge rounded-pill ${app.status === 'Selected' ? 'bg-success' :
-                                                    app.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary'
-                                                    }`}>
-                                                    {app.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
                         {/* Recommended Jobs Section */}
                         <section className="mb-5">
                             <div className="d-flex align-items-center mb-3">

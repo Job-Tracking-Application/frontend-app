@@ -53,7 +53,6 @@ const ManageApplications = () => {
       if (Array.isArray(data)) {
         setApplications(data);
       } else {
-        console.warn('Expected array but got:', data);
         setApplications([]);
       }
     } catch (error) {
