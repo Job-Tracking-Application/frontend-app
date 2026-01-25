@@ -6,6 +6,7 @@ import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { getRoleName, getRoleOptions } from "../../utils/roleMap";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import UserType from "../../components/common/UserType";
 
 const ManageUsers = () => {
   const { t } = useTranslation();
@@ -173,9 +174,9 @@ const ManageUsers = () => {
                           </div>
                         ) : (
                           <div className="d-flex justify-content-between align-items-center">
-                            <span>{getRoleName(parseInt(u.role))}</span>
+                            <UserType role={parseInt(u.role)} />
                             <button
-                              className="btn btn-sm btn-outline-primary"
+                              className="btn btn-sm btn-outline-primary ms-2"
                               onClick={() => {
                                 setEditingRoleId(u.id);
                                 setSelectedRole(parseInt(u.role));
@@ -298,7 +299,7 @@ const ManageUsers = () => {
                         <div className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
                           <span className="text-muted small">{t("Role")}:</span>
                           <div className="d-flex align-items-center gap-2">
-                            <strong>{getRoleName(parseInt(u.role))}</strong>
+                            <UserType role={parseInt(u.role)} />
                             <button
                               className="btn btn-sm btn-outline-primary"
                               onClick={() => {
