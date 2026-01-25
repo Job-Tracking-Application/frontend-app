@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useLanguage } from "../../context/useLanguage";
+import { getInitials } from "../../utils/helpers";
 
 import { useTranslation } from "react-i18next";
 import { menuItems } from "../../utils/menuItems";
@@ -82,7 +83,7 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
                   className="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold"
                   style={{ width: "32px", height: "32px" }}
                 >
-                  {user.fullname?.charAt(0).toUpperCase() || "U"}
+                  {getInitials(user.fullname || user.email)}
                 </div>
                 <span className="d-none d-sm-inline">
                   {user.fullname || user.email}

@@ -2,17 +2,19 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getJobs } from "../../services/jobService";
 import { useAuth } from "../../context/useAuth";
+import { useLanguage } from "../../context/useLanguage";
 import { showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
 
 export default function JobList() {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const [jobs, setJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Search and filter states
     const [searchTerm, setSearchTerm] = useState("");
     const [locationFilter, setLocationFilter] = useState("");
@@ -42,8 +44,8 @@ export default function JobList() {
             setFilteredJobs(jobsData);
         } catch (error) {
             console.error("Error loading jobs:", error);
-            setError("Failed to load jobs");
-            showErrorToast("Failed to load jobs. Please try again.");
+            setError(t("error_loading_jobs"));
+            showErrorToast(t("load_jobs_error_retry"));
         } finally {
             setLoading(false);
         }
@@ -52,27 +54,29 @@ export default function JobList() {
     const filterJobs = () => {
         let filtered = jobs.filter(job => {
             // Search term filter (title, description, location)
-            const matchesSearch = !searchTerm || 
+            const matchesSearch = !searchTerm ||
                 job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 job.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 job.location?.toLowerCase().includes(searchTerm.toLowerCase());
 
             // Location filter
-            const matchesLocation = !locationFilter || 
+            const matchesLocation = !locationFilter ||
                 job.location?.toLowerCase().includes(locationFilter.toLowerCase());
 
             // Job type filter
-            const matchesJobType = !jobTypeFilter || 
+            const matchesJobType = !jobTypeFilter ||
                 job.jobType?.toLowerCase() === jobTypeFilter.toLowerCase();
 
-            // Salary range filter
+            // Salary range filter (Annual salary – IT market)
             const matchesSalary = !salaryRangeFilter || (() => {
                 const jobMaxSalary = job.maxSalary || job.minSalary || 0;
-                switch(salaryRangeFilter) {
-                    case "0-50000": return jobMaxSalary <= 50000;
-                    case "50000-100000": return jobMaxSalary >= 50000 && jobMaxSalary <= 100000;
-                    case "100000-150000": return jobMaxSalary >= 100000 && jobMaxSalary <= 150000;
-                    case "150000+": return jobMaxSalary >= 150000;
+
+                switch (salaryRangeFilter) {
+                    case "0-300000": return jobMaxSalary <= 300000;              // 0–3 LPA
+                    case "300000-600000": return jobMaxSalary > 300000 && jobMaxSalary <= 600000; // 3–6 LPA
+                    case "600000-1000000": return jobMaxSalary > 600000 && jobMaxSalary <= 1000000; // 6–10 LPA
+                    case "1000000-2000000": return jobMaxSalary > 1000000 && jobMaxSalary <= 2000000; // 10–20 LPA
+                    case "2000000+": return jobMaxSalary > 2000000;             // 20+ LPA
                     default: return true;
                 }
             })();
@@ -80,7 +84,7 @@ export default function JobList() {
             // Experience filter
             const matchesExperience = !experienceFilter || (() => {
                 const jobMaxExp = job.maxExperience || job.minExperience || 0;
-                switch(experienceFilter) {
+                switch (experienceFilter) {
                     case "0-2": return jobMaxExp <= 2;
                     case "3-5": return jobMaxExp >= 3 && jobMaxExp <= 5;
                     case "6-10": return jobMaxExp >= 6 && jobMaxExp <= 10;
@@ -94,7 +98,7 @@ export default function JobList() {
 
         // Sort the filtered results
         filtered.sort((a, b) => {
-            switch(sortBy) {
+            switch (sortBy) {
                 case "oldest":
                     return new Date(a.postedAt) - new Date(b.postedAt);
                 case "salary-high":
@@ -129,18 +133,18 @@ export default function JobList() {
     };
 
     const formatSalary = (min, max) => {
-        if (!min && !max) return "Salary not specified";
+        if (!min && !max) return t("salary_not_specified");
         if (!max) return `₹${min?.toLocaleString()}+`;
-        if (!min) return `Up to ₹${max?.toLocaleString()}`;
+        if (!min) return `${t("upto")} ₹${max?.toLocaleString()}`;
         return `₹${min?.toLocaleString()} - ₹${max?.toLocaleString()}`;
     };
 
     const formatExperience = (min, max) => {
-        if (!min && !max) return "Experience not specified";
-        if (!max) return `${min}+ years`;
-        if (!min) return `Up to ${max} years`;
-        if (min === max) return `${min} years`;
-        return `${min} - ${max} years`;
+        if (!min && !max) return t("experience_not_specified");
+        if (!max) return `${min}+ ${t("years")}`;
+        if (!min) return `${t("upto")} ${max} ${t("years")}`;
+        if (min === max) return `${min} ${t("years")}`;
+        return `${min} - ${max} ${t("years")}`;
     };
 
     const formatDate = (dateString) => {
@@ -154,10 +158,10 @@ export default function JobList() {
         return (
             <div className="container py-5">
                 <div className="alert alert-danger" role="alert">
-                    <h4 className="alert-heading">Error Loading Jobs</h4>
+                    <h4 className="alert-heading">{t("error_loading_job")}</h4>
                     <p>{error}</p>
                     <button className="btn btn-outline-danger" onClick={loadJobs}>
-                        Try Again
+                        {t("try_again")}
                     </button>
                 </div>
             </div>
@@ -167,10 +171,10 @@ export default function JobList() {
     return (
         <div className="container py-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Available Jobs</h2>
+                <h2>{t("latest_openings")}</h2>
                 {isRecruiter && (
                     <Link to="/jobs/create" className="btn btn-primary">
-                        Post New Job
+                        {t("post_new_job")}
                     </Link>
                 )}
             </div>
@@ -181,9 +185,9 @@ export default function JobList() {
                     <div className="card-body">
                         <h5 className="card-title mb-3">
                             <i className="bi bi-search me-2"></i>
-                            Search & Filter Jobs
+                            {t("search_filter")}
                         </h5>
-                        
+
                         {/* Search Bar */}
                         <div className="row mb-3">
                             <div className="col-md-6">
@@ -194,31 +198,31 @@ export default function JobList() {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="Search by job title, description, or location..."
+                                        placeholder={t("search_placeholder")}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
                                 </div>
                             </div>
                             <div className="col-md-3">
-                                <select 
+                                <select
                                     className="form-select"
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
                                 >
-                                    <option value="newest">Newest First</option>
-                                    <option value="oldest">Oldest First</option>
-                                    <option value="salary-high">Salary: High to Low</option>
-                                    <option value="salary-low">Salary: Low to High</option>
+                                    <option value="newest">{t("newest_first")}</option>
+                                    <option value="oldest">{t("oldest_first")}</option>
+                                    <option value="salary-high">{t("salary_high_to_low")}</option>
+                                    <option value="salary-low">{t("salary_low_to_high")}</option>
                                 </select>
                             </div>
                             <div className="col-md-3">
-                                <button 
+                                <button
                                     className="btn btn-outline-secondary w-100"
                                     onClick={clearFilters}
                                 >
                                     <i className="bi bi-x-circle me-2"></i>
-                                    Clear All
+                                    {t("clear_all")}
                                 </button>
                             </div>
                         </div>
@@ -226,53 +230,55 @@ export default function JobList() {
                         {/* Filter Options */}
                         <div className="row">
                             <div className="col-md-3 mb-2">
-                                <select 
+                                <select
                                     className="form-select"
                                     value={locationFilter}
                                     onChange={(e) => setLocationFilter(e.target.value)}
                                 >
-                                    <option value="">All Locations</option>
+                                    <option value="">{t("all_locations")}</option>
                                     {getUniqueLocations().map(location => (
                                         <option key={location} value={location}>{location}</option>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-3 mb-2">
-                                <select 
+                                <select
                                     className="form-select"
                                     value={jobTypeFilter}
                                     onChange={(e) => setJobTypeFilter(e.target.value)}
                                 >
-                                    <option value="">All Job Types</option>
+                                    <option value="">{t("all_job_types")}</option>
                                     {getUniqueJobTypes().map(type => (
                                         <option key={type} value={type}>{type}</option>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-3 mb-2">
-                                <select 
+                                <select
                                     className="form-select"
                                     value={salaryRangeFilter}
                                     onChange={(e) => setSalaryRangeFilter(e.target.value)}
                                 >
-                                    <option value="">All Salaries</option>
-                                    <option value="0-50000">₹0 - ₹50,000</option>
-                                    <option value="50000-100000">₹50,000 - ₹1,00,000</option>
-                                    <option value="100000-150000">₹1,00,000 - ₹1,50,000</option>
-                                    <option value="150000+">₹1,50,000+</option>
+                                    <option value="">{t("all_salaries")}</option>
+                                    <option value="0-300000">₹0 – ₹3 LPA</option>
+                                    <option value="300000-600000">₹3 – ₹6 LPA</option>
+                                    <option value="600000-1000000">₹6 – ₹10 LPA</option>
+                                    <option value="1000000-2000000">₹10 – ₹20 LPA</option>
+                                    <option value="2000000+">₹20 LPA+</option>
+
                                 </select>
                             </div>
                             <div className="col-md-3 mb-2">
-                                <select 
+                                <select
                                     className="form-select"
                                     value={experienceFilter}
                                     onChange={(e) => setExperienceFilter(e.target.value)}
                                 >
-                                    <option value="">All Experience</option>
-                                    <option value="0-2">0-2 years</option>
-                                    <option value="3-5">3-5 years</option>
-                                    <option value="6-10">6-10 years</option>
-                                    <option value="10+">10+ years</option>
+                                    <option value="">{t("all_experience")}</option>
+                                    <option value="0-2">0-2 {t("years")}</option>
+                                    <option value="3-5">3-5 {t("years")}</option>
+                                    <option value="6-10">6-10 {t("years")}</option>
+                                    <option value="10+">10+ {t("years")}</option>
                                 </select>
                             </div>
                         </div>
@@ -280,9 +286,9 @@ export default function JobList() {
                         {/* Results Count */}
                         <div className="mt-3 text-muted">
                             <small>
-                                Showing {filteredJobs.length} of {jobs.length} jobs
-                                {(searchTerm || locationFilter || jobTypeFilter || salaryRangeFilter || experienceFilter) && 
-                                    " (filtered)"
+                                {t("showing_jobs", { count: filteredJobs.length, total: jobs.length })}
+                                {(searchTerm || locationFilter || jobTypeFilter || salaryRangeFilter || experienceFilter) &&
+                                    ` ${t("filtered")}`
                                 }
                             </small>
                         </div>
@@ -292,18 +298,18 @@ export default function JobList() {
 
             {filteredJobs.length === 0 ? (
                 isRecruiter ? (
-                    <EmptyState 
-                        title="No Jobs Posted"
-                        message="You haven't posted any jobs yet. Be the first to post a job!"
-                        actionText="Post Job"
+                    <EmptyState
+                        title={t("no_jobs_posted_title")}
+                        message={t("no_jobs_posted_msg")}
+                        actionText={t("post_job_action")}
                         actionLink="/jobs/create"
                     />
                 ) : (
-                    <EmptyState 
-                        title={jobs.length === 0 ? "No Jobs Available" : "No Jobs Match Your Search"}
-                        message={jobs.length === 0 ? 
-                            "There are no job postings at the moment. Check back later for new opportunities!" :
-                            "Try adjusting your search criteria or clearing filters to see more jobs."
+                    <EmptyState
+                        title={jobs.length === 0 ? t("latest_openings") : t("no_jobs_found")}
+                        message={jobs.length === 0 ?
+                            t("no_jobs_at_moment") :
+                            t("adjust_search_criteria")
                         }
                     />
                 )
@@ -316,14 +322,14 @@ export default function JobList() {
                                     <div className="d-flex justify-content-between align-items-start mb-3">
                                         <h5 className="card-title mb-0">{job.title}</h5>
                                         <span className={`badge ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                                            {job.isActive ? 'Active' : 'Inactive'}
+                                            {job.isActive ? t("status_active") : t("status_inactive")}
                                         </span>
                                     </div>
-                                    
+
                                     <div className="mb-3">
                                         <small className="text-muted">
                                             <i className="fas fa-building me-1"></i>
-                                            Company ID: {job.companyId}
+                                            {t("company")} ID: {job.companyId}
                                         </small>
                                         {job.location && (
                                             <small className="text-muted ms-3">
@@ -333,18 +339,18 @@ export default function JobList() {
                                         )}
                                     </div>
 
-                                    <p className="card-text text-truncate" style={{maxHeight: '3rem'}}>
+                                    <p className="card-text text-truncate" style={{ maxHeight: '3rem' }}>
                                         {job.description}
                                     </p>
 
                                     <div className="mb-3">
                                         <div className="row text-sm">
                                             <div className="col-6">
-                                                <strong>Salary:</strong><br/>
+                                                <strong>{t("salary")}:</strong><br />
                                                 <span className="text-success">{formatSalary(job.minSalary, job.maxSalary)}</span>
                                             </div>
                                             <div className="col-6">
-                                                <strong>Experience:</strong><br/>
+                                                <strong>{t("experience")}:</strong><br />
                                                 <span className="text-info">{formatExperience(job.minExperience, job.maxExperience)}</span>
                                             </div>
                                         </div>
@@ -355,20 +361,20 @@ export default function JobList() {
                                         {job.deadline && (
                                             <small className="text-warning">
                                                 <i className="fas fa-clock me-1"></i>
-                                                Apply by: {formatDate(job.deadline)}
+                                                {t("apply_by")}: {formatDate(job.deadline)}
                                             </small>
                                         )}
                                     </div>
 
                                     <div className="d-flex justify-content-between align-items-center">
                                         <small className="text-muted">
-                                            Posted: {formatDate(job.postedAt)}
+                                            {t("posted_on")}: {formatDate(job.postedAt)}
                                         </small>
-                                        <Link 
-                                            to={`/jobs/${job.id}`} 
+                                        <Link
+                                            to={`/jobs/${job.id}`}
                                             className="btn btn-outline-primary btn-sm"
                                         >
-                                            View Details
+                                            {t("view_details")}
                                         </Link>
                                     </div>
                                 </div>

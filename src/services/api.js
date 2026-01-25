@@ -1,30 +1,133 @@
 import axios from "axios";
+import { getAuthToken, removeAuthToken } from "../utils/cookies";
+import { toast } from "react-toastify";
+import config from "../utils/config";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000
+  baseURL: config.apiBaseUrl,
+  timeout: config.apiTimeout,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
-);
-
-// Add response interceptor to handle 401 errors
-api.interceptors.response.use(
-  (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token might be expired or invalid - handled by components
-    }
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
+
+// Response interceptor with enhanced error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const { response, request, message } = error;
+
+    // Network error (no response received)
+    if (!response) {
+      if (request) {
+        console.error('Network error - no response received:', message);
+        toast.error('Network error. Please check your connection.');
+      } else {
+        console.error('Request setup error:', message);
+        toast.error('Request failed. Please try again.');
+      }
+      return Promise.reject(error);
+    }
+
+    // HTTP error responses
+    const { status, data } = response;
+    
+    switch (status) {
+      case 401:
+        // Unauthorized - token expired or invalid
+        console.warn('Unauthorized access - clearing token');
+        removeAuthToken();
+        
+        // Don't show toast for auth pages
+        if (!window.location.pathname.includes('/login')) {
+          toast.error('Session expired. Please login again.');
+          // Redirect to login after a short delay
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }
+        break;
+        
+      case 403:
+        // Forbidden
+        console.warn('Access forbidden:', data?.message);
+        toast.error('Access denied. You don\'t have permission for this action.');
+        break;
+        
+      case 404:
+        // Not found
+        console.warn('Resource not found:', data?.message);
+        toast.error('Requested resource not found.');
+        break;
+        
+      case 422:
+        // Validation error
+        console.warn('Validation error:', data?.message);
+        if (data?.message) {
+          toast.error(data.message);
+        } else {
+          toast.error('Invalid data provided.');
+        }
+        break;
+        
+      case 429:
+        // Rate limiting
+        console.warn('Rate limit exceeded');
+        toast.error('Too many requests. Please wait a moment.');
+        break;
+        
+      case 500:
+        // Server error
+        console.error('Server error:', data?.message);
+        toast.error('Server error. Please try again later.');
+        break;
+        
+      case 503:
+        // Service unavailable
+        console.error('Service unavailable');
+        toast.error('Service temporarily unavailable. Please try again later.');
+        break;
+        
+      default:
+        // Other errors
+        console.error(`HTTP ${status} error:`, data?.message || message);
+        toast.error(data?.message || 'An unexpected error occurred.');
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// Helper function to handle API calls with consistent error handling
+export const apiCall = async (apiFunction, errorMessage = 'Operation failed') => {
+  try {
+    const response = await apiFunction();
+    return response.data;
+  } catch (error) {
+    console.error('API call failed:', error);
+    
+    // If error wasn't handled by interceptor, show generic message
+    if (!error.response) {
+      toast.error(errorMessage);
+    }
+    
+    throw error;
+  }
+};
 
 export default api;

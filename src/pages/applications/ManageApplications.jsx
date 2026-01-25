@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { getApplicationsForJob, updateApplicationStatus } from "../../services/applicationService";
 import { getMyJobs } from "../../services/jobService";
 import PageHero from "../../components/common/PageHero";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
+import ApplicationCard from "../../components/common/ApplicationCard";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import "./ManageApplications.css";
 
-const ManageApplications = () => {
-  const { t } = useTranslation(); // ✅ FIX: t now always exists
+const ManageApplications = memo(() => {
+  const { t } = useTranslation();
 
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
@@ -16,23 +18,17 @@ const ManageApplications = () => {
   const [loading, setLoading] = useState(true);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
 
-  /* =======================
-     LOAD JOBS
-  ======================= */
   useEffect(() => {
     loadJobs();
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
-  /* =======================
-     LOAD APPLICATIONS
-  ======================= */
   useEffect(() => {
     if (selectedJobId) {
       loadApplications(selectedJobId);
     }
-  }, [selectedJobId]);
+  }, [selectedJobId]); // Only run when selectedJobId changes
 
-  const loadJobs = async () => {
+  const loadJobs = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getMyJobs();
@@ -49,13 +45,14 @@ const ManageApplications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
-  const loadApplications = async (jobId) => {
+  const loadApplications = useCallback(async (jobId) => {
     try {
       setApplicationsLoading(true);
       const data = await getApplicationsForJob(jobId);
-      setApplications(Array.isArray(data) ? data : []);
+      const applicationsArray = Array.isArray(data) ? data : [];
+      setApplications(applicationsArray);
     } catch (err) {
       console.error("Error loading applications:", err);
       showErrorToast(t("error_load_applications"));
@@ -63,34 +60,59 @@ const ManageApplications = () => {
     } finally {
       setApplicationsLoading(false);
     }
-  };
+  }, [t]);
 
-  const handleJobChange = (e) => {
-    setSelectedJobId(Number(e.target.value));
-  };
+  const handleJobChange = useCallback((e) => {
+    const newJobId = Number(e.target.value);
+    setSelectedJobId(newJobId);
+    setApplications([]); // Clear applications while loading new ones
+  }, []);
 
-  const handleAction = async (id, status) => {
+  const handleStatusUpdate = useCallback(async (applicationId, status) => {
     try {
-      await updateApplicationStatus(id, status);
-      showSuccessToast(t("application_status_updated"));
-
+      await updateApplicationStatus(applicationId, status);
+      
+      // Update the application status in the local state
       setApplications((prev) =>
         prev.map((app) =>
-          app.id === id ? { ...app, status } : app
+          app.id === applicationId ? { ...app, status } : app
         )
       );
+      
+      // Show success message with status
+      const statusMessages = {
+        'SHORTLISTED': t('status_shortlisted'),
+        'REJECTED': t('status_rejected'),
+        'HIRED': t('status_hired')
+      };
+      
+      showSuccessToast(`${t("application_status_updated")} - ${statusMessages[status] || status}`);
+      
     } catch (err) {
       console.error("Error updating application:", err);
-      showErrorToast(t("error_update_application"));
+      
+      // Show more specific error messages
+      let errorMessage = t("error_update_application");
+      if (err.message) {
+        errorMessage += `: ${err.message}`;
+      } else if (err.response?.data?.message) {
+        errorMessage += `: ${err.response.data.message}`;
+      }
+      
+      showErrorToast(errorMessage);
+      throw err; // Re-throw so ApplicationCard can handle loading state
     }
-  };
+  }, [t]);
 
-  const selectedJob = jobs.find((j) => j.id === selectedJobId);
+  const selectedJob = useMemo(() => 
+    jobs.find((j) => j.id === selectedJobId), 
+    [jobs, selectedJobId]
+  );
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader message={t("loading")} />;
 
   return (
-    <div>
+    <div className="manage-applications-page">
       <PageHero
         title={t("manage_applications")}
         subtitle={t("manage_applications_subtitle")}
@@ -100,9 +122,9 @@ const ManageApplications = () => {
         {jobs.length === 0 ? (
           <EmptyState
             icon="bi-briefcase"
-            title={t("no_jobs_posted")}
+            title={t("no_jobs_posted_title")}
             message={t("no_jobs_posted_msg")}
-            actionText={t("post_job")}
+            actionText={t("post_job_action")}
             actionLink="/jobs/create"
           />
         ) : (
@@ -117,6 +139,7 @@ const ManageApplications = () => {
                   className="form-select"
                   value={selectedJobId || ""}
                   onChange={handleJobChange}
+                  disabled={applicationsLoading}
                 >
                   {jobs.map((job) => (
                     <option key={job.id} value={job.id}>
@@ -135,7 +158,7 @@ const ManageApplications = () => {
                   <p className="text-muted mb-0">
                     <i className="bi bi-geo-alt me-1"></i>
                     {selectedJob.location} •{" "}
-                    {applications.length} {t("applications")}
+                    {applications.length} {applications.length === 1 ? t("application") : t("applications")}
                   </p>
                 </div>
               </div>
@@ -143,7 +166,7 @@ const ManageApplications = () => {
 
             {/* Applications */}
             {applicationsLoading ? (
-              <Loader />
+              <Loader message={t("loading")} />
             ) : applications.length === 0 ? (
               <EmptyState
                 icon="bi-person-x"
@@ -156,42 +179,10 @@ const ManageApplications = () => {
               <div className="row g-4">
                 {applications.map((app) => (
                   <div key={app.id} className="col-lg-6">
-                    <div className="card shadow-sm h-100">
-                      <div className="card-body">
-                        <h5 className="fw-bold">{app.name}</h5>
-                        <p className="text-muted mb-2">{app.email}</p>
-
-                        <a
-                          href={app.resume}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn btn-sm btn-outline-primary mb-3"
-                        >
-                          {t("view_resume")}
-                        </a>
-
-                        <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-outline-warning"
-                            onClick={() => handleAction(app.id, "SHORTLISTED")}
-                          >
-                            {t("shortlist")}
-                          </button>
-                          <button
-                            className="btn btn-outline-danger"
-                            onClick={() => handleAction(app.id, "REJECTED")}
-                          >
-                            {t("reject")}
-                          </button>
-                          <button
-                            className="btn btn-success"
-                            onClick={() => handleAction(app.id, "HIRED")}
-                          >
-                            {t("hire")}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    <ApplicationCard 
+                      application={app} 
+                      onStatusUpdate={handleStatusUpdate}
+                    />
                   </div>
                 ))}
               </div>
@@ -201,6 +192,8 @@ const ManageApplications = () => {
       </div>
     </div>
   );
-};
+});
+
+ManageApplications.displayName = 'ManageApplications';
 
 export default ManageApplications;

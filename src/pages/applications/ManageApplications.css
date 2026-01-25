@@ -1,91 +1,213 @@
+/* MANAGE APPLICATIONS PAGE STYLES */
+
+/* PAGE CONTAINER */
+.manage-applications-page {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Ensure no duplicate page heroes */
+.manage-applications-page .bg-primary {
+  position: relative;
+  z-index: 1;
+}
+
 /* PAGE TITLE */
 .page-title {
   font-size: 1.8rem;
   font-weight: 700;
   text-align: center;
-  
-}
-
-/* CENTER PAGE CONTENT */
-.applications-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 300px;
 }
 
 /* APPLICATION CARD */
 .app-card {
-  width: 100%;
-  max-width: 700px;
   background: #ffffff;
-  padding: 22px;
-  border-radius: 14px;
-  margin-bottom: 24px;
-  box-shadow: 0 3px 12px rgba(145, 138, 138, 0.06);
-  border: 1px solid rgba(241, 238, 238, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* HEADER ROW */
-.app-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
+.app-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* SUBTITLE */
-.card-subtitle {
-  font-size: 1rem;
+/* STATUS BADGE */
+.status-badge {
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #222;
-  margin: 0;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ACTION BUTTONS WRAPPER */
-.actions-wrap {
+/* ACTION BUTTONS */
+.action-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* uniform button size */
 .action-btn {
-  min-width: 100px;
+  min-width: 90px;
   font-weight: 500;
+  font-size: 0.875rem;
   padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
-/* INFO BLOCK (field + value) */
-.info-block {
-  margin-bottom: 16px;
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* LABEL ABOVE VALUE */
-.info-label {
-  display: block;
+.action-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+/* LOADING SPINNER */
+.btn-loading {
+  pointer-events: none;
+}
+
+/* INFO SECTIONS */
+.candidate-info {
+  margin-bottom: 1rem;
+}
+
+.candidate-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.candidate-email {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.candidate-phone {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.applied-date {
+  color: #6c757d;
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 6px;
+  margin-bottom: 1rem;
 }
 
-/* READONLY VALUE BOX */
-.info-box {
-  background: #f6f7f8;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 1rem;
-  color: #222;
-  min-height: 40px;
-}
-
-/* LINKS INSIDE INFO BOX */
-.info-box a {
-  font-weight: 600;
-  color: #0f4c81;
+/* RESUME LINK */
+.resume-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
-.info-box a:hover {
-  text-decoration: underline;
+
+.resume-link:hover {
+  transform: translateY(-1px);
+}
+
+.no-resume {
+  color: #dc3545;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+/* JOB SELECTOR */
+.job-selector {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.job-selector label {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.job-selector select {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-selector select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* JOB INFO CARD */
+.job-info-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.job-info-card .card-body {
+  padding: 1.5rem;
+}
+
+.job-info-card h5 {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.job-info-card p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    min-width: 100%;
+    justify-content: center;
+  }
+  
+  .candidate-name {
+    font-size: 1.1rem;
+  }
+  
+  .job-selector {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .app-card {
+    margin-bottom: 1rem;
+  }
+  
+  .job-info-card .card-body {
+    padding: 1rem;
+  }
 }
 

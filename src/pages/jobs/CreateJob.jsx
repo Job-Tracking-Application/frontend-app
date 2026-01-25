@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { addJob } from "../../services/jobService";
 import { getCompanies } from "../../services/companyService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import { useLanguage } from "../../context/useLanguage";
 
 export default function CreateJob() {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
@@ -15,7 +17,7 @@ export default function CreateJob() {
         maxSalary: "",
         minExperience: "",
         maxExperience: "",
-        jobType: "Full-time",
+        jobType: t("full_time"),
         companyId: "",
         deadline: ""
     });
@@ -34,7 +36,7 @@ export default function CreateJob() {
             setCompanies(response.data || []);
         } catch (error) {
             console.error("Error loading companies:", error);
-            showErrorToast("Failed to load companies. Please check backend connection.");
+            showErrorToast(t("load_companies_error"));
             setCompanies([]);
         } finally {
             setCompaniesLoading(false);
@@ -51,12 +53,12 @@ export default function CreateJob() {
         
         // Validation
         if (!formData.companyId) {
-            showErrorToast("Please select a company");
+            showErrorToast(t("select_company_error"));
             return;
         }
         
         if (parseFloat(formData.minSalary) >= parseFloat(formData.maxSalary)) {
-            showErrorToast("Maximum salary must be greater than minimum salary");
+            showErrorToast(t("salary_validation_error"));
             return;
         }
 
@@ -73,11 +75,11 @@ export default function CreateJob() {
             };
             
             await addJob(jobData, skillIds);
-            showSuccessToast("Job posted successfully!");
+            showSuccessToast(t("job_post_success"));
             navigate('/jobs/my-jobs');
         } catch (error) {
             console.error("Error creating job:", error);
-            const errorMessage = error.response?.data?.message || error.message || "Failed to post job";
+            const errorMessage = error.response?.data?.message || error.message || t("job_post_error");
             showErrorToast(errorMessage);
         } finally {
             setLoading(false);
@@ -88,12 +90,12 @@ export default function CreateJob() {
         <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-lg-8">
-                    <h2 className="mb-4">Post a New Job</h2>
+                    <h2 className="mb-4">{t("post_new_job_title")}</h2>
                     <div className="card shadow-sm">
                         <div className="card-body p-4">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <label className="form-label">Job Title *</label>
+                                    <label className="form-label">{t("job_title")} *</label>
                                     <input
                                         type="text"
                                         name="title"
@@ -101,13 +103,13 @@ export default function CreateJob() {
                                         required
                                         value={formData.title}
                                         onChange={handleChange}
-                                        placeholder="e.g. Software Developer"
+                                        placeholder={t("job_title_placeholder")}
                                     />
                                 </div>
 
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Company *</label>
+                                        <label className="form-label">{t("company")} *</label>
                                         <select
                                             name="companyId"
                                             className="form-select"
@@ -117,7 +119,7 @@ export default function CreateJob() {
                                             disabled={companiesLoading}
                                         >
                                             <option value="">
-                                                {companiesLoading ? "Loading companies..." : "Select Company"}
+                                                {companiesLoading ? t("loading_companies") : t("select_company")}
                                             </option>
                                             {companies.map(company => (
                                                 <option key={company.id} value={company.id}>
@@ -126,42 +128,42 @@ export default function CreateJob() {
                                             ))}
                                         </select>
                                         {companiesLoading && (
-                                            <small className="text-muted">Loading companies from backend...</small>
+                                            <small className="text-muted">{t("loading_companies_hint")}</small>
                                         )}
                                         {!companiesLoading && companies.length === 0 && (
-                                            <small className="text-danger">No companies available. Please check backend connection.</small>
+                                            <small className="text-danger">{t("no_companies_error")}</small>
                                         )}
                                     </div>
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Location</label>
+                                        <label className="form-label">{t("job_location")}</label>
                                         <input
                                             type="text"
                                             name="location"
                                             className="form-control"
                                             value={formData.location}
                                             onChange={handleChange}
-                                            placeholder="e.g. Mumbai, Remote"
+                                            placeholder={t("job_location_placeholder")}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Job Type *</label>
+                                        <label className="form-label">{t("job_type")} *</label>
                                         <select
                                             name="jobType"
                                             className="form-select"
                                             value={formData.jobType}
                                             onChange={handleChange}
                                         >
-                                            <option value="Full-time">Full-time</option>
-                                            <option value="Part-time">Part-time</option>
-                                            <option value="Contract">Contract</option>
-                                            <option value="Internship">Internship</option>
+                                            <option value="Full-time">{t("full_time")}</option>
+                                            <option value="Part-time">{t("part_time")}</option>
+                                            <option value="Contract">{t("contract")}</option>
+                                            <option value="Internship">{t("internship")}</option>
                                         </select>
                                     </div>
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Application Deadline</label>
+                                        <label className="form-label">{t("application_deadline")}</label>
                                         <input
                                             type="date"
                                             name="deadline"
@@ -174,7 +176,7 @@ export default function CreateJob() {
 
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Minimum Salary (₹) *</label>
+                                        <label className="form-label">{t("min_salary")} (₹) *</label>
                                         <input
                                             type="number"
                                             name="minSalary"
@@ -186,7 +188,7 @@ export default function CreateJob() {
                                         />
                                     </div>
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Maximum Salary (₹) *</label>
+                                        <label className="form-label">{t("max_salary")} (₹) *</label>
                                         <input
                                             type="number"
                                             name="maxSalary"
@@ -201,33 +203,33 @@ export default function CreateJob() {
 
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Minimum Experience (years)</label>
+                                        <label className="form-label">{t("min_experience")}</label>
                                         <input
                                             type="number"
                                             name="minExperience"
                                             className="form-control"
                                             value={formData.minExperience}
                                             onChange={handleChange}
-                                            placeholder="e.g. 0"
+                                            placeholder={t("min_experience_placeholder")}
                                             min="0"
                                         />
                                     </div>
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Maximum Experience (years)</label>
+                                        <label className="form-label">{t("max_experience")}</label>
                                         <input
                                             type="number"
                                             name="maxExperience"
                                             className="form-control"
                                             value={formData.maxExperience}
                                             onChange={handleChange}
-                                            placeholder="e.g. 5"
+                                            placeholder={t("max_experience_placeholder")}
                                             min="0"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className="form-label">Job Description *</label>
+                                    <label className="form-label">{t("job_description")} *</label>
                                     <textarea
                                         name="description"
                                         className="form-control"
@@ -235,7 +237,7 @@ export default function CreateJob() {
                                         required
                                         value={formData.description}
                                         onChange={handleChange}
-                                        placeholder="Describe the job responsibilities, requirements, and benefits..."
+                                        placeholder={t("job_description_placeholder")}
                                     ></textarea>
                                 </div>
 
@@ -246,14 +248,14 @@ export default function CreateJob() {
                                         onClick={() => navigate('/jobs/my-jobs')}
                                         disabled={loading}
                                     >
-                                        Cancel
+                                        {t("cancel")}
                                     </button>
                                     <button 
                                         type="submit" 
                                         className="btn btn-primary" 
                                         disabled={loading || companiesLoading || companies.length === 0}
                                     >
-                                        {loading ? "Posting..." : "Post Job"}
+                                        {loading ? t("posting") : t("post_job")}
                                     </button>
                                 </div>
                             </form>

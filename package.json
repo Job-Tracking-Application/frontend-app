@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext js,jsx --fix",
     "preview": "vite preview --host 0.0.0.0 --port $PORT",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules/.vite",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html",
     "i18n:extract": "node scripts/extract-keys.cjs",
     "i18n:translate": "node scripts/translate.cjs",
     "i18n:build": "npm run i18n:extract && npm run i18n:translate"
@@ -18,7 +22,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^13.5.0",
-    "react-router-dom": "^6.18.1",
+    "react-router-dom": "^7.13.0",
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {
@@ -26,6 +30,7 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
+    "baseline-browser-mapping": "^2.9.18",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",

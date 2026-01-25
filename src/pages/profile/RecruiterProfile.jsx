@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getMyCompanyProfile,
   createCompanyProfile,
@@ -13,7 +13,7 @@ import PageHero from "../../components/common/PageHero";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../context/useLanguage";
 
 export default function RecruiterProfile() {
   const { t } = useLanguage();
@@ -44,11 +44,7 @@ export default function RecruiterProfile() {
   const [companyId, setCompanyId] = useState(null);
   const [verified, setVerified] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const recruiter = await getRecruiterProfile();
       if (recruiter) {
@@ -63,9 +59,10 @@ export default function RecruiterProfile() {
       }
 
       const hasCompany = await hasCompanyProfile();
-      if (hasCompany.data.data) {
+      if (hasCompany.data?.data) {
         const res = await getMyCompanyProfile();
         const c = res.data.data;
+
         setCompanyId(c.id);
         setVerified(c.verified);
         setCompanyForm({
@@ -78,12 +75,16 @@ export default function RecruiterProfile() {
       } else {
         setCreatingCompany(true);
       }
-    } catch (err) {
+    } catch {
       showErrorToast(t("load_profile_error"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const savePersonalProfile = async () => {
     try {
@@ -124,7 +125,6 @@ export default function RecruiterProfile() {
       />
 
       <div className="container pb-5">
-
         {/* PERSONAL INFORMATION */}
         <div className="card shadow-sm mb-4">
           <div className="card-header bg-white d-flex justify-content-between">
@@ -166,7 +166,9 @@ export default function RecruiterProfile() {
                 <div className="col-md-6"><b>{t("full_name")}</b><p>{personalForm.fullName || t("not_provided")}</p></div>
                 <div className="col-md-6"><b>{t("phone")}</b><p>{personalForm.phone || t("not_provided")}</p></div>
                 <div className="col-md-6"><b>{t("linkedin")}</b>
-                  <p>{personalForm.linkedinUrl ? <a href={personalForm.linkedinUrl} target="_blank" rel="noreferrer">{t("view_profile")}</a> : t("not_provided")}</p>
+                  <p>{personalForm.linkedinUrl
+                    ? <a href={personalForm.linkedinUrl} target="_blank" rel="noreferrer">{t("view_profile")}</a>
+                    : t("not_provided")}</p>
                 </div>
                 <div className="col-md-6"><b>{t("experience")}</b>
                   <p>{personalForm.yearsExperience ? `${personalForm.yearsExperience} ${t("years")}` : t("not_provided")}</p>
@@ -228,7 +230,6 @@ export default function RecruiterProfile() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

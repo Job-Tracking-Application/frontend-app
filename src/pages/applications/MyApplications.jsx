@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyApplications } from "../../services/applicationService";
+import { useLanguage } from "../../context/useLanguage";
 import PageHero from "../../components/common/PageHero";
 import Loader from "../../components/common/Loader";
 import { showErrorToast } from "../../utils/toast";
 
 const MyApplications = () => {
+  const { t } = useLanguage();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,8 +24,8 @@ const MyApplications = () => {
       setApplications(data);
     } catch (error) {
       console.error("Error loading applications:", error);
-      setError("Failed to load applications");
-      showErrorToast("Failed to load applications. Please try again.");
+      setError(t("load_apps_error"));
+      showErrorToast(t("load_apps_error"));
     } finally {
       setLoading(false);
     }
@@ -48,16 +50,16 @@ const MyApplications = () => {
   const formatStatus = (status) => {
     switch (status?.toUpperCase()) {
       case 'UNDER_REVIEW':
-        return 'Under Review';
+        return t("status_under_review");
       case 'INTERVIEWED':
-        return 'Interviewed';
+        return t("status_interviewed");
       case 'HIRED':
-        return 'Hired';
+        return t("status_hired");
       case 'REJECTED':
-        return 'Rejected';
+        return t("status_rejected");
       case 'APPLIED':
       default:
-        return 'Applied';
+        return t("status_applied");
     }
   };
 
@@ -74,15 +76,15 @@ const MyApplications = () => {
 
   return (
     <div>
-      <PageHero title="My Applications" subtitle="Track the status of your job applications." />
+      <PageHero title={t("nav_applications")} subtitle={t("manage_apps_subtitle")} />
 
       <div className="container pb-5">
         {error && (
           <div className="alert alert-danger" role="alert">
-            <h4 className="alert-heading">Error Loading Applications</h4>
+            <h4 className="alert-heading">{t("load_apps_error")}</h4>
             <p>{error}</p>
             <button className="btn btn-outline-danger" onClick={loadApplications}>
-              Try Again
+              {t("try_again")}
             </button>
           </div>
         )}
@@ -92,11 +94,11 @@ const MyApplications = () => {
             {applications.length > 0 && (
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h4 className="mb-0">
-                  {applications.length} Application{applications.length !== 1 ? 's' : ''}
+                  {applications.length} {applications.length === 1 ? t("application") : t("applications")}
                 </h4>
                 <Link to="/jobs" className="btn btn-outline-primary">
                   <i className="bi bi-search me-2"></i>
-                  Browse More Jobs
+                  {t("explore_jobs")}
                 </Link>
               </div>
             )}
@@ -126,7 +128,7 @@ const MyApplications = () => {
                           <div className="d-flex align-items-center">
                             <i className="bi bi-calendar-check text-muted me-2"></i>
                             <div>
-                              <p className="text-muted small mb-0 fw-bold text-uppercase">Applied On</p>
+                              <p className="text-muted small mb-0 fw-bold text-uppercase">{t("applied_on")}</p>
                               <p className="fw-medium mb-0">{formatDate(app.appliedDate)}</p>
                             </div>
                           </div>
@@ -135,7 +137,7 @@ const MyApplications = () => {
                           <div className="d-flex align-items-center">
                             <i className="bi bi-file-earmark-text text-muted me-2"></i>
                             <div>
-                              <p className="text-muted small mb-0 fw-bold text-uppercase">Resume</p>
+                              <p className="text-muted small mb-0 fw-bold text-uppercase">{t("resume")}</p>
                               {app.resume ? (
                                 <a 
                                   href={app.resume} 
@@ -143,10 +145,10 @@ const MyApplications = () => {
                                   rel="noreferrer" 
                                   className="text-decoration-none fw-medium"
                                 >
-                                  View Resume <i className="bi bi-box-arrow-up-right ms-1 small"></i>
+                                  {t("view_resume")} <i className="bi bi-box-arrow-up-right ms-1 small"></i>
                                 </a>
                               ) : (
-                                <span className="text-muted">No resume</span>
+                                <span className="text-muted">{t("no_resume")}</span>
                               )}
                             </div>
                           </div>
@@ -165,7 +167,7 @@ const MyApplications = () => {
                               disabled={!app.resume}
                             >
                               <i className="bi bi-eye me-1"></i>
-                              View Resume
+                              {t("view_resume")}
                             </button>
                           </div>
                         </div>
@@ -179,13 +181,13 @@ const MyApplications = () => {
                 <div className="col-12 mt-4 text-center">
                   <div className="p-5 bg-light rounded-3">
                     <i className="bi bi-clipboard-x display-4 text-muted mb-3 d-block"></i>
-                    <h4 className="text-muted">No Applications Yet</h4>
+                    <h4 className="text-muted">{t("no_apps_yet_title")}</h4>
                     <p className="text-muted mb-4">
                       You haven't applied to any jobs yet. Start exploring opportunities!
                     </p>
                     <Link to="/jobs" className="btn btn-primary">
                       <i className="bi bi-search me-2"></i>
-                      Browse Jobs
+                      {t("explore_jobs")}
                     </Link>
                   </div>
                 </div>

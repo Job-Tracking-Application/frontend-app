@@ -5,15 +5,15 @@ A modern React-based web application for job tracking with role-based dashboards
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm/yarn
-- Backend API running on `http://localhost:5000`
+- Node.js 18+ and npm/yarn (for frontend development)
+- Spring Boot backend API running (typically on `http://localhost:8080`)
 - Modern web browser
 
 ### Installation & Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Job-Tracking-Application/frontend-app.git
+   git clone <repository-url>
    cd frontend-app
    ```
 
@@ -27,8 +27,8 @@ A modern React-based web application for job tracking with role-based dashboards
 3. **Configure environment**
    ```bash
    # .env file
-   VITE_API_BASE_URL=http://localhost:5000/api
-   VITE_APP_NAME=Job Tracking System
+   VITE_API_BASE_URL=http://localhost:8080/api
+   VITE_APP_NAME=JobSync
    ```
 
 4. **Start development server**
@@ -40,17 +40,20 @@ A modern React-based web application for job tracking with role-based dashboards
 
 5. **Access the application**
    - Frontend: `http://localhost:5173`
+   - Backend API: `http://localhost:8080` (Spring Boot)
    - Login with demo accounts or register new users
 
 ## 🏗️ Architecture
 
 ### Technology Stack
-- **Framework**: React 18 with Vite
+- **Frontend**: React 19 with Vite 7
+- **Backend**: Spring Boot (Java) - REST API
 - **Routing**: React Router v6
 - **Styling**: Bootstrap 5 + Custom CSS
 - **State Management**: React Context API
 - **HTTP Client**: Axios
-- **Icons**: Bootstrap Icons
+- **Internationalization**: i18next, react-i18next
+- **Notifications**: React Toastify
 - **Build Tool**: Vite
 - **Package Manager**: npm/yarn
 
@@ -241,17 +244,26 @@ src/
 
 ## 🌐 API Integration
 
+### Backend Architecture
+This React frontend connects to a **Spring Boot backend** that provides:
+- RESTful API endpoints
+- JWT-based authentication
+- Role-based authorization
+- Database integration (MySQL/PostgreSQL)
+- File upload handling
+- Email notifications
+
 ### Service Architecture
 ```javascript
 // services/api.js - Base API configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL, // Spring Boot API URL
   timeout: 10000,
 });
 
-// Request interceptor for auth token
+// Request interceptor for JWT token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -261,78 +273,98 @@ api.interceptors.request.use((config) => {
 
 ### Authentication Service
 ```javascript
-// services/authService.js
+// services/authService.js - Connects to Spring Boot auth endpoints
 export const loginUser = async (email, password) => {
   const response = await api.post('/auth/login', { email, password });
-  return response.data;
+  return response.data; // JWT token from Spring Boot
 };
 
 export const registerUser = async (userData) => {
   const response = await api.post('/auth/register', userData);
   return response.data;
 };
+
+export const getCurrentUser = async () => {
+  const response = await api.get('/auth/me');
+  return response.data; // User profile from Spring Boot
+};
 ```
 
 ### Job Service
 ```javascript
-// services/jobService.js
+// services/jobService.js - Connects to Spring Boot job endpoints
 export const getJobs = async (params) => {
   const response = await api.get('/jobs', { params });
-  return response.data;
+  return response.data; // Paginated job list from Spring Boot
 };
 
 export const createJob = async (jobData) => {
   const response = await api.post('/jobs', jobData);
-  return response.data;
+  return response.data; // Created job from Spring Boot
 };
 
 export const getJobDetails = async (jobId) => {
   const response = await api.get(`/jobs/${jobId}`);
-  return response.data;
+  return response.data; // Job details from Spring Boot
+};
+
+export const updateJob = async (jobId, jobData) => {
+  const response = await api.put(`/jobs/${jobId}`, jobData);
+  return response.data; // Updated job from Spring Boot
 };
 ```
 
 ### Application Service
 ```javascript
-// services/applicationService.js
+// services/applicationService.js - Connects to Spring Boot application endpoints
 export const applyForJob = async (applicationData) => {
   const response = await api.post('/applications/apply', applicationData);
-  return response.data;
+  return response.data; // Application confirmation from Spring Boot
 };
 
 export const getMyApplications = async (params) => {
   const response = await api.get('/applications/my-applications', { params });
-  return response.data;
+  return response.data; // User's applications from Spring Boot
 };
 
 export const updateApplicationStatus = async (applicationId, status) => {
   const response = await api.put(`/applications/${applicationId}/status`, { status });
-  return response.data;
+  return response.data; // Updated application from Spring Boot
+};
+
+export const getApplicationsForJob = async (jobId, params) => {
+  const response = await api.get(`/applications/job/${jobId}`, { params });
+  return response.data; // Applications for specific job from Spring Boot
 };
 ```
 
 ### Profile Service
 ```javascript
-// services/userService.js
+// services/userService.js - Connects to Spring Boot profile endpoints
 export const getUserProfile = async () => {
   const response = await api.get('/profile/jobseeker');
-  return response.data;
+  return response.data; // Job seeker profile from Spring Boot
 };
 
 export const updateUserProfile = async (profileData) => {
   const response = await api.put('/profile/jobseeker', profileData);
-  return response.data;
+  return response.data; // Updated profile from Spring Boot
 };
 
 // services/recruiterProfileService.js
 export const getRecruiterProfile = async () => {
   const response = await api.get('/profile/recruiter');
-  return response.data;
+  return response.data; // Recruiter profile from Spring Boot
 };
 
 export const updateRecruiterProfile = async (profileData) => {
   const response = await api.put('/profile/recruiter', profileData);
-  return response.data;
+  return response.data; // Updated recruiter profile from Spring Boot
+};
+
+export const getCompanyProfile = async () => {
+  const response = await api.get('/profile/company');
+  return response.data; // Company profile from Spring Boot
 };
 ```
 
@@ -598,6 +630,59 @@ npm run preview
 ```
 
 ### Docker Deployment
+
+#### Single Container
+```bash
+# Build the frontend image
+docker build -t jobsync-frontend .
+
+# Run the frontend container
+docker run -d -p 3000:80 \
+  -e VITE_API_BASE_URL=http://your-spring-boot-api:8080/api \
+  --name jobsync-frontend \
+  jobsync-frontend
+```
+
+#### Docker Compose (Full Stack)
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=http://backend:8080/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    
+  backend:
+    image: jobsync-backend:latest  # Your Spring Boot application
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - DATABASE_URL=jdbc:mysql://db:3306/jobsync
+      - JWT_SECRET=your-jwt-secret
+    depends_on:
+      - db
+    restart: unless-stopped
+    
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=jobsync
+      - MYSQL_USER=jobsync_user
+      - MYSQL_PASSWORD=jobsync_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+```
 ```dockerfile
 # Dockerfile
 FROM node:18-alpine as build
@@ -616,10 +701,15 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ### Environment Variables
 ```bash
+# .env.development
+VITE_API_BASE_URL=http://localhost:8080/api
+VITE_APP_NAME=JobSync
+VITE_DEBUG_MODE=true
+
 # .env.production
-VITE_API_BASE_URL=https://api.jobtracking.com
-VITE_APP_NAME=Job Tracking System
-VITE_ENVIRONMENT=production
+VITE_API_BASE_URL=https://api.jobsync.com/api
+VITE_APP_NAME=JobSync
+VITE_ERROR_REPORTING=true
 ```
 
 ## 📊 Performance Optimization
@@ -785,15 +875,65 @@ api.interceptors.response.use(
 
 This project is licensed under the MIT License.
 
+## � Troubleshooting
+
+### Common Issues
+
+1. **Build Fails**
+   - Check Node.js version (18+ required)
+   - Clear node_modules and reinstall: `rm -rf node_modules package-lock.json && npm install`
+   - Verify all environment variables are set correctly
+
+2. **API Connection Issues**
+   - Verify `VITE_API_BASE_URL` points to your Spring Boot API (usually `http://localhost:8080/api`)
+   - Check Spring Boot backend is running on correct port
+   - Verify CORS configuration in Spring Boot allows frontend origin
+   - Check Spring Boot application logs for errors
+   - Test API endpoints directly: `curl http://localhost:8080/api/health`
+
+3. **Authentication Issues**
+   - Check JWT token format and expiration
+   - Verify Spring Boot JWT configuration matches frontend expectations
+   - Clear browser localStorage and cookies
+   - Check Spring Boot security configuration
+
+4. **Docker Issues**
+   - Ensure Docker daemon is running
+   - Check port conflicts: `docker ps`
+   - View frontend logs: `docker logs jobsync-frontend`
+   - View backend logs: `docker logs jobsync-backend`
+   - Verify network connectivity between containers
+
+### Health Checks
+
+- **Frontend**: `http://localhost:3000/health`
+- **Spring Boot API**: `http://localhost:8080/actuator/health`
+- **Database Connection**: Check Spring Boot actuator endpoints
+
+### Backend Integration
+
+This frontend is designed to work with a **Spring Boot backend** that should provide:
+
+- **Authentication endpoints**: `/api/auth/login`, `/api/auth/register`, `/api/auth/me`
+- **Job endpoints**: `/api/jobs`, `/api/jobs/{id}`, `/api/jobs/my-jobs`
+- **Application endpoints**: `/api/applications/apply`, `/api/applications/my-applications`
+- **Profile endpoints**: `/api/profile/jobseeker`, `/api/profile/recruiter`
+- **Admin endpoints**: `/api/admin/users`, `/api/admin/companies`, `/api/admin/jobs`
+
+Ensure your Spring Boot application implements these REST endpoints with proper CORS configuration.
+
 ## 📞 Support
 
 For support and questions:
-- Create an issue on GitHub
+- Create an issue in the repository
 - Contact the development team
-- Check the documentation
+- Check the troubleshooting section above
+- Review Spring Boot backend logs for API-related issues
 
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: January 2024  
-**Maintainer**: Job Tracking Development Team
+**Last Updated**: January 2025  
+**Frontend**: React 19 + Vite 7  
+**Backend**: Spring Boot (Java)  
+**Maintainer**: JobSync Development Team

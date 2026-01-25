@@ -26,14 +26,30 @@ export const getApplicationsForJob = async (jobId) => {
     }
 
     return [];
-  } catch {
-    return [];
+  } catch (error) {
+    console.error('Error fetching applications for job:', error);
+    throw error; // Re-throw to let the component handle it
   }
 };
 
 export const updateApplicationStatus = async (id, status) => {
-  const response = await api.patch(`/applications/manage/${id}`, { status });
-  return response.data;
+  try {
+    const response = await api.patch(`/applications/manage/${id}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating application status:', error);
+    
+    // Provide more specific error messages
+    if (error.response?.status === 404) {
+      throw new Error('Application not found');
+    } else if (error.response?.status === 403) {
+      throw new Error('You do not have permission to update this application');
+    } else if (error.response?.status === 400) {
+      throw new Error('Invalid status provided');
+    }
+    
+    throw error; // Re-throw original error if no specific handling
+  }
 };
 
 export const applyForJob = async (jobId, applicationData) => {

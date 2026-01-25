@@ -18,13 +18,27 @@ export default function AuthProvider({ children }) {
 
     setToken(storedToken);
 
-    // Fetch user securely from backend
+    // Validate token with backend and get fresh user data
     authService
       .getCurrentUser()
       .then((userData) => {
-        setUser(userData);
+        // Map the secure response to match frontend expectations
+        const mappedUser = {
+          roleId: userData.roleId,
+          role: userData.role,
+          displayName: userData.displayName,
+          fullname: userData.displayName, // Map displayName to fullname for consistency
+          maskedEmail: userData.maskedEmail,
+          email: userData.maskedEmail, // Also map to email for fallback
+          active: userData.active,
+          languagePref: userData.languagePref,
+          accountType: userData.accountType
+        };
+        setUser(mappedUser);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.warn("Token validation failed:", error.response?.status);
+        // Clear invalid token
         authService.logout();
         setToken(null);
         setUser(null);
@@ -53,6 +67,7 @@ export default function AuthProvider({ children }) {
       fullname,
     };
 
+    // Store only the token, user data will be fetched from /auth/me on refresh
     authService.setStoredToken(token);
 
     setToken(token);

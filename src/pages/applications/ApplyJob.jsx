@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getJobById } from "../../services/jobService";
 import { applyForJob, checkApplicationExists } from "../../services/applicationService";
 import { useAuth } from "../../context/useAuth";
@@ -12,6 +13,7 @@ import ResumeUrlHelper from "../../components/common/ResumeUrlHelper";
 export default function ApplyJob() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     useAuth(); // initialize auth context
 
     const [job, setJob] = useState(null);
@@ -54,8 +56,8 @@ export default function ApplyJob() {
             }
         } catch (err) {
             console.error("Error loading job:", err);
-            setError("Failed to load job details");
-            showErrorToast("Failed to load job details. Please try again.");
+            setError(t("apply_job_load_error"));
+            showErrorToast(t("apply_job_load_error_toast"));
         } finally {
             setLoading(false);
         }
@@ -87,7 +89,7 @@ export default function ApplyJob() {
         const errors = {};
 
         if (!formData.resumeUrl.trim()) {
-            errors.resumeUrl = "Please provide a resume URL";
+            errors.resumeUrl = t("apply_job_resume_required");
         } else {
             const validation = validateResumeUrl(formData.resumeUrl);
             if (!validation.isValid) {
@@ -96,11 +98,11 @@ export default function ApplyJob() {
         }
 
         if (formData.portfolioUrl && !validateResumeUrl(formData.portfolioUrl).isValid) {
-            errors.portfolioUrl = "Please enter a valid URL";
+            errors.portfolioUrl = t("apply_job_invalid_url");
         }
 
         if (formData.linkedinUrl && !validateResumeUrl(formData.linkedinUrl).isValid) {
-            errors.linkedinUrl = "Please enter a valid URL";
+            errors.linkedinUrl = t("apply_job_invalid_url");
         }
 
         setFormErrors(errors);
@@ -111,7 +113,7 @@ export default function ApplyJob() {
         e.preventDefault();
 
         if (!validateForm()) {
-            showErrorToast("Please fix the errors in the form");
+            showErrorToast(t("Please fix the errors in the form"));
             return;
         }
 
@@ -124,18 +126,18 @@ export default function ApplyJob() {
             };
 
             await applyForJob(id, applicationData);
-            showSuccessToast("Application submitted successfully!");
+            showSuccessToast(t("apply_job_success"));
             navigate("/applications");
         } catch (err) {
             console.error("Error applying for job:", err);
 
             if (err.response?.status === 401) {
-                showErrorToast("Your session has expired. Please log in again.");
+                showErrorToast(t("apply_job_session_expired"));
             } else if (err.response?.status === 409) {
-                showErrorToast("You have already applied for this job");
+                showErrorToast(t("apply_job_already_applied"));
                 setAlreadyApplied(true);
             } else {
-                showErrorToast("Failed to apply for job. Please try again.");
+                showErrorToast(t("apply_job_error"));
             }
         } finally {
             setSubmitting(false);
@@ -143,9 +145,9 @@ export default function ApplyJob() {
     };
 
     const formatSalary = (min, max) => {
-        if (!min && !max) return "Salary not specified";
+        if (!min && !max) return t("salary_not_specified");
         if (!max) return `₹${min?.toLocaleString()}+`;
-        if (!min) return `Up to ₹${max?.toLocaleString()}`;
+        if (!min) return `${t("up_to")} ₹${max?.toLocaleString()}`;
         return `₹${min?.toLocaleString()} - ₹${max?.toLocaleString()}`;
     };
 
@@ -155,10 +157,10 @@ export default function ApplyJob() {
         return (
             <div className="container py-5">
                 <div className="alert alert-danger">
-                    <h4>Error Loading Job</h4>
-                    <p>{error || "Job not found"}</p>
+                    <h4>{t("error_loading_job")}</h4>
+                    <p>{error || t("job_not_found")}</p>
                     <Link to="/jobs" className="btn btn-outline-danger">
-                        Back to Jobs
+                        {t("back_to_jobs")}
                     </Link>
                 </div>
             </div>
@@ -168,11 +170,11 @@ export default function ApplyJob() {
     if (alreadyApplied) {
         return (
             <div className="container py-5 text-center">
-                <h3>Application Already Submitted</h3>
-                <p>You have already applied for <strong>{job.title}</strong>.</p>
+                <h3>{t("apply_job_already_submitted")}</h3>
+                <p>{t("apply_job_already_applied_message", { jobTitle: job.title })}</p>
                 <div className="d-flex gap-3 justify-content-center">
-                    <Link to="/jobs" className="btn btn-outline-secondary">Browse Jobs</Link>
-                    <Link to="/applications" className="btn btn-primary">My Applications</Link>
+                    <Link to="/jobs" className="btn btn-outline-secondary">{t("browse_jobs")}</Link>
+                    <Link to="/applications" className="btn btn-primary">{t("nav_applications")}</Link>
                 </div>
             </div>
         );
@@ -184,7 +186,7 @@ export default function ApplyJob() {
                 <div className="col-lg-8">
                     <div className="card shadow-sm">
                         <div className="card-header bg-primary text-white">
-                            <h4>Apply for Job</h4>
+                            <h4>{t("apply_job_title")}</h4>
                         </div>
                         <div className="card-body">
 
@@ -197,7 +199,7 @@ export default function ApplyJob() {
 
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <label className="form-label">Resume URL *</label>
+                                    <label className="form-label">{t("apply_job_resume_url")} *</label>
                                     <input
                                         type="url"
                                         className={`form-control ${formErrors.resumeUrl ? "is-invalid" : ""}`}
@@ -222,7 +224,7 @@ export default function ApplyJob() {
                                 )}
 
                                 <div className="mb-3">
-                                    <label className="form-label">Cover Letter</label>
+                                    <label className="form-label">{t("apply_job_cover_letter")}</label>
                                     <textarea
                                         className="form-control"
                                         rows="4"
@@ -238,7 +240,7 @@ export default function ApplyJob() {
                                     loading={submitting}
                                     disabled={submitting}
                                 >
-                                    Submit Application
+                                    {t("apply_job_submit")}
                                 </Button>
                             </form>
                         </div>

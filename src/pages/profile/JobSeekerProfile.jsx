@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
 import { useAuth } from "../../context/useAuth";
+import { useLanguage } from "../../context/useLanguage";
 import PageHero from "../../components/common/PageHero";
 import Loader from "../../components/common/Loader";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -8,6 +9,7 @@ import "./JobSeekerProfile.css";
 
 const JobSeekerProfile = () => {
   const { user: authUser } = useAuth();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -68,8 +70,8 @@ const JobSeekerProfile = () => {
       });
     } catch (error) {
       console.error("Error loading profile:", error);
-      setError("Failed to load profile");
-      showErrorToast("Failed to load profile. Please try again.");
+      setError(t("failed_load_profile"));
+      showErrorToast(t("profile_update_failed"));
     } finally {
       setLoading(false);
     }
@@ -165,10 +167,10 @@ const JobSeekerProfile = () => {
       
       setProfile(updatedProfile);
       setIsEditing(false);
-      showSuccessToast("Profile updated successfully!");
+      showSuccessToast(t("profile_updated_success"));
     } catch (error) {
       console.error("Error updating profile:", error);
-      showErrorToast("Failed to update profile. Please try again.");
+      showErrorToast(t("profile_update_failed"));
     } finally {
       setSaving(false);
     }
@@ -181,13 +183,13 @@ const JobSeekerProfile = () => {
   if (error) {
     return (
       <div>
-        <PageHero title="Job Seeker Profile" subtitle="Manage your personal information and resume." />
+        <PageHero title={t("job_seeker_profile_title")} subtitle={t("job_seeker_profile_subtitle")} />
         <div className="container py-5">
           <div className="alert alert-danger" role="alert">
-            <h4 className="alert-heading">Error Loading Profile</h4>
+            <h4 className="alert-heading">{t("error_loading_profile")}</h4>
             <p>{error}</p>
             <button className="btn btn-outline-danger" onClick={loadProfile}>
-              Try Again
+              {t("try_again")}
             </button>
           </div>
         </div>
@@ -198,14 +200,14 @@ const JobSeekerProfile = () => {
   if (!profile) {
     return (
       <div>
-        <PageHero title="Job Seeker Profile" subtitle="Manage your personal information and resume." />
+        <PageHero title={t("job_seeker_profile_title")} subtitle={t("job_seeker_profile_subtitle")} />
         <div className="container py-5">
           <div className="alert alert-info" role="alert">
-            <h4 className="alert-heading">Profile Not Found</h4>
-            <p>Your profile hasn't been created yet. Click "Create Profile" to set up your profile.</p>
+            <h4 className="alert-heading">{t("profile_not_found")}</h4>
+            <p>{t("profile_not_created")}</p>
             <button className="btn btn-primary" onClick={toggleEdit}>
               <i className="bi bi-pencil me-2"></i>
-              Create Profile
+              {t("create_profile")}
             </button>
           </div>
         </div>
@@ -215,13 +217,13 @@ const JobSeekerProfile = () => {
 
   return (
     <div>
-      <PageHero title="Job Seeker Profile" subtitle="Manage your personal information and resume." />
+      <PageHero title={t("job_seeker_profile_title")} subtitle={t("job_seeker_profile_subtitle")} />
 
       <div className="container pb-5">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h4 className="mb-1">Welcome, {profile.fullName || authUser?.fullname || 'Job Seeker'}!</h4>
-            <p className="text-muted mb-0">Keep your profile updated to attract better job opportunities</p>
+            <h4 className="mb-1">{t("welcome_message", { name: profile.fullName || authUser?.fullname || t("job_seeker") })}</h4>
+            <p className="text-muted mb-0">{t("profile_update_message")}</p>
           </div>
           {isEditing ? (
             <div className="d-flex gap-2">
@@ -233,12 +235,12 @@ const JobSeekerProfile = () => {
                 {saving ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Saving...
+                    {t("saving")}
                   </>
                 ) : (
                   <>
                     <i className="bi bi-check-lg me-2"></i>
-                    Save Changes
+                    {t("save_changes")}
                   </>
                 )}
               </button>
@@ -247,12 +249,12 @@ const JobSeekerProfile = () => {
                 onClick={toggleEdit}
                 disabled={saving}
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           ) : (
             <button className="btn btn-primary" onClick={toggleEdit}>
-              <i className="bi bi-pencil me-2"></i> Edit Profile
+              <i className="bi bi-pencil me-2"></i> {t("edit_profile")}
             </button>
           )}
         </div>
@@ -264,34 +266,34 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-person-circle me-2 text-primary"></i>
-                  Basic Information
+                  {t("basic_information")}
                 </h5>
               </div>
               <div className="card-body p-4">
                 <div className="row g-3">
                   <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Full Name</label>
+                    <label className="form-label text-muted small fw-bold">{t("full_name")}</label>
                     {isEditing ? (
                       <input 
                         name="fullName" 
                         value={formData.fullName} 
                         onChange={handleChange} 
                         className="form-control"
-                        placeholder="Enter your full name"
+                        placeholder={t("enter_full_name")}
                       />
                     ) : (
-                      <p className="fw-medium">{profile.fullName || "Not provided"}</p>
+                      <p className="fw-medium">{profile.fullName || t("not_provided")}</p>
                     )}
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Username</label>
+                    <label className="form-label text-muted small fw-bold">{t("username")}</label>
                     <p className="fw-medium">
-                      <span className="badge bg-secondary">{profile.userName || "Not set"}</span>
+                      <span className="badge bg-secondary">{profile.userName || t("not_set")}</span>
                     </p>
-                    <small className="text-muted">Username cannot be changed</small>
+                    <small className="text-muted">{t("username_cannot_change")}</small>
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Email</label>
+                    <label className="form-label text-muted small fw-bold">{t("email")}</label>
                     {isEditing ? (
                       <input 
                         name="email" 
@@ -299,15 +301,15 @@ const JobSeekerProfile = () => {
                         value={formData.email} 
                         onChange={handleChange} 
                         className="form-control"
-                        placeholder="Enter your email"
+                        placeholder={t("enter_email")}
                         disabled // Email usually shouldn't be editable
                       />
                     ) : (
-                      <p className="fw-medium">{profile.email || "Not provided"}</p>
+                      <p className="fw-medium">{profile.email || t("not_provided")}</p>
                     )}
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Phone</label>
+                    <label className="form-label text-muted small fw-bold">{t("phone")}</label>
                     {isEditing ? (
                       <input 
                         name="phone" 
@@ -315,17 +317,11 @@ const JobSeekerProfile = () => {
                         value={formData.phone} 
                         onChange={handleChange} 
                         className="form-control"
-                        placeholder="Enter your phone number"
+                        placeholder={t("enter_phone")}
                       />
                     ) : (
-                      <p className="fw-medium">{profile.phone || "Not provided"}</p>
+                      <p className="fw-medium">{profile.phone || t("not_provided")}</p>
                     )}
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label text-muted small fw-bold">Role</label>
-                    <p className="fw-medium">
-                      <span className="badge bg-primary">Job Seeker</span>
-                    </p>
                   </div>
                 </div>
               </div>
@@ -335,7 +331,7 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-person-lines-fill me-2 text-info"></i>
-                  About Me
+                  {t("about_me")}
                 </h5>
               </div>
               <div className="card-body p-4">
@@ -346,11 +342,11 @@ const JobSeekerProfile = () => {
                     value={formData.about} 
                     onChange={handleChange} 
                     className="form-control"
-                    placeholder="Tell us about yourself, your experience, and career goals..."
+                    placeholder={t("about_placeholder")}
                   />
                 ) : (
                   <p className="text-secondary">
-                    {profile.about || "No description provided. Add information about your experience, skills, and career goals."}
+                    {profile.about || t("no_description_provided")}
                   </p>
                 )}
               </div>
@@ -360,41 +356,41 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-mortarboard me-2 text-success"></i>
-                  Education
+                  {t("education")}
                 </h5>
               </div>
               <div className="card-body p-4">
                 {isEditing ? (
                   <div className="row g-3">
                     <div className="col-md-6">
-                      <label className="form-label">Degree</label>
+                      <label className="form-label">{t("degree")}</label>
                       <input 
                         name="degree" 
                         value={formData.education.degree} 
                         onChange={handleEducationChange} 
                         className="form-control"
-                        placeholder="e.g., Bachelor of Computer Science"
+                        placeholder={t("degree_placeholder")}
                       />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label">College/University</label>
+                      <label className="form-label">{t("college_university")}</label>
                       <input 
                         name="college" 
                         value={formData.education.college} 
                         onChange={handleEducationChange} 
                         className="form-control"
-                        placeholder="e.g., Tech University"
+                        placeholder={t("college_placeholder")}
                       />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label">Year of Graduation</label>
+                      <label className="form-label">{t("year_of_graduation")}</label>
                       <input 
                         name="year" 
                         type="number"
                         value={formData.education.year} 
                         onChange={handleEducationChange} 
                         className="form-control"
-                        placeholder="e.g., 2020"
+                        placeholder={t("year_placeholder")}
                         min="1950"
                         max="2030"
                       />
@@ -405,32 +401,32 @@ const JobSeekerProfile = () => {
                     {profile.education ? (
                       <div className="row g-3">
                         <div className="col-md-6">
-                          <label className="form-label text-muted small fw-bold">Degree</label>
+                          <label className="form-label text-muted small fw-bold">{t("degree")}</label>
                           <p className="fw-medium">
                             {typeof profile.education === 'string' 
                               ? profile.education 
-                              : (profile.education.degree || "Not specified")}
+                              : (profile.education.degree || t("not_specified"))}
                           </p>
                         </div>
                         <div className="col-md-6">
-                          <label className="form-label text-muted small fw-bold">College/University</label>
+                          <label className="form-label text-muted small fw-bold">{t("college_university")}</label>
                           <p className="fw-medium">
                             {typeof profile.education === 'object' && profile.education.college && profile.education.college.trim() !== ""
                               ? profile.education.college 
-                              : "Not specified"}
+                              : t("not_specified")}
                           </p>
                         </div>
                         <div className="col-md-6">
-                          <label className="form-label text-muted small fw-bold">Year of Graduation</label>
+                          <label className="form-label text-muted small fw-bold">{t("year_of_graduation")}</label>
                           <p className="fw-medium">
                             {typeof profile.education === 'object' && profile.education.year && profile.education.year > 0
                               ? profile.education.year 
-                              : "Not specified"}
+                              : t("not_specified")}
                           </p>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-secondary">No education details provided.</p>
+                      <p className="text-secondary">{t("no_education_details")}</p>
                     )}
                   </div>
                 )}
@@ -445,7 +441,7 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-speedometer2 me-2 text-primary"></i>
-                  Profile Completion
+                  {t("profile_completion")}
                 </h5>
               </div>
               <div className="card-body p-4">
@@ -455,8 +451,12 @@ const JobSeekerProfile = () => {
                   return (
                     <div>
                       <div className="d-flex justify-content-between align-items-center mb-2">
-                        <span className="fw-medium">{completion}% Complete</span>
-                        <span className={`badge bg-${color}`}>{completion >= 80 ? 'Excellent' : completion >= 50 ? 'Good' : 'Needs Work'}</span>
+                        <span className="fw-medium">{t("percent_complete", { percent: completion })}</span>
+                        <span className={`badge bg-${color}`}>
+                          {completion >= 80 ? t("profile_completion_excellent") : 
+                           completion >= 50 ? t("profile_completion_good") : 
+                           t("profile_completion_needs_work")}
+                        </span>
                       </div>
                       <div className="progress mb-3" style={{height: '8px'}}>
                         <div 
@@ -467,8 +467,8 @@ const JobSeekerProfile = () => {
                       </div>
                       <small className="text-muted">
                         {completion < 100 ? 
-                          "Complete your profile to attract more recruiters!" :
-                          "Your profile is complete! Great job!"
+                          t("complete_profile_message") :
+                          t("profile_complete_message")
                         }
                       </small>
                     </div>
@@ -481,7 +481,7 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-tools me-2 text-warning"></i>
-                  Skills
+                  {t("skills")}
                 </h5>
               </div>
               <div className="card-body p-4">
@@ -492,10 +492,10 @@ const JobSeekerProfile = () => {
                       value={formData.skills.join(", ")} 
                       onChange={handleSkillsChange} 
                       className="form-control" 
-                      placeholder="React, Node.js, Python, etc."
+                      placeholder={t("skills_placeholder")}
                     />
                     <small className="form-text text-muted">
-                      Separate skills with commas
+                      {t("separate_skills_comma")}
                     </small>
                   </div>
                 ) : (
@@ -508,13 +508,13 @@ const JobSeekerProfile = () => {
                           </span>
                         )) : 
                         <span className="text-muted small">
-                          No skills listed. Add your technical skills to attract recruiters.
+                          {t("no_skills_listed")}
                         </span>
                       }
                     </div>
                     {(!profile.skills || profile.skills.length === 0) && (
                       <span className="text-muted small">
-                        No skills listed. Add your technical skills to attract recruiters.
+                        {t("no_skills_listed")}
                       </span>
                     )}
                   </div>
@@ -526,7 +526,7 @@ const JobSeekerProfile = () => {
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                 <h5 className="fw-bold mb-0">
                   <i className="bi bi-file-earmark-text me-2 text-danger"></i>
-                  Resume
+                  {t("resume")}
                 </h5>
               </div>
               <div className="card-body p-4">
@@ -538,10 +538,10 @@ const JobSeekerProfile = () => {
                       value={formData.resume}
                       onChange={handleChange}
                       className="form-control" 
-                      placeholder="https://drive.google.com/your-resume-link"
+                      placeholder={t("resume_placeholder")}
                     />
                     <small className="form-text text-muted">
-                      Provide a link to your resume (Google Drive, LinkedIn, etc.)
+                      {t("resume_link_helper")}
                     </small>
                   </div>
                 ) : (
@@ -556,12 +556,12 @@ const JobSeekerProfile = () => {
                           className="btn btn-outline-primary btn-sm"
                         >
                           <i className="bi bi-eye me-2"></i>
-                          View Resume
+                          {t("view_resume")}
                         </a>
                       </div>
                     ) : (
                       <span className="text-muted small">
-                        No resume uploaded. Add your resume link to increase your chances of getting hired.
+                        {t("no_resume_uploaded")}
                       </span>
                     )}
                   </div>

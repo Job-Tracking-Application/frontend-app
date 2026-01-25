@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getMyJobs, deleteJob } from "../../services/jobService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../context/useLanguage";
 
 export default function MyJobs() {
     const { t } = useLanguage();
@@ -16,23 +16,23 @@ export default function MyJobs() {
     const [deleteModal, setDeleteModal] = useState({ show: false, job: null });
     const [deleting, setDeleting] = useState(false);
 
-    useEffect(() => {
-        loadMyJobs();
-    }, []);
-
-    const loadMyJobs = async () => {
+    const loadMyJobs = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
             const response = await getMyJobs();
             setJobs(response.data || []);
-        } catch (error) {
+        } catch {
             setError(t("load_jobs_error"));
             showErrorToast(t("load_jobs_error"));
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        loadMyJobs();
+    }, [loadMyJobs]);
 
     const handleDeleteClick = (job) => {
         setDeleteModal({ show: true, job });
@@ -46,7 +46,7 @@ export default function MyJobs() {
             await deleteJob(deleteModal.job.id);
             showSuccessToast(t("job_deleted"));
             setJobs(prev => prev.filter(j => j.id !== deleteModal.job.id));
-        } catch (error) {
+        } catch {
             showErrorToast(t("delete_job_error"));
         } finally {
             setDeleting(false);
@@ -114,22 +114,9 @@ export default function MyJobs() {
                         <div key={job.id} className="col-lg-6 mb-4">
                             <div className="card h-100 shadow-sm">
                                 <div className="card-body">
-
-                                    {/* TITLE + STATUS */}
                                     <div className="d-flex justify-content-between align-items-start mb-3">
                                         <h5 className="mb-0">{job.title}</h5>
-
-                                        {/* ✅ FIXED STATUS BADGE */}
-                                        <span
-                                            className={`badge ${job.isActive ? "bg-success" : "bg-secondary"}`}
-                                            style={{
-                                                padding: "4px 10px",
-                                                fontSize: "0.75rem",
-                                                borderRadius: "12px",
-                                                lineHeight: "1",
-                                                whiteSpace: "nowrap"
-                                            }}
-                                        >
+                                        <span className={`badge ${job.isActive ? "bg-success" : "bg-secondary"}`}>
                                             {job.isActive ? t("status_active") : t("status_inactive")}
                                         </span>
                                     </div>

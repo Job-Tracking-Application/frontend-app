@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../context/useLanguage";
 
 export default function JobCard({ job }) {
+    const { t } = useLanguage();
     return (
         <div className="card h-100 shadow-sm border-0 job-card" style={{ transition: "transform 0.2s, box-shadow 0.2s" }}>
             <div className="card-body p-4 d-flex flex-column">
@@ -25,7 +27,7 @@ export default function JobCard({ job }) {
                     </div>
 
                     <Link to={`/jobs/${job.id}`} className="btn btn-primary w-100 fw-medium">
-                        View Details
+                        {t("view_details")}
                     </Link>
                 </div>
             </div>

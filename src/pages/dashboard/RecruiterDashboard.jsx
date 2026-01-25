@@ -4,8 +4,10 @@ import PageHero from "../../components/common/PageHero";
 import { getRecruiterStats } from "../../services/dashboardService";
 import { getJobs } from "../../services/jobService";
 import { showErrorToast } from "../../utils/toast";
+import { useLanguage } from "../../context/useLanguage";
 
 export default function RecruiterDashboard() {
+    const { t } = useLanguage();
     const [stats, setStats] = useState({
         activeJobs: 0,
         pendingApplications: 0,
@@ -42,8 +44,8 @@ export default function RecruiterDashboard() {
             }
         } catch (error) {
             console.error("Error loading dashboard data:", error);
-            setError("Failed to load dashboard data");
-            showErrorToast("Failed to load dashboard data from backend");
+            setError(t("dashboard_error"));
+            showErrorToast(t("dashboard_error_backend"));
         } finally {
             setLoading(false);
         }
@@ -58,7 +60,7 @@ export default function RecruiterDashboard() {
                             <h6 className="text-muted text-uppercase mb-2">{title}</h6>
                             {loading ? (
                                 <div className="spinner-border spinner-border-sm text-primary" role="status">
-                                    <span className="visually-hidden">Loading...</span>
+                                    <span className="visually-hidden">{t("loading")}</span>
                                 </div>
                             ) : (
                                 <h2 className="display-5 fw-bold mb-0">{value}</h2>
@@ -74,7 +76,7 @@ export default function RecruiterDashboard() {
     if (error) {
         return (
             <div>
-                <PageHero title="Recruiter Dashboard" subtitle="Post jobs and manage candidates efficiently." />
+                <PageHero title={t("recruiter_dashboard_title")} subtitle={t("recruiter_dashboard_subtitle")} />
                 <div className="container pb-5">
                     <div className="alert alert-danger border-0 shadow-sm rounded-3 p-4">
                         <i className="bi bi-exclamation-triangle me-2"></i>
@@ -83,7 +85,7 @@ export default function RecruiterDashboard() {
                             className="btn btn-outline-danger btn-sm ms-3"
                             onClick={loadDashboardData}
                         >
-                            Retry
+                            {t("retry")}
                         </button>
                     </div>
                 </div>
@@ -93,30 +95,30 @@ export default function RecruiterDashboard() {
 
     return (
         <div>
-            <PageHero title="Recruiter Dashboard" subtitle="Post jobs and manage candidates efficiently." />
+            <PageHero title={t("recruiter_dashboard_title")} subtitle={t("recruiter_dashboard_subtitle")} />
 
             <div className="container pb-5">
                 <div className="row g-4">
-                    <StatCard title="Active Jobs" value={stats.activeJobs} color="primary" icon="bi-briefcase" />
-                    <StatCard title="Pending Applications" value={stats.pendingApplications} color="warning" icon="bi-clock" />
-                    <StatCard title="Hired Candidates" value={stats.hiredCandidates} color="success" icon="bi-check-circle" />
+                    <StatCard title={t("active_jobs")} value={stats.activeJobs} color="primary" icon="bi-briefcase" />
+                    <StatCard title={t("pending_applications")} value={stats.pendingApplications} color="warning" icon="bi-clock" />
+                    <StatCard title={t("hired_candidates")} value={stats.hiredCandidates} color="success" icon="bi-check-circle" />
 
                     <div className="col-12 mt-4">
-                        <h4 className="fw-bold mb-3">Quick Actions</h4>
+                        <h4 className="fw-bold mb-3">{t("quick_actions")}</h4>
                         <div className="row g-3">
                             <div className="col-md-3">
                                 <Link to="/jobs/create" className="btn btn-primary w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-plus-circle me-2"></i> Post New Job
+                                    <i className="bi bi-plus-circle me-2"></i> {t("post_new_job")}
                                 </Link>
                             </div>
                             <div className="col-md-3">
                                 <Link to="/applications/manage" className="btn btn-outline-dark w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-people me-2"></i> Manage Applications
+                                    <i className="bi bi-people me-2"></i> {t("nav_manage_apps")}
                                 </Link>
                             </div>
                             <div className="col-md-3">
                                 <Link to="/profile" className="btn btn-outline-secondary w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-building me-2"></i> Company Profile
+                                    <i className="bi bi-building me-2"></i> {t("company_profile")}
                                 </Link>
                             </div>
                             <div className="col-md-3">
@@ -126,7 +128,7 @@ export default function RecruiterDashboard() {
                                     disabled={loading}
                                 >
                                     <i className="bi bi-arrow-clockwise me-2"></i>
-                                    {loading ? "Refreshing..." : "Refresh Stats"}
+                                    {loading ? t("refreshing") : t("refresh_stats")}
                                 </button>
                             </div>
                         </div>
