@@ -41,7 +41,7 @@ export default function ApplyJob() {
         try {
             setLoading(true);
             setError(null);
-            
+
             // Load job details
             const jobResponse = await getJobById(id);
             setJob(jobResponse.data);
@@ -50,7 +50,7 @@ export default function ApplyJob() {
             try {
                 const checkResponse = await checkApplicationExists(id);
                 setAlreadyApplied(checkResponse.hasApplied);
-                
+
                 if (checkResponse.hasApplied) {
                     // User has already applied for this job
                 }
@@ -73,7 +73,7 @@ export default function ApplyJob() {
             ...prev,
             [name]: value
         }));
-        
+
         // Clear error when user starts typing
         if (formErrors[name]) {
             setFormErrors(prev => ({
@@ -112,7 +112,7 @@ export default function ApplyJob() {
         if (formData.portfolioUrl && !validateResumeUrl(formData.portfolioUrl).isValid) {
             errors.portfolioUrl = 'Please enter a valid URL (starting with http:// or https://)';
         }
-        
+
         if (formData.linkedinUrl && !validateResumeUrl(formData.linkedinUrl).isValid) {
             errors.linkedinUrl = 'Please enter a valid URL (starting with http:// or https://)';
         }
@@ -123,7 +123,7 @@ export default function ApplyJob() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             showErrorToast("Please fix the errors in the form");
             return;
@@ -140,10 +140,10 @@ export default function ApplyJob() {
 
             await applyForJob(id, applicationData);
             showSuccessToast("Application submitted successfully!");
-            navigate("/applications/my");
+            navigate("/applications/");
         } catch (error) {
             console.error("Error applying for job:", error);
-            
+
             if (error.response?.status === 401) {
                 showErrorToast("Your session has expired. Please log in again.");
             } else if (error.response?.status === 409) {
@@ -260,7 +260,7 @@ export default function ApplyJob() {
                                         <i className="bi bi-file-person me-2"></i>
                                         Resume URL <span className="text-danger">*</span>
                                     </h5>
-                                    
+
                                     <div className="mb-3">
                                         <input
                                             type="url"
@@ -277,7 +277,7 @@ export default function ApplyJob() {
                                         {formErrors.resumeUrl && (
                                             <div className="invalid-feedback">{formErrors.resumeUrl}</div>
                                         )}
-                                        
+
                                         {/* URL Suggestions */}
                                         {urlSuggestions && urlSuggestions.length > 0 && (
                                             <div className="alert alert-info mt-2">
@@ -330,7 +330,7 @@ export default function ApplyJob() {
                                 {/* Additional Links */}
                                 <div className="mb-4">
                                     <h6 className="mb-3">Additional Information (Optional)</h6>
-                                    
+
                                     <div className="row">
                                         <div className="col-md-6 mb-3">
                                             <label htmlFor="portfolioUrl" className="form-label">
@@ -350,7 +350,7 @@ export default function ApplyJob() {
                                                 <div className="invalid-feedback">{formErrors.portfolioUrl}</div>
                                             )}
                                         </div>
-                                        
+
                                         <div className="col-md-6 mb-3">
                                             <label htmlFor="linkedinUrl" className="form-label">
                                                 <i className="bi bi-linkedin me-2"></i>

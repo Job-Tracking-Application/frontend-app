@@ -4,8 +4,11 @@ import PageHero from "../../components/common/PageHero";
 import { getRecruiterStats } from "../../services/dashboardService";
 import { getJobs } from "../../services/jobService";
 import { showErrorToast } from "../../utils/toast";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function RecruiterDashboard() {
+    const { t } = useLanguage();
+
     const [stats, setStats] = useState({
         activeJobs: 0,
         pendingApplications: 0,
@@ -22,29 +25,25 @@ export default function RecruiterDashboard() {
         try {
             setLoading(true);
             setError(null);
-            
-            // Try to get stats from dedicated endpoint first
+
             try {
                 const response = await getRecruiterStats();
                 setStats(response.data);
-            } catch (statsError) {
-                // Fallback: Calculate stats from jobs endpoint
+            } catch {
                 const jobsResponse = await getJobs();
                 const jobs = jobsResponse.data || [];
-                
-                // Calculate basic stats from jobs data
+
                 const activeJobs = jobs.filter(job => job.isActive !== false).length;
-                
+
                 setStats({
-                    activeJobs: activeJobs,
-                    pendingApplications: 0, // Would need applications endpoint
-                    hiredCandidates: 0      // Would need applications endpoint
+                    activeJobs,
+                    pendingApplications: 0,
+                    hiredCandidates: 0
                 });
             }
-        } catch (error) {
-            console.error("Error loading dashboard data:", error);
-            setError("Failed to load dashboard data");
-            showErrorToast("Failed to load dashboard data from backend");
+        } catch (err) {
+            setError(t("dashboard_error"));
+            showErrorToast(t("dashboard_error_backend"));
         } finally {
             setLoading(false);
         }
@@ -59,13 +58,13 @@ export default function RecruiterDashboard() {
                             <h6 className="text-muted text-uppercase mb-2">{title}</h6>
                             {loading ? (
                                 <div className="spinner-border spinner-border-sm text-primary" role="status">
-                                    <span className="visually-hidden">Loading...</span>
+                                    <span className="visually-hidden">{t("loading")}</span>
                                 </div>
                             ) : (
                                 <h2 className="display-5 fw-bold mb-0">{value}</h2>
                             )}
                         </div>
-                        {icon && <i className={`bi ${icon} fs-1 text-${color} opacity-25`}></i>}
+                        <i className={`bi ${icon} fs-1 text-${color} opacity-25`}></i>
                     </div>
                 </div>
             </div>
@@ -74,85 +73,108 @@ export default function RecruiterDashboard() {
 
     if (error) {
         return (
-            <div>
-                <PageHero title="Recruiter Dashboard" subtitle="Post jobs and manage candidates efficiently." />
+            <>
+                <PageHero
+                    title={t("recruiter_dashboard_title")}
+                    subtitle={t("recruiter_dashboard_subtitle")}
+                />
+
                 <div className="container pb-5">
-                    <div className="alert alert-danger border-0 shadow-sm rounded-3 p-4">
+                    <div className="alert alert-danger shadow-sm d-flex align-items-center">
                         <i className="bi bi-exclamation-triangle me-2"></i>
                         {error}
-                        <button 
+                        <button
                             className="btn btn-outline-danger btn-sm ms-3"
                             onClick={loadDashboardData}
                         >
-                            Retry
+                            {t("retry")}
                         </button>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     return (
-        <div>
-            <PageHero title="Recruiter Dashboard" subtitle="Post jobs and manage candidates efficiently." />
+        <>
+            <PageHero
+                title={t("recruiter_dashboard_title")}
+                subtitle={t("recruiter_dashboard_subtitle")}
+            />
 
             <div className="container pb-5">
                 <div className="row g-4">
-                    {/* Quick Stats */}
-                    <StatCard 
-                        title="Active Jobs" 
-                        value={stats.activeJobs} 
-                        color="primary" 
+                    {/* Stats */}
+                    <StatCard
+                        title={t("active_jobs")}
+                        value={stats.activeJobs}
+                        color="primary"
                         icon="bi-briefcase"
                     />
-                    
-                    <StatCard 
-                        title="Pending Applications" 
-                        value={stats.pendingApplications} 
-                        color="warning" 
+
+                    <StatCard
+                        title={t("pending_applications")}
+                        value={stats.pendingApplications}
+                        color="warning"
                         icon="bi-clock"
                     />
-                    
-                    <StatCard 
-                        title="Hired Candidates" 
-                        value={stats.hiredCandidates} 
-                        color="success" 
+
+                    <StatCard
+                        title={t("hired_candidates")}
+                        value={stats.hiredCandidates}
+                        color="success"
                         icon="bi-check-circle"
                     />
 
-                    {/* Actions */}
+                    {/* Quick Actions */}
                     <div className="col-12 mt-4">
-                        <h4 className="fw-bold mb-3">Quick Actions</h4>
+                        <h4 className="fw-bold mb-3">{t("quick_actions")}</h4>
+
                         <div className="row g-3">
                             <div className="col-md-3">
-                                <Link to="/jobs/create" className="btn btn-primary w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-plus-circle me-2"></i> Post New Job
+                                <Link
+                                    to="/jobs/create"
+                                    className="btn btn-primary w-100 py-3 shadow-sm"
+                                >
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    {t("post_new_job")}
                                 </Link>
                             </div>
+
                             <div className="col-md-3">
-                                <Link to="/applications/manage" className="btn btn-outline-dark w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-people me-2"></i> Manage Applications
+                                <Link
+                                    to="/applications/manage"
+                                    className="btn btn-outline-dark w-100 py-3 shadow-sm"
+                                >
+                                    <i className="bi bi-people me-2"></i>
+                                    {t("manage_applications")}
                                 </Link>
                             </div>
+
                             <div className="col-md-3">
-                                <Link to="/profile" className="btn btn-outline-secondary w-100 py-3 fw-medium shadow-sm">
-                                    <i className="bi bi-building me-2"></i> Company Profile
+                                <Link
+                                    to="/profile"
+                                    className="btn btn-outline-secondary w-100 py-3 shadow-sm"
+                                >
+                                    <i className="bi bi-building me-2"></i>
+                                    {t("company_profile")}
                                 </Link>
                             </div>
+
                             <div className="col-md-3">
-                                <button 
-                                    className="btn btn-outline-info w-100 py-3 fw-medium shadow-sm"
+                                <button
+                                    className="btn btn-outline-info w-100 py-3 shadow-sm"
                                     onClick={loadDashboardData}
                                     disabled={loading}
                                 >
-                                    <i className="bi bi-arrow-clockwise me-2"></i> 
-                                    {loading ? "Refreshing..." : "Refresh Stats"}
+                                    <i className="bi bi-arrow-clockwise me-2"></i>
+                                    {loading ? t("refreshing") : t("refresh_stats")}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getJobById, deleteJob } from "../../services/jobService";
-import { applyForJob } from "../../services/applicationService";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -11,33 +11,30 @@ export default function JobDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { t } = useLanguage();
+
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
-    const [applying, setApplying] = useState(false);
 
-    const isRecruiter = user?.role === 'RECRUITER';
-    const isJobSeeker = user?.role === 'JOB_SEEKER';
+    const isRecruiter = user?.role === "RECRUITER";
+    const isJobSeeker = user?.role === "JOB_SEEKER";
     const isOwner = isRecruiter && job?.recruiterUserId === user?.id;
 
     useEffect(() => {
-        if (id) {
-            loadJob();
-        }
+        loadJob();
     }, [id]);
 
     const loadJob = async () => {
         try {
             setLoading(true);
-            setError(null);
-            const response = await getJobById(id);
-            setJob(response.data);
-        } catch (error) {
-            console.error("Error loading job:", error);
-            setError("Failed to load job details");
-            showErrorToast("Failed to load job details. Please try again.");
+            const res = await getJobById(id);
+            setJob(res.data);
+        } catch {
+            setError(true);
+            showErrorToast(t("job_load_error"));
         } finally {
             setLoading(false);
         }
@@ -47,63 +44,48 @@ export default function JobDetails() {
         try {
             setDeleting(true);
             await deleteJob(id);
-            showSuccessToast("Job deleted successfully!");
+            showSuccessToast(t("job_delete_success"));
             navigate("/jobs/my-jobs");
-        } catch (error) {
-            console.error("Error deleting job:", error);
-            showErrorToast("Failed to delete job. Please try again.");
+        } catch {
+            showErrorToast(t("job_delete_error"));
         } finally {
             setDeleting(false);
             setShowDeleteModal(false);
         }
     };
 
-    const handleApply = () => {
-        // Redirect to application form instead of direct apply
-        navigate(`/jobs/${id}/apply`);
-    };
-
     const formatSalary = (min, max) => {
-        if (!min && !max) return "Salary not specified";
-        if (!max) return `₹${min?.toLocaleString()}+`;
-        if (!min) return `Up to ₹${max?.toLocaleString()}`;
-        return `₹${min?.toLocaleString()} - ₹${max?.toLocaleString()}`;
+        if (!min && !max) return t("salary_not_specified");
+        if (!max) return `₹${min.toLocaleString()}+`;
+        if (!min) return `Up to ₹${max.toLocaleString()}`;
+        return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
     };
 
     const formatExperience = (min, max) => {
-        if (!min && !max) return "Experience not specified";
+        if (!min && !max) return t("experience_not_specified");
         if (!max) return `${min}+ years`;
         if (!min) return `Up to ${max} years`;
         if (min === max) return `${min} years`;
         return `${min} - ${max} years`;
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "Not specified";
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
+    const formatDate = (d) =>
+        d
+            ? new Date(d).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            })
+            : t("no_deadline");
 
     if (loading) return <Loader />;
 
-    if (error || !job) {
+    if (!job || error) {
         return (
             <div className="container py-5">
-                <div className="alert alert-danger" role="alert">
-                    <h4 className="alert-heading">Error Loading Job</h4>
-                    <p>{error || "Job not found"}</p>
-                    {isRecruiter ? (
-                        <Link to="/jobs/my-jobs" className="btn btn-outline-danger">
-                            Back to My Jobs
-                        </Link>
-                    ) : (
-                        <Link to="/jobs" className="btn btn-outline-danger">
-                            Back to Jobs
-                        </Link>
-                    )}
+                <div className="alert alert-danger">
+                    <h4>{t("error_loading_job")}</h4>
+                    <p>{t("job_not_found")}</p>
                 </div>
             </div>
         );
@@ -112,163 +94,135 @@ export default function JobDetails() {
     return (
         <div className="container py-5">
             <div className="row">
+                {/* LEFT */}
                 <div className="col-lg-8">
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-start mb-4">
                                 <div>
-                                    <h1 className="h3 mb-2">{job.title}</h1>
-                                    <div className="text-muted mb-3">
-                                        <i className="fas fa-building me-2"></i>
-                                        Company ID: {job.companyId}
-                                        {job.location && (
-                                            <>
-                                                <i className="fas fa-map-marker-alt ms-3 me-2"></i>
-                                                {job.location}
-                                            </>
-                                        )}
+                                    <h3>{job.title}</h3>
+                                    <div className="text-muted">
+                                        Company ID: {job.companyId} {job.location && `• ${job.location}`}
                                     </div>
                                 </div>
-                                <span className={`badge fs-6 ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                                    {job.isActive ? 'Active' : 'Inactive'}
+
+                                {/* STATUS BADGE – FIXED SIZE */}
+                                <span
+                                    className={`badge ${job.isActive ? "bg-success" : "bg-secondary"}`}
+                                    style={{
+                                        padding: "4px 10px",
+                                        fontSize: "0.75rem",
+                                        borderRadius: "12px",
+                                        height: "fit-content"
+                                    }}
+                                >
+                                    {job.isActive ? t("status_active") : t("status_inactive")}
                                 </span>
                             </div>
 
+                            {/* INFO CARDS */}
                             <div className="row mb-4">
                                 <div className="col-md-4">
                                     <div className="border rounded p-3 text-center">
-                                        <h6 className="text-muted mb-1">Salary Range</h6>
-                                        <div className="h5 text-success mb-0">
+                                        <h6 className="text-muted">{t("salary_range")}</h6>
+                                        <div className="text-success fw-bold">
                                             {formatSalary(job.minSalary, job.maxSalary)}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="border rounded p-3 text-center">
-                                        <h6 className="text-muted mb-1">Experience</h6>
-                                        <div className="h5 text-info mb-0">
+                                        <h6 className="text-muted">{t("experience")}</h6>
+                                        <div className="text-info fw-bold">
                                             {formatExperience(job.minExperience, job.maxExperience)}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="border rounded p-3 text-center">
-                                        <h6 className="text-muted mb-1">Job Type</h6>
-                                        <div className="h5 text-primary mb-0">{job.jobType}</div>
+                                        <h6 className="text-muted">{t("job_type")}</h6>
+                                        <div className="fw-bold text-primary">{job.jobType}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mb-4">
-                                <h5>Job Description</h5>
-                                <div className="bg-light p-3 rounded">
-                                    <p className="mb-0" style={{whiteSpace: 'pre-wrap'}}>
-                                        {job.description}
-                                    </p>
-                                </div>
+                            {/* DESCRIPTION */}
+                            <h5>{t("job_description")}</h5>
+                            <div className="bg-light p-3 rounded mb-4">
+                                {job.description}
                             </div>
 
+                            {/* DATES */}
                             <div className="row mb-4">
                                 <div className="col-md-6">
-                                    <h6>Posted Date</h6>
-                                    <p className="text-success">
-                                        <i className="fas fa-calendar-plus me-2"></i>
-                                        {formatDate(job.postedAt)}
-                                    </p>
+                                    <strong>{t("posted_date")}:</strong> {formatDate(job.postedAt)}
                                 </div>
                                 <div className="col-md-6">
-                                    <h6>Application Deadline</h6>
-                                    {job.deadline ? (
-                                        <p className="text-warning fw-bold">
-                                            <i className="fas fa-calendar-alt me-2"></i>
-                                            {formatDate(job.deadline)}
-                                        </p>
-                                    ) : (
-                                        <p className="text-muted fst-italic">
-                                            <i className="fas fa-calendar-times me-2"></i>
-                                            No deadline specified
-                                        </p>
-                                    )}
+                                    <strong>{t("application_deadline")}:</strong>{" "}
+                                    {job.deadline ? formatDate(job.deadline) : t("no_deadline")}
                                 </div>
                             </div>
 
+                            {/* ACTIONS */}
                             <div className="d-flex gap-3">
-                                {/* Back button - different for each role */}
-                                {isRecruiter ? (
-                                    <Link to="/jobs/my-jobs" className="btn btn-outline-secondary">
-                                        <i className="fas fa-arrow-left me-2"></i>
-                                        Back to My Jobs
-                                    </Link>
-                                ) : (
-                                    <Link to="/jobs" className="btn btn-outline-secondary">
-                                        <i className="fas fa-arrow-left me-2"></i>
-                                        Back to Jobs
-                                    </Link>
-                                )}
-
-                                {/* Role-specific action buttons */}
-                                {isJobSeeker && (
-                                    <button 
-                                        className="btn btn-primary"
-                                        onClick={handleApply}
-                                        disabled={applying}
-                                    >
-                                        <i className="fas fa-paper-plane me-2"></i>
-                                        Apply for Job
-                                    </button>
-                                )}
+                                <Link
+                                    to={isRecruiter ? "/jobs/my-jobs" : "/jobs"}
+                                    className="btn btn-outline-secondary"
+                                >
+                                    {isRecruiter ? t("back_to_my_jobs") : t("back_to_jobs")}
+                                </Link>
 
                                 {isOwner && (
                                     <>
-                                        <Link 
-                                            to={`/jobs/edit/${job.id}`} 
+                                        <Link
+                                            to={`/jobs/edit/${job.id}`}
                                             className="btn btn-outline-primary"
                                         >
-                                            <i className="fas fa-edit me-2"></i>
-                                            Edit Job
+                                            {t("edit_job")}
                                         </Link>
-                                        <button 
+                                        <button
                                             className="btn btn-outline-danger"
                                             onClick={() => setShowDeleteModal(true)}
                                         >
-                                            <i className="fas fa-trash me-2"></i>
-                                            Delete Job
+                                            {t("delete_job")}
                                         </button>
                                     </>
                                 )}
 
-                                {isRecruiter && !isOwner && (
-                                    <div className="text-muted fst-italic">
-                                        <i className="fas fa-info-circle me-2"></i>
-                                        You can only edit jobs you created
-                                    </div>
+                                {isJobSeeker && (
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => navigate(`/jobs/${id}/apply`)}
+                                    >
+                                        {t("apply_for_job")}
+                                    </button>
                                 )}
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* RIGHT */}
                 <div className="col-lg-4">
                     <div className="card shadow-sm">
                         <div className="card-body">
-                            <h5 className="card-title">Job Information</h5>
+                            <h5>{t("job_information")}</h5>
                             <ul className="list-unstyled">
-                                <li className="mb-2">
-                                    <strong>Job ID:</strong> {job.id}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>Recruiter ID:</strong> {job.recruiterUserId}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>Created:</strong> {formatDate(job.createdAt)}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>Last Updated:</strong> {formatDate(job.updatedAt)}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>Status:</strong> 
-                                    <span className={`ms-2 badge ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                                        {job.isActive ? 'Active' : 'Inactive'}
+                                <li><strong>{t("job_id")}:</strong> {job.id}</li>
+                                <li><strong>{t("recruiter_id")}:</strong> {job.recruiterUserId}</li>
+                                <li><strong>{t("created")}:</strong> {formatDate(job.createdAt)}</li>
+                                <li><strong>{t("last_updated")}:</strong> {formatDate(job.updatedAt)}</li>
+                                <li>
+                                    <strong>{t("status")}:</strong>
+                                    <span
+                                        className={`ms-2 badge ${job.isActive ? "bg-success" : "bg-secondary"}`}
+                                        style={{
+                                            padding: "4px 10px",
+                                            fontSize: "0.75rem",
+                                            borderRadius: "12px"
+                                        }}
+                                    >
+                                        {job.isActive ? t("status_active") : t("status_inactive")}
                                     </span>
                                 </li>
                             </ul>
@@ -277,11 +231,12 @@ export default function JobDetails() {
                 </div>
             </div>
 
+            {/* DELETE MODAL */}
             <ConfirmationModal
                 show={showDeleteModal}
-                title="Delete Job"
-                message={`Are you sure you want to delete "${job.title}"? This action cannot be undone.`}
-                confirmText="Delete"
+                title={t("delete_job_confirm_title")}
+                message={t("delete_job_confirm_message").replace("{{title}}", job.title)}
+                confirmText={t("delete_job")}
                 confirmVariant="danger"
                 onConfirm={handleDelete}
                 onCancel={() => setShowDeleteModal(false)}

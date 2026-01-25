@@ -176,12 +176,12 @@ const ManageApplications = () => {
 
                               <span
                                 className={`badge rounded-pill px-3 py-1 fw-semibold text-uppercase ${app.status === "HIRED"
-                                    ? "bg-success"
-                                    : app.status === "SHORTLISTED"
-                                      ? "bg-warning text-dark"
-                                      : app.status === "REJECTED"
-                                        ? "bg-danger"
-                                        : "bg-secondary"
+                                  ? "bg-success"
+                                  : app.status === "SHORTLISTED"
+                                    ? "bg-warning text-dark"
+                                    : app.status === "REJECTED"
+                                      ? "bg-danger"
+                                      : "bg-secondary"
                                   }`}
                                 style={{
                                   fontSize: "0.75rem",

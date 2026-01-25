@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getJobById, updateJob } from "../../services/jobService";
 import { getCompanies } from "../../services/companyService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import { useLanguage } from "../../context/LanguageContext";
 import Loader from "../../components/common/Loader";
 
 export default function EditJob() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useLanguage();
+
     const [companies, setCompanies] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
@@ -21,6 +24,7 @@ export default function EditJob() {
         companyId: "",
         deadline: ""
     });
+
     const [skillIds, setSkillIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -33,15 +37,14 @@ export default function EditJob() {
     const loadData = async () => {
         try {
             setLoading(true);
-            
-            // Load companies and job data in parallel
+
             const [companiesResponse, jobResponse] = await Promise.all([
                 getCompanies(),
                 getJobById(id)
             ]);
 
             setCompanies(companiesResponse.data || []);
-            
+
             const job = jobResponse.data;
             setFormData({
                 title: job.title || "",
@@ -53,12 +56,12 @@ export default function EditJob() {
                 maxExperience: job.maxExperience || "",
                 jobType: job.jobType || "Full-time",
                 companyId: job.companyId || "",
-                deadline: job.deadline ? job.deadline.split('T')[0] : ""
+                deadline: job.deadline ? job.deadline.split("T")[0] : ""
             });
 
         } catch (error) {
             console.error("Error loading data:", error);
-            showErrorToast("Failed to load job data. Please try again.");
+            showErrorToast(t("edit_job_load_error"));
         } finally {
             setLoading(false);
             setCompaniesLoading(false);
@@ -72,15 +75,14 @@ export default function EditJob() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Validation
+
         if (!formData.companyId) {
-            showErrorToast("Please select a company");
+            showErrorToast(t("select_company_error"));
             return;
         }
-        
+
         if (parseFloat(formData.minSalary) >= parseFloat(formData.maxSalary)) {
-            showErrorToast("Maximum salary must be greater than minimum salary");
+            showErrorToast(t("salary_validation_error"));
             return;
         }
 
@@ -93,16 +95,17 @@ export default function EditJob() {
                 minExperience: formData.minExperience ? parseInt(formData.minExperience) : null,
                 maxExperience: formData.maxExperience ? parseInt(formData.maxExperience) : null,
                 companyId: parseInt(formData.companyId),
-                deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null
+                deadline: formData.deadline
+                    ? new Date(formData.deadline).toISOString()
+                    : null
             };
-            
+
             await updateJob(id, jobData, skillIds);
-            showSuccessToast("Job updated successfully!");
+            showSuccessToast(t("edit_job_success"));
             navigate(`/jobs/${id}`);
         } catch (error) {
             console.error("Error updating job:", error);
-            const errorMessage = error.response?.data?.message || error.message || "Failed to update job";
-            showErrorToast(errorMessage);
+            showErrorToast(t("edit_job_error"));
         } finally {
             setSaving(false);
         }
@@ -114,12 +117,15 @@ export default function EditJob() {
         <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-lg-8">
-                    <h2 className="mb-4">Edit Job</h2>
+                    <h2 className="mb-4">{t("edit_job")}</h2>
+
                     <div className="card shadow-sm">
                         <div className="card-body p-4">
                             <form onSubmit={handleSubmit}>
+
+                                {/* Job Title */}
                                 <div className="mb-3">
-                                    <label className="form-label">Job Title *</label>
+                                    <label className="form-label">{t("job_title")} *</label>
                                     <input
                                         type="text"
                                         name="title"
@@ -127,13 +133,14 @@ export default function EditJob() {
                                         required
                                         value={formData.title}
                                         onChange={handleChange}
-                                        placeholder="e.g. Software Developer"
+                                        placeholder={t("job_title_placeholder")}
                                     />
                                 </div>
 
+                                {/* Company & Location */}
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Company *</label>
+                                        <label className="form-label">{t("company")} *</label>
                                         <select
                                             name="companyId"
                                             className="form-select"
@@ -143,45 +150,46 @@ export default function EditJob() {
                                             disabled={companiesLoading}
                                         >
                                             <option value="">
-                                                {companiesLoading ? "Loading companies..." : "Select Company"}
+                                                {companiesLoading ? t("loading_companies") : t("select_company")}
                                             </option>
-                                            {companies.map(company => (
-                                                <option key={company.id} value={company.id}>
-                                                    {company.name}
-                                                </option>
+                                            {companies.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name}</option>
                                             ))}
                                         </select>
                                     </div>
+
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Location</label>
+                                        <label className="form-label">{t("job_location")}</label>
                                         <input
                                             type="text"
                                             name="location"
                                             className="form-control"
                                             value={formData.location}
                                             onChange={handleChange}
-                                            placeholder="e.g. Mumbai, Remote"
+                                            placeholder={t("job_location_placeholder")}
                                         />
                                     </div>
                                 </div>
 
+                                {/* Job Type & Deadline */}
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Job Type *</label>
+                                        <label className="form-label">{t("job_type")} *</label>
                                         <select
                                             name="jobType"
                                             className="form-select"
                                             value={formData.jobType}
                                             onChange={handleChange}
                                         >
-                                            <option value="Full-time">Full-time</option>
-                                            <option value="Part-time">Part-time</option>
-                                            <option value="Contract">Contract</option>
-                                            <option value="Internship">Internship</option>
+                                            <option value="Full-time">{t("job_type_full_time")}</option>
+                                            <option value="Part-time">{t("job_type_part_time")}</option>
+                                            <option value="Contract">{t("job_type_contract")}</option>
+                                            <option value="Internship">{t("job_type_internship")}</option>
                                         </select>
                                     </div>
+
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Application Deadline</label>
+                                        <label className="form-label">{t("application_deadline")}</label>
                                         <input
                                             type="date"
                                             name="deadline"
@@ -192,9 +200,10 @@ export default function EditJob() {
                                     </div>
                                 </div>
 
+                                {/* Salary */}
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Minimum Salary (₹) *</label>
+                                        <label className="form-label">{t("min_salary")} *</label>
                                         <input
                                             type="number"
                                             name="minSalary"
@@ -202,11 +211,11 @@ export default function EditJob() {
                                             required
                                             value={formData.minSalary}
                                             onChange={handleChange}
-                                            placeholder="e.g. 300000"
                                         />
                                     </div>
+
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Maximum Salary (₹) *</label>
+                                        <label className="form-label">{t("max_salary")} *</label>
                                         <input
                                             type="number"
                                             name="maxSalary"
@@ -214,40 +223,38 @@ export default function EditJob() {
                                             required
                                             value={formData.maxSalary}
                                             onChange={handleChange}
-                                            placeholder="e.g. 600000"
                                         />
                                     </div>
                                 </div>
 
+                                {/* Experience */}
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Minimum Experience (years)</label>
+                                        <label className="form-label">{t("min_experience")}</label>
                                         <input
                                             type="number"
                                             name="minExperience"
                                             className="form-control"
                                             value={formData.minExperience}
                                             onChange={handleChange}
-                                            placeholder="e.g. 0"
-                                            min="0"
                                         />
                                     </div>
+
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">Maximum Experience (years)</label>
+                                        <label className="form-label">{t("max_experience")}</label>
                                         <input
                                             type="number"
                                             name="maxExperience"
                                             className="form-control"
                                             value={formData.maxExperience}
                                             onChange={handleChange}
-                                            placeholder="e.g. 5"
-                                            min="0"
                                         />
                                     </div>
                                 </div>
 
+                                {/* Description */}
                                 <div className="mb-4">
-                                    <label className="form-label">Job Description *</label>
+                                    <label className="form-label">{t("job_description")} *</label>
                                     <textarea
                                         name="description"
                                         className="form-control"
@@ -255,27 +262,30 @@ export default function EditJob() {
                                         required
                                         value={formData.description}
                                         onChange={handleChange}
-                                        placeholder="Describe the job responsibilities, requirements, and benefits..."
-                                    ></textarea>
+                                        placeholder={t("job_description_placeholder")}
+                                    />
                                 </div>
 
+                                {/* Buttons */}
                                 <div className="d-flex justify-content-end gap-3">
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-outline-secondary" 
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
                                         onClick={() => navigate(`/jobs/${id}`)}
                                         disabled={saving}
                                     >
-                                        Cancel
+                                        {t("cancel")}
                                     </button>
-                                    <button 
-                                        type="submit" 
-                                        className="btn btn-primary" 
+
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
                                         disabled={saving || companiesLoading}
                                     >
-                                        {saving ? "Updating..." : "Update Job"}
+                                        {saving ? t("updating") : t("update_job")}
                                     </button>
                                 </div>
+
                             </form>
                         </div>
                     </div>
