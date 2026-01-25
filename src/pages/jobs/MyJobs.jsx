@@ -5,8 +5,11 @@ import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function MyJobs() {
+    const { t } = useLanguage();
+
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,9 +27,8 @@ export default function MyJobs() {
             const response = await getMyJobs();
             setJobs(response.data || []);
         } catch (error) {
-            console.error("Error loading my jobs:", error);
-            setError("Failed to load your jobs");
-            showErrorToast("Failed to load your jobs. Please try again.");
+            setError(t("load_jobs_error"));
+            showErrorToast(t("load_jobs_error"));
         } finally {
             setLoading(false);
         }
@@ -42,11 +44,10 @@ export default function MyJobs() {
         try {
             setDeleting(true);
             await deleteJob(deleteModal.job.id);
-            showSuccessToast("Job deleted successfully!");
-            setJobs(jobs.filter(job => job.id !== deleteModal.job.id));
+            showSuccessToast(t("job_deleted"));
+            setJobs(prev => prev.filter(j => j.id !== deleteModal.job.id));
         } catch (error) {
-            console.error("Error deleting job:", error);
-            showErrorToast("Failed to delete job. Please try again.");
+            showErrorToast(t("delete_job_error"));
         } finally {
             setDeleting(false);
             setDeleteModal({ show: false, job: null });
@@ -54,18 +55,18 @@ export default function MyJobs() {
     };
 
     const formatSalary = (min, max) => {
-        if (!min && !max) return "Salary not specified";
+        if (!min && !max) return t("salary_not_specified");
         if (!max) return `₹${min?.toLocaleString()}+`;
-        if (!min) return `Up to ₹${max?.toLocaleString()}`;
+        if (!min) return `${t("salary_upto")} ₹${max?.toLocaleString()}`;
         return `₹${min?.toLocaleString()} - ₹${max?.toLocaleString()}`;
     };
 
     const formatExperience = (min, max) => {
-        if (!min && !max) return "Experience not specified";
-        if (!max) return `${min}+ years`;
-        if (!min) return `Up to ${max} years`;
-        if (min === max) return `${min} years`;
-        return `${min} - ${max} years`;
+        if (!min && !max) return t("experience_not_specified");
+        if (!max) return `${min}+ ${t("years")}`;
+        if (!min) return `${t("upto")} ${max} ${t("years")}`;
+        if (min === max) return `${min} ${t("years")}`;
+        return `${min} - ${max} ${t("years")}`;
     };
 
     const formatDate = (dateString) => {
@@ -78,11 +79,11 @@ export default function MyJobs() {
     if (error) {
         return (
             <div className="container py-5">
-                <div className="alert alert-danger" role="alert">
-                    <h4 className="alert-heading">Error Loading Jobs</h4>
+                <div className="alert alert-danger">
+                    <h4>{t("error_loading_jobs")}</h4>
                     <p>{error}</p>
                     <button className="btn btn-outline-danger" onClick={loadMyJobs}>
-                        Try Again
+                        {t("try_again")}
                     </button>
                 </div>
             </div>
@@ -92,18 +93,18 @@ export default function MyJobs() {
     return (
         <div className="container py-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>My Job Postings</h2>
+                <h2>{t("my_job_postings")}</h2>
                 <Link to="/jobs/create" className="btn btn-primary">
                     <i className="fas fa-plus me-2"></i>
-                    Post New Job
+                    {t("post_new_job")}
                 </Link>
             </div>
 
             {jobs.length === 0 ? (
-                <EmptyState 
-                    title="No Jobs Posted Yet"
-                    message="You haven't posted any jobs yet. Start by creating your first job posting!"
-                    actionText="Post Your First Job"
+                <EmptyState
+                    title={t("no_jobs_posted_title")}
+                    message={t("no_jobs_posted_msg")}
+                    actionText={t("post_first_job")}
                     actionLink="/jobs/create"
                     icon="fas fa-briefcase"
                 />
@@ -113,78 +114,60 @@ export default function MyJobs() {
                         <div key={job.id} className="col-lg-6 mb-4">
                             <div className="card h-100 shadow-sm">
                                 <div className="card-body">
+
+                                    {/* TITLE + STATUS */}
                                     <div className="d-flex justify-content-between align-items-start mb-3">
-                                        <h5 className="card-title mb-0">{job.title}</h5>
-                                        <span className={`badge ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                                            {job.isActive ? 'Active' : 'Inactive'}
+                                        <h5 className="mb-0">{job.title}</h5>
+
+                                        {/* ✅ FIXED STATUS BADGE */}
+                                        <span
+                                            className={`badge ${job.isActive ? "bg-success" : "bg-secondary"}`}
+                                            style={{
+                                                padding: "4px 10px",
+                                                fontSize: "0.75rem",
+                                                borderRadius: "12px",
+                                                lineHeight: "1",
+                                                whiteSpace: "nowrap"
+                                            }}
+                                        >
+                                            {job.isActive ? t("status_active") : t("status_inactive")}
                                         </span>
                                     </div>
-                                    
-                                    <div className="mb-3">
-                                        <small className="text-muted">
-                                            <i className="fas fa-building me-1"></i>
-                                            Company ID: {job.companyId}
-                                        </small>
-                                        {job.location && (
-                                            <small className="text-muted ms-3">
-                                                <i className="fas fa-map-marker-alt me-1"></i>
-                                                {job.location}
-                                            </small>
-                                        )}
-                                    </div>
 
-                                    <p className="card-text text-truncate" style={{maxHeight: '3rem'}}>
-                                        {job.description}
-                                    </p>
+                                    <p className="text-truncate">{job.description}</p>
 
-                                    <div className="mb-3">
-                                        <div className="row text-sm">
-                                            <div className="col-6">
-                                                <strong>Salary:</strong><br/>
-                                                <span className="text-success">{formatSalary(job.minSalary, job.maxSalary)}</span>
-                                            </div>
-                                            <div className="col-6">
-                                                <strong>Experience:</strong><br/>
-                                                <span className="text-info">{formatExperience(job.minExperience, job.maxExperience)}</span>
-                                            </div>
+                                    <div className="row mb-3">
+                                        <div className="col-6">
+                                            <strong>{t("salary")}:</strong><br />
+                                            {formatSalary(job.minSalary, job.maxSalary)}
                                         </div>
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <span className="badge bg-light text-dark me-2">{job.jobType}</span>
-                                        {job.deadline && (
-                                            <small className="text-warning">
-                                                <i className="fas fa-clock me-1"></i>
-                                                Apply by: {formatDate(job.deadline)}
-                                            </small>
-                                        )}
+                                        <div className="col-6">
+                                            <strong>{t("experience")}:</strong><br />
+                                            {formatExperience(job.minExperience, job.maxExperience)}
+                                        </div>
                                     </div>
 
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <small className="text-muted">
-                                            Posted: {formatDate(job.postedAt)}
+                                        <small>
+                                            {t("posted_on")}: {formatDate(job.postedAt)}
                                         </small>
+
                                         <div className="btn-group">
-                                            <Link 
-                                                to={`/jobs/${job.id}`} 
-                                                className="btn btn-outline-primary btn-sm"
-                                            >
-                                                View
+                                            <Link to={`/jobs/${job.id}`} className="btn btn-outline-primary btn-sm">
+                                                {t("view")}
                                             </Link>
-                                            <Link 
-                                                to={`/jobs/edit/${job.id}`} 
-                                                className="btn btn-outline-secondary btn-sm"
-                                            >
-                                                Edit
+                                            <Link to={`/jobs/edit/${job.id}`} className="btn btn-outline-secondary btn-sm">
+                                                {t("edit")}
                                             </Link>
-                                            <button 
+                                            <button
                                                 className="btn btn-outline-danger btn-sm"
                                                 onClick={() => handleDeleteClick(job)}
                                             >
-                                                Delete
+                                                {t("delete")}
                                             </button>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -194,9 +177,9 @@ export default function MyJobs() {
 
             <ConfirmationModal
                 show={deleteModal.show}
-                title="Delete Job"
-                message={`Are you sure you want to delete "${deleteModal.job?.title}"? This action cannot be undone.`}
-                confirmText="Delete"
+                title={t("delete_job_confirm_title")}
+                message={t("delete_job_confirm_message", { title: deleteModal.job?.title })}
+                confirmText={t("delete")}
                 confirmVariant="danger"
                 onConfirm={handleDeleteConfirm}
                 onCancel={() => setDeleteModal({ show: false, job: null })}
