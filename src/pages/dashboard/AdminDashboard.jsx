@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAdminStats } from "../../services/adminService"
 import { getSummaryReport, getMatrixReport } from "../../services/reportService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 
 const AdminDashboard = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalJobs: 0,

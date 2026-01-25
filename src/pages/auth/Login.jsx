@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useLanguage } from "../../context/LanguageContext";
+import { useAuth } from "../../context/useAuth";
+import { useLanguage } from "../../context/useLanguage";
+
 import LanguageSwitcher from "../../components/common/LanguageSwitcher";
 
 export default function Login() {
@@ -35,7 +36,7 @@ export default function Login() {
             <div className="position-absolute top-0 end-0 p-3">
                 <LanguageSwitcher />
             </div>
-            
+
             <div className="card shadow-lg border-0" style={{ maxWidth: "400px", width: "100%" }}>
                 <div className="card-body p-5">
                     <div className="text-center mb-4">

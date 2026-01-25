@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { getJobs, deleteJob, verifyJob } from "../../services/adminService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageJobs = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");

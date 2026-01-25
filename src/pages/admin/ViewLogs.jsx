@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getLogs } from "../../services/adminService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 
 const ViewLogs = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -109,7 +109,7 @@ const ViewLogs = () => {
           <div className="card-body p-0">
             {currentLogs.length > 0 ? (
               <div className="list-group list-group-flush">
-                {currentLogs.map((log, index) => (
+                {currentLogs.map((log) => (
                   <div key={log.id} className="list-group-item border-0 py-3">
                     <div className="row align-items-center">
                       <div className="col-auto">

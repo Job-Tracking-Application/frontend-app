@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import PageHero from "../../components/common/PageHero";
 import Loader from "../../components/common/Loader";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";

@@ -1,21 +1,37 @@
-import React, { useState } from "react";
-import LanguageContext from "./LanguageContext";
-import en from "../i18n/en.json";
-import mr from "../i18n/mr.json";
+import { useEffect, useState } from "react";
+import i18n from "../i18n";
+import { LanguageContext } from "./languageContext";
 
-const LanguageProvider = ({ children }) => {
-  const [lang, setLang] = useState("en");
+export default function LanguageProvider({ children }) {
+  const [language, setLanguage] = useState(i18n.language);
 
-  const t = (key) => {
-    const dict = lang === "en" ? en : mr;
-    return dict[key] || key;
+  useEffect(() => {
+    const onLanguageChanged = (lng) => {
+      setLanguage(lng);
+    };
+
+    i18n.on("languageChanged", onLanguageChanged);
+
+    return () => {
+      i18n.off("languageChanged", onLanguageChanged);
+    };
+  }, []);
+
+  const changeLanguage = (lng) => {
+    if (lng !== language) {
+      i18n.changeLanguage(lng);
+    }
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        changeLanguage,
+        t: i18n.t.bind(i18n),
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );
-};
-
-export default LanguageProvider;
+}

@@ -22,23 +22,22 @@ export default function RecruiterDashboard() {
         try {
             setLoading(true);
             setError(null);
-            
+
             // Try to get stats from dedicated endpoint first
             try {
                 const response = await getRecruiterStats();
                 setStats(response.data);
-            } catch (statsError) {
+            } catch {
                 // Fallback: Calculate stats from jobs endpoint
                 const jobsResponse = await getJobs();
                 const jobs = jobsResponse.data || [];
-                
-                // Calculate basic stats from jobs data
+
                 const activeJobs = jobs.filter(job => job.isActive !== false).length;
-                
+
                 setStats({
-                    activeJobs: activeJobs,
-                    pendingApplications: 0, // Would need applications endpoint
-                    hiredCandidates: 0      // Would need applications endpoint
+                    activeJobs,
+                    pendingApplications: 0,
+                    hiredCandidates: 0
                 });
             }
         } catch (error) {
@@ -80,7 +79,7 @@ export default function RecruiterDashboard() {
                     <div className="alert alert-danger border-0 shadow-sm rounded-3 p-4">
                         <i className="bi bi-exclamation-triangle me-2"></i>
                         {error}
-                        <button 
+                        <button
                             className="btn btn-outline-danger btn-sm ms-3"
                             onClick={loadDashboardData}
                         >
@@ -98,29 +97,10 @@ export default function RecruiterDashboard() {
 
             <div className="container pb-5">
                 <div className="row g-4">
-                    {/* Quick Stats */}
-                    <StatCard 
-                        title="Active Jobs" 
-                        value={stats.activeJobs} 
-                        color="primary" 
-                        icon="bi-briefcase"
-                    />
-                    
-                    <StatCard 
-                        title="Pending Applications" 
-                        value={stats.pendingApplications} 
-                        color="warning" 
-                        icon="bi-clock"
-                    />
-                    
-                    <StatCard 
-                        title="Hired Candidates" 
-                        value={stats.hiredCandidates} 
-                        color="success" 
-                        icon="bi-check-circle"
-                    />
+                    <StatCard title="Active Jobs" value={stats.activeJobs} color="primary" icon="bi-briefcase" />
+                    <StatCard title="Pending Applications" value={stats.pendingApplications} color="warning" icon="bi-clock" />
+                    <StatCard title="Hired Candidates" value={stats.hiredCandidates} color="success" icon="bi-check-circle" />
 
-                    {/* Actions */}
                     <div className="col-12 mt-4">
                         <h4 className="fw-bold mb-3">Quick Actions</h4>
                         <div className="row g-3">
@@ -140,12 +120,12 @@ export default function RecruiterDashboard() {
                                 </Link>
                             </div>
                             <div className="col-md-3">
-                                <button 
+                                <button
                                     className="btn btn-outline-info w-100 py-3 fw-medium shadow-sm"
                                     onClick={loadDashboardData}
                                     disabled={loading}
                                 >
-                                    <i className="bi bi-arrow-clockwise me-2"></i> 
+                                    <i className="bi bi-arrow-clockwise me-2"></i>
                                     {loading ? "Refreshing..." : "Refresh Stats"}
                                 </button>
                             </div>

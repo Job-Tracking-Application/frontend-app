@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../services/authService";
 import { getValidationErrors, formatPhoneNumber } from "../../utils/validators";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../context/useLanguage";
 import LanguageSwitcher from "../../components/common/LanguageSwitcher";
 
 const roleMap = {

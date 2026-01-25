@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 // auth pages
 import Login from "../pages/auth/Login";

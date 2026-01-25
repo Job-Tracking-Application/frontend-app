@@ -21,7 +21,7 @@ export default function EditJob() {
         companyId: "",
         deadline: ""
     });
-    const [skillIds, setSkillIds] = useState([]);
+    const [skillIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [companiesLoading, setCompaniesLoading] = useState(true);

@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getJobById, deleteJob } from "../../services/jobService";
-import { applyForJob } from "../../services/applicationService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -16,7 +15,6 @@ export default function JobDetails() {
     const [error, setError] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
-    const [applying, setApplying] = useState(false);
 
     const isRecruiter = user?.role === 'RECRUITER';
     const isJobSeeker = user?.role === 'JOB_SEEKER';
@@ -26,9 +24,9 @@ export default function JobDetails() {
         if (id) {
             loadJob();
         }
-    }, [id]);
+    }, [loadJob]);
 
-    const loadJob = async () => {
+    const loadJob = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -41,7 +39,7 @@ export default function JobDetails() {
         } finally {
             setLoading(false);
         }
-    };
+    },[id]);
 
     const handleDelete = async () => {
         try {
@@ -211,7 +209,6 @@ export default function JobDetails() {
                                     <button 
                                         className="btn btn-primary"
                                         onClick={handleApply}
-                                        disabled={applying}
                                     >
                                         <i className="fas fa-paper-plane me-2"></i>
                                         Apply for Job

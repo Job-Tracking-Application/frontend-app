@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useLanguage } from "../../context/LanguageContext";
+import { useAuth } from "../../context/useAuth";
+import { useLanguage } from "../../context/useLanguage";
+
 import { menuItems } from "../../utils/menuItems";
 
 export default function Sidebar() {

@@ -1,12 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useLanguage } from "../../context/LanguageContext";
+import { useAuth } from "../../context/useAuth";
+import { useLanguage } from "../../context/useLanguage";
+
+import { useTranslation } from "react-i18next";
 import { menuItems } from "../../utils/menuItems";
 
 export default function Navbar({ toggleSidebar, isSidebarOpen }) {
   const { user, logout } = useAuth();
-  const { lang, toggle, t } = useLanguage();
+  const { language, changeLanguage } = useLanguage();
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
   const role = user?.role || "guest";
   const menu = menuItems[role] || menuItems.guest;
 
@@ -20,28 +24,37 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
       <div className="container-fluid">
         <div className="d-flex align-items-center">
           <button
-            className="btn btn-link text-white me-3 p-0 text-decoration-none d-lg-none"
+            className="btn btn-link text-white me-3 p-0 d-lg-none"
             onClick={toggleSidebar}
             title="Toggle Sidebar"
           >
-            <i className={`bi ${isSidebarOpen ? 'bi-list-nested' : 'bi-list'} fs-3`}></i>
+            <i className={`bi ${isSidebarOpen ? "bi-list-nested" : "bi-list"} fs-3`} />
           </button>
 
-          <a className="navbar-brand d-flex align-items-center gap-2" href="#" onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
+          <a
+            className="navbar-brand d-flex align-items-center gap-2"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/dashboard");
+            }}
+          >
             <i className="bi bi-briefcase-fill"></i> JobSync
           </a>
 
-          {/* Desktop Menu Links */}
+          {/* Desktop Menu */}
           <div className="d-none d-lg-flex ms-4 gap-4">
             {menu.map((item) => (
               <a
                 key={item.path}
                 href="#"
-                onClick={(e) => { e.preventDefault(); navigate(item.path); }}
-                className="text-white text-decoration-none opacity-75 hover-opacity-100 fw-medium d-flex align-items-center gap-2"
-                style={{ transition: 'opacity 0.2s' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(item.path);
+                }}
+                className="text-white text-decoration-none opacity-75 fw-medium d-flex align-items-center gap-2"
               >
-                <i className={`bi ${item.icon}`}></i>
+                <i className={`bi ${item.icon}`} />
                 {t(item.label)}
               </a>
             ))}
@@ -49,38 +62,54 @@ export default function Navbar({ toggleSidebar, isSidebarOpen }) {
         </div>
 
         <div className="d-flex align-items-center gap-3">
-          <button className="btn btn-sm btn-outline-light opacity-75" onClick={toggle} title="Switch Language">
-            {lang.toUpperCase()}
+          {/* Language switch */}
+          <button
+            className="btn btn-sm btn-outline-light opacity-75"
+            onClick={() => changeLanguage(language === "en" ? "mr" : "en")}
+            title="Switch Language"
+          >
+            {language.toUpperCase()}
           </button>
 
           {user ? (
             <div className="dropdown">
-              <button className="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-                <div className="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: "32px", height: "32px" }}>
-                  {user.fullname?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
+              <button
+                className="btn btn-link text-white dropdown-toggle d-flex align-items-center gap-2"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <div
+                  className="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                  style={{ width: "32px", height: "32px" }}
+                >
+                  {user.fullname?.charAt(0).toUpperCase() || "U"}
                 </div>
-                <span className="d-none d-sm-inline opacity-90">
-                  {user.fullname || user.email?.split('@')[0] || 'User'}
+                <span className="d-none d-sm-inline">
+                  {user.fullname || user.email}
                 </span>
               </button>
-              <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+
+              <ul className="dropdown-menu dropdown-menu-end">
                 <li>
-                  <h6 className="dropdown-header text-muted">
-                    Signed in as <br />
-                    <strong>{user.email}</strong>
-                  </h6>
+                  <button className="dropdown-item" onClick={() => navigate("/dashboard")}>
+                    {t("nav_dashboard")}
+                  </button>
                 </li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item" onClick={() => navigate('/dashboard')}><i className="bi bi-speedometer2 me-2"></i> {t('nav_dashboard')}</button></li>
-                <li><button className="dropdown-item" onClick={() => navigate('/settings')}><i className="bi bi-gear me-2"></i> {t('nav_settings')}</button></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item text-danger" onClick={handleLogout}><i className="bi bi-box-arrow-right me-2"></i> {t('nav_logout')}</button></li>
+                <li>
+                  <button className="dropdown-item text-danger" onClick={handleLogout}>
+                    {t("nav_logout")}
+                  </button>
+                </li>
               </ul>
             </div>
           ) : (
             <div className="d-flex gap-2">
-              <button className="btn btn-outline-light" onClick={() => navigate('/login')}>{t('nav_login')}</button>
-              <button className="btn btn-light text-primary fw-bold" onClick={() => navigate('/register')}>{t('nav_register')}</button>
+              <button className="btn btn-outline-light" onClick={() => navigate("/login")}>
+                {t("nav_login")}
+              </button>
+              <button className="btn btn-light text-primary" onClick={() => navigate("/register")}>
+                {t("nav_register")}
+              </button>
             </div>
           )}
         </div>

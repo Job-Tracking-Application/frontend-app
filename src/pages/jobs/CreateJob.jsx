@@ -19,7 +19,7 @@ export default function CreateJob() {
         companyId: "",
         deadline: ""
     });
-    const [skillIds, setSkillIds] = useState([]);
+    const [skillIds] = useState([]);
     const [loading, setLoading] = useState(false);
     const [companiesLoading, setCompaniesLoading] = useState(true);
 

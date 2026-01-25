@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { getCompanies, verifyCompany } from "../../services/adminService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageCompanies = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
 

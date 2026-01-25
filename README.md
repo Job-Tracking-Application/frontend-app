@@ -6,7 +6,7 @@ A modern React-based web application for job tracking with role-based dashboards
 
 ### Prerequisites
 - Node.js 18+ and npm/yarn
-- Backend API running on `http://localhost:8080`
+- Backend API running on `http://localhost:5000`
 - Modern web browser
 
 ### Installation & Setup
@@ -27,7 +27,7 @@ A modern React-based web application for job tracking with role-based dashboards
 3. **Configure environment**
    ```bash
    # .env file
-   VITE_API_BASE_URL=http://localhost:8080
+   VITE_API_BASE_URL=http://localhost:5000/api
    VITE_APP_NAME=Job Tracking System
    ```
 

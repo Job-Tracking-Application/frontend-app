@@ -8,30 +8,26 @@ export const getMyApplications = async () => {
 export const getApplicationsForJob = async (jobId) => {
   try {
     const response = await api.get(`/applications/job/${jobId}`);
-    // Handle different response types
+
     if (response.status === 204) {
-      return []; // No content, return empty array
+      return [];
     }
-    
-    // Check if response.data is an array
+
     if (Array.isArray(response.data)) {
       return response.data;
     }
-    
-    // If it's wrapped in an ApiResponse object
+
     if (response.data && Array.isArray(response.data.data)) {
       return response.data.data;
     }
-    
-    // If it's wrapped in an ApiResponse but data is null/undefined
+
     if (response.data && response.data.success === false) {
       return [];
     }
-    
-    // Fallback: return empty array if data structure is unexpected
+
     return [];
-  } catch (error) {
-    return []; // Return empty array on error
+  } catch {
+    return [];
   }
 };
 

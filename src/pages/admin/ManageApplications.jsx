@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getApplications, deleteApplication } from "../../services/adminApplicationService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageApplications = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
+
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +17,6 @@ const ManageApplications = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize] = useState(10);
 
-  // Confirmation modal states
   const [confirmModal, setConfirmModal] = useState({
     show: false,
     title: "",
@@ -40,27 +40,30 @@ const ManageApplications = () => {
     { value: "WITHDRAWN", label: t("Withdrawn") }
   ];
 
-  const fetchApplications = async (page = 0, status = null) => {
-    try {
-      setLoading(true);
-      const res = await getApplications(page, pageSize, status);
-      const data = res.data;
-      
-      setApplications(data.content || []);
-      setTotalPages(data.totalPages || 0);
-      setTotalElements(data.totalElements || 0);
-      setCurrentPage(data.number || 0);
-    } catch (err) {
-      console.error("Failed to load applications:", err);
-      showErrorToast(t("Failed to load applications"));
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchApplications = useCallback(
+    async (page = 0, status = null) => {
+      try {
+        setLoading(true);
+        const res = await getApplications(page, pageSize, status);
+        const data = res.data;
+
+        setApplications(data.content || []);
+        setTotalPages(data.totalPages || 0);
+        setTotalElements(data.totalElements || 0);
+        setCurrentPage(data.number || 0);
+      } catch (err) {
+        console.error("Failed to load applications:", err);
+        showErrorToast(t("Failed to load applications"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pageSize, t]
+  );
 
   useEffect(() => {
     fetchApplications(currentPage, statusFilter || null);
-  }, [currentPage, statusFilter, t]);
+  }, [currentPage, statusFilter, fetchApplications]);
 
   const filteredApplications = applications.filter(app =>
     app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,18 +71,18 @@ const ManageApplications = () => {
   );
 
   const showViewDetails = (application) => {
-    setViewModal({
-      show: true,
-      application: application
-    });
+    setViewModal({ show: true, application });
   };
 
   const showDeleteConfirmation = (applicationId, jobTitle, jobSeekerName) => {
     setConfirmModal({
       show: true,
       title: t("Delete Application"),
-      message: t("Are you sure you want to delete the application by {{name}} for {{job}}? This action cannot be undone.", { name: jobSeekerName, job: jobTitle }),
-      applicationId: applicationId
+      message: t(
+        "Are you sure you want to delete the application by {{name}} for {{job}}? This action cannot be undone.",
+        { name: jobSeekerName, job: jobTitle }
+      ),
+      applicationId
     });
   };
 
@@ -87,7 +90,6 @@ const ManageApplications = () => {
     try {
       await deleteApplication(confirmModal.applicationId);
       showSuccessToast(t("Application deleted successfully"));
-      // Refresh the current page
       fetchApplications(currentPage, statusFilter || null);
     } catch (err) {
       console.error("Error deleting application:", err);
@@ -104,28 +106,18 @@ const ManageApplications = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case "APPLIED":
-        return "bg-primary"; // blue
-      case "UNDER_REVIEW":
-        return "bg-warning"; // orange/yellow
+      case "APPLIED": return "bg-primary";
+      case "UNDER_REVIEW": return "bg-warning";
       case "INTERVIEW_SCHEDULED":
-      case "INTERVIEW_COMPLETED":
-        return "bg-info"; // light blue
-      case "SELECTED":
-        return "bg-success"; // green
-      case "REJECTED":
-        return "bg-danger"; // red
-      case "WITHDRAWN":
-        return "bg-secondary"; // gray
-      default:
-        return "bg-primary";
+      case "INTERVIEW_COMPLETED": return "bg-info";
+      case "SELECTED": return "bg-success";
+      case "REJECTED": return "bg-danger";
+      case "WITHDRAWN": return "bg-secondary";
+      default: return "bg-primary";
     }
   };
 
-  const shouldDisableDelete = (status) => {
-    // Prevent deletion of selected applications to avoid mistakes
-    return status === "SELECTED";
-  };
+  const shouldDisableDelete = (status) => status === "SELECTED";
 
   const formatDate = (dateString) => {
     if (!dateString) return t("N/A");

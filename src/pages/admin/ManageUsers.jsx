@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { getUsers, toggleUserStatus, changeUserRole }
   from "../../services/adminService";
-import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import { getRoleName, getRoleOptions } from "../../utils/roleMap";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const ManageUsers = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");

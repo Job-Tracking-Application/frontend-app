@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getJobs } from "../../services/jobService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";

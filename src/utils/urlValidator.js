@@ -9,7 +9,7 @@ export const isValidUrl = (url) => {
     try {
         const urlObj = new URL(url);
         return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    } catch (error) {
+    } catch {
         return false;
     }
 };
@@ -43,7 +43,6 @@ export const validateResumeUrl = (url) => {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
 
-    // Check if it's from a supported platform
     const platform = supportedPlatforms.find(p => 
         p.domains.some(domain => hostname.includes(domain.toLowerCase()))
     );
@@ -56,7 +55,6 @@ export const validateResumeUrl = (url) => {
         };
     }
 
-    // Allow other URLs but with a warning
     return {
         isValid: true,
         platform: 'Other',
@@ -66,15 +64,12 @@ export const validateResumeUrl = (url) => {
 
 /**
  * Suggests improvements for common URL issues
- * @param {string} url - The URL to analyze
- * @returns {object} - Suggestions for improvement
  */
 export const getUrlSuggestions = (url) => {
     if (!url) return null;
 
     const suggestions = [];
 
-    // Google Drive specific suggestions
     if (url.includes('drive.google.com')) {
         if (!url.includes('/view') && !url.includes('/edit')) {
             suggestions.push('Make sure your Google Drive link includes "/view" at the end for public access');
@@ -84,7 +79,6 @@ export const getUrlSuggestions = (url) => {
         }
     }
 
-    // LinkedIn specific suggestions
     if (url.includes('linkedin.com/in/')) {
         suggestions.push('LinkedIn profile detected - make sure your profile is public and includes your resume information');
     }
@@ -93,10 +87,7 @@ export const getUrlSuggestions = (url) => {
 };
 
 /**
- * Formats a URL for display (truncates long URLs)
- * @param {string} url - The URL to format
- * @param {number} maxLength - Maximum length for display
- * @returns {string} - Formatted URL
+ * Formats a URL for display
  */
 export const formatUrlForDisplay = (url, maxLength = 50) => {
     if (!url || url.length <= maxLength) return url;
