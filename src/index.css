@@ -150,7 +150,9 @@ body {
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-card);
 }
-
+.badge{
+    margin-left: 1em ;
+}
 .mobile-card-item:last-child {
     border-bottom: none;
 }
@@ -310,6 +312,7 @@ body {
     .badge {
         font-size: 0.75rem;
         padding: 0.35em 0.65em;
+        margin-left: 1em;
     }
 }
 
