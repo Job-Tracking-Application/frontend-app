@@ -46,12 +46,12 @@ const ManageUsers = () => {
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const showStatusConfirmation = (id, active) => {
+  const showStatusConfirmation = (id, active, username) => {
     const action = active ? t("disable") : t("enable");
     setConfirmModal({
       show: true,
       title: t("Confirm Status Change"),
-      message: t("Are you sure you want to {{action}} this user?", { action }),
+      message: t("Are you sure you want to {{action}} user '{{username}}'?", { action, username }),
       action: "toggle-status",
       userId: id,
       active: active
@@ -104,104 +104,230 @@ const ManageUsers = () => {
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
           <div className="card-header bg-white p-4 border-bottom">
-            <div className="d-flex justify-content-between">
-              <h5 className="fw-bold mb-0">{t("All Users")} ({filteredUsers.length})</h5>
-              <input
-                className="form-control w-25"
-                placeholder={t("Search users...")}
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
+            <div className="row g-3 align-items-center">
+              <div className="col-12 col-md-6">
+                <h5 className="fw-bold mb-0">{t("All Users")} ({filteredUsers.length})</h5>
+              </div>
+              <div className="col-12 col-md-6">
+                <input
+                  className="form-control"
+                  placeholder={t("Search users...")}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
-          <table className="table table-hover align-middle mb-0">
-            <thead className="bg-light">
-              <tr>
-                <th>{t("User")}</th>
-                <th>{t("Role")}</th>
-                <th>{t("Status")}</th>
-                <th className="text-end">{t("Action")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(u => (
-                <tr key={u.id}>
-                  <td>
-                    <strong>{u.username}</strong>
-                    <br />
-                    <small>{u.email}</small>
-                  </td>
-                  <td>
-                    {editingRoleId === u.id ? (
-                      <div className="d-flex gap-2">
-                        <select
-                          className="form-select form-select-sm"
-                          value={selectedRole || ""}
-                          onChange={(e) => setSelectedRole(parseInt(e.target.value))}
-                        >
-                          <option value="">{t("Select role")}</option>
-                          {getRoleOptions().map(opt => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
+          {/* Desktop Table View */}
+          <div className="table-responsive-mobile">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="px-3 py-3">{t("User")}</th>
+                    <th className="px-3 py-3">{t("Role")}</th>
+                    <th className="px-3 py-3">{t("Status")}</th>
+                    <th className="text-end px-3 py-3">{t("Action")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map(u => (
+                    <tr key={u.id}>
+                      <td className="px-3 py-3">
+                        <div>
+                          <strong className="d-block">{u.username}</strong>
+                          <small className="text-muted">{u.email}</small>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        {editingRoleId === u.id ? (
+                          <div className="d-flex gap-2">
+                            <select
+                              className="form-select form-select-sm"
+                              value={selectedRole || ""}
+                              onChange={(e) => setSelectedRole(parseInt(e.target.value))}
+                            >
+                              <option value="">{t("Select role")}</option>
+                              {getRoleOptions().map(opt => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              className="btn btn-sm btn-success"
+                              onClick={() => handleChangeRole(u.id)}
+                            >
+                              {t("Save")}
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => {
+                                setEditingRoleId(null);
+                                setSelectedRole(null);
+                              }}
+                            >
+                              {t("Cancel")}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="d-flex justify-content-between align-items-center">
+                            <span>{getRoleName(parseInt(u.role))}</span>
+                            <button
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => {
+                                setEditingRoleId(u.id);
+                                setSelectedRole(parseInt(u.role));
+                              }}
+                            >
+                              {t("Edit")}
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className={`badge ${u.active ? "bg-success" : "bg-danger"}`}>
+                          {u.active ? t("Active") : t("Disabled")}
+                        </span>
+                      </td>
+                      <td className="text-end px-3 py-3">
                         <button
-                          className="btn btn-sm btn-success"
-                          onClick={() => handleChangeRole(u.id)}
+                          className="btn btn-sm btn-warning"
+                          onClick={() => showStatusConfirmation(u.id, u.active, u.username)}
                         >
-                          {t("Save")}
+                          {u.active ? t("Disable") : t("Enable")}
                         </button>
-                        <button
-                          className="btn btn-sm btn-secondary"
-                          onClick={() => {
-                            setEditingRoleId(null);
-                            setSelectedRole(null);
-                          }}
-                        >
-                          {t("Cancel")}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span>{getRoleName(parseInt(u.role))}</span>
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => {
-                            setEditingRoleId(u.id);
-                            setSelectedRole(parseInt(u.role));
-                          }}
-                        >
-                          {t("Edit")}
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <span className={`badge ${u.active ? "bg-success" : "bg-danger"}`}>
-                      {u.active ? t("Active") : t("Disabled")}
-                    </span>
-                  </td>
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-warning"
-                      onClick={() => showStatusConfirmation(u.id, u.active)}
-                    >
-                      {u.active ? t("Disable") : t("Enable")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredUsers.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center py-4 text-muted">
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredUsers.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="text-center py-4 text-muted">
+                        {searchTerm ? (
+                          <>
+                            <i className="bi bi-search mb-2 fs-4 d-block"></i>
+                            {t("No users match your search criteria")}
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-people mb-2 fs-4 d-block"></i>
+                            {t("No users found")}
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-card-view">
+            {filteredUsers.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                {searchTerm ? (
+                  <>
+                    <i className="bi bi-search mb-2 fs-4 d-block"></i>
+                    {t("No users match your search criteria")}
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-people mb-2 fs-4 d-block"></i>
                     {t("No users found")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="p-3">
+                {filteredUsers.map((u) => (
+                  <div key={u.id} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="flex-grow-1">
+                        <h6 className="mobile-card-title">{u.username}</h6>
+                        <div className="mobile-card-details">
+                          <div className="text-break-mobile">
+                            <i className="bi bi-envelope me-1"></i>
+                            {u.email}
+                          </div>
+                        </div>
+                      </div>
+                      <span className={`badge ${u.active ? "bg-success" : "bg-danger"} ms-2`}>
+                        {u.active ? t("Active") : t("Disabled")}
+                      </span>
+                    </div>
+
+                    {/* Role Section */}
+                    <div className="mt-3">
+                      {editingRoleId === u.id ? (
+                        <div className="d-flex flex-column gap-2">
+                          <select
+                            className="form-select form-select-sm"
+                            value={selectedRole || ""}
+                            onChange={(e) => setSelectedRole(parseInt(e.target.value))}
+                          >
+                            <option value="">{t("Select role")}</option>
+                            {getRoleOptions().map(opt => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="d-flex gap-2">
+                            <button
+                              className="btn btn-sm btn-success flex-grow-1 touch-target"
+                              onClick={() => handleChangeRole(u.id)}
+                            >
+                              <i className="bi bi-check-lg me-1"></i>
+                              {t("Save")}
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary flex-grow-1 touch-target"
+                              onClick={() => {
+                                setEditingRoleId(null);
+                                setSelectedRole(null);
+                              }}
+                            >
+                              <i className="bi bi-x-lg me-1"></i>
+                              {t("Cancel")}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                          <span className="text-muted small">{t("Role")}:</span>
+                          <div className="d-flex align-items-center gap-2">
+                            <strong>{getRoleName(parseInt(u.role))}</strong>
+                            <button
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => {
+                                setEditingRoleId(u.id);
+                                setSelectedRole(parseInt(u.role));
+                              }}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="mobile-card-actions">
+                      <button
+                        className="btn btn-sm btn-warning btn-mobile-full touch-target"
+                        onClick={() => showStatusConfirmation(u.id, u.active, u.username)}
+                      >
+                        <i className={`bi ${u.active ? 'bi-slash-circle' : 'bi-check-circle'} me-1`}></i>
+                        {u.active ? t("Disable") : t("Enable")}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

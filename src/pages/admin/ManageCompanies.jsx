@@ -74,46 +74,93 @@ const ManageCompanies = () => {
 
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4">
-          <table className="table table-hover align-middle mb-0">
-            <thead className="bg-light">
-              <tr>
-                <th>{t("Name")}</th>
-                <th>{t("City")}</th>
-                <th>{t("Email")}</th>
-                <th>{t("Verified")}</th>
-                <th className="text-end">{t("Action")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {companies.map(c => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td>{c.city}</td>
-                  <td>{c.contactEmail}</td>
-                  <td>
-                    <span className={`badge ${c.verified ? "bg-success" : "bg-warning"}`}>
-                      {c.verified ? t("Verified") : t("Pending")}
-                    </span>
-                  </td>
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => showVerifyConfirmation(c.id, c.verified)}
-                    >
-                      {c.verified ? t("Unverify") : t("Verify")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {companies.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center py-4 text-muted">
-                    {t("No companies found")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {/* Desktop Table View */}
+          <div className="table-responsive-mobile">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="px-3 py-3">{t("Name")}</th>
+                    <th className="px-3 py-3">{t("City")}</th>
+                    <th className="px-3 py-3">{t("Email")}</th>
+                    <th className="px-3 py-3">{t("Verified")}</th>
+                    <th className="text-end px-3 py-3">{t("Action")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {companies.map(c => (
+                    <tr key={c.id}>
+                      <td className="px-3 py-3 fw-semibold">{c.name}</td>
+                      <td className="px-3 py-3">{c.city}</td>
+                      <td className="px-3 py-3 text-muted small">{c.contactEmail}</td>
+                      <td className="px-3 py-3">
+                        <span className={`badge ${c.verified ? "bg-success" : "bg-warning"}`}>
+                          {c.verified ? t("Verified") : t("Pending")}
+                        </span>
+                      </td>
+                      <td className="text-end px-3 py-3">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() => showVerifyConfirmation(c.id, c.verified)}
+                        >
+                          {c.verified ? t("Unverify") : t("Verify")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {companies.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="text-center py-4 text-muted">
+                        {t("No companies found")}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-card-view">
+            {companies.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                {t("No companies found")}
+              </div>
+            ) : (
+              <div className="p-3">
+                {companies.map((c) => (
+                  <div key={c.id} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="flex-grow-1">
+                        <h6 className="mobile-card-title">{c.name}</h6>
+                        <div className="mobile-card-details">
+                          <div>
+                            <i className="bi bi-geo-alt me-1"></i>
+                            {c.city}
+                          </div>
+                          <div className="text-break-mobile">
+                            <i className="bi bi-envelope me-1"></i>
+                            {c.contactEmail}
+                          </div>
+                        </div>
+                      </div>
+                      <span className={`badge ${c.verified ? "bg-success" : "bg-warning"} ms-2`}>
+                        {c.verified ? t("Verified") : t("Pending")}
+                      </span>
+                    </div>
+                    <div className="mobile-card-actions">
+                      <button
+                        className="btn btn-sm btn-primary btn-mobile-full touch-target"
+                        onClick={() => showVerifyConfirmation(c.id, c.verified)}
+                      >
+                        {c.verified ? t("Unverify") : t("Verify")}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
