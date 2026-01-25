@@ -223,7 +223,7 @@ const JobSeekerProfile = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h4 className="mb-1">{t("welcome_message", { name: profile.fullName || authUser?.fullname || t("job_seeker") })}</h4>
-            <p className="text-muted mb-0">{t("profile_update_message")}</p>
+            <p className="text-muted mb-0">{t("job_seeker_profile_subtitle")}</p>
           </div>
           {isEditing ? (
             <div className="d-flex gap-2">
@@ -451,7 +451,7 @@ const JobSeekerProfile = () => {
                   return (
                     <div>
                       <div className="d-flex justify-content-between align-items-center mb-2">
-                        <span className="fw-medium">{t("percent_complete", { percent: completion })}</span>
+                        <span className="fw-medium">{completion}{t("percent_complete")}</span>
                         <span className={`badge bg-${color}`}>
                           {completion >= 80 ? t("profile_completion_excellent") : 
                            completion >= 50 ? t("profile_completion_good") : 

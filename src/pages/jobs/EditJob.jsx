@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getJobById, updateJob } from "../../services/jobService";
-import { getCompanies } from "../../services/companyService";
+import { getMyCompanyProfile } from "../../services/companyService";
+import { getSkills } from "../../services/skillService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import Loader from "../../components/common/Loader";
 
@@ -10,7 +11,8 @@ export default function EditJob() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const [companies, setCompanies] = useState([]);
+    const [company, setCompany] = useState(null);
+    const [skills, setSkills] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -23,10 +25,11 @@ export default function EditJob() {
         companyId: "",
         deadline: ""
     });
-    const [skillIds] = useState([]);
+    const [skillIds, setSkillIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [companiesLoading, setCompaniesLoading] = useState(true);
+    const [companyLoading, setCompanyLoading] = useState(true);
+    const [skillsLoading, setSkillsLoading] = useState(true);
 
     useEffect(() => {
         loadData();
@@ -36,13 +39,19 @@ export default function EditJob() {
         try {
             setLoading(true);
             
-            // Load companies and job data in parallel
-            const [companiesResponse, jobResponse] = await Promise.all([
-                getCompanies(),
+            // Load company, skills, and job data in parallel
+            const [companyResponse, skillsResponse, jobResponse] = await Promise.all([
+                getMyCompanyProfile(),
+                getSkills(),
                 getJobById(id)
             ]);
 
-            setCompanies(companiesResponse.data || []);
+            // Set company
+            if (companyResponse && companyResponse.data && companyResponse.data.data) {
+                setCompany(companyResponse.data.data);
+            }
+            
+            setSkills(skillsResponse.data || []);
             
             const job = jobResponse.data;
             setFormData({
@@ -58,18 +67,35 @@ export default function EditJob() {
                 deadline: job.deadline ? job.deadline.split('T')[0] : ""
             });
 
+            // Load existing job skills
+            if (job.skills && Array.isArray(job.skills)) {
+                const existingSkillIds = job.skills.map(skill => skill.id);
+                setSkillIds(existingSkillIds);
+            }
+
         } catch (error) {
             console.error("Error loading data:", error);
             showErrorToast(t("job_load_error"));
         } finally {
             setLoading(false);
-            setCompaniesLoading(false);
+            setCompanyLoading(false);
+            setSkillsLoading(false);
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSkillChange = (skillId) => {
+        setSkillIds(prev => {
+            if (prev.includes(skillId)) {
+                return prev.filter(id => id !== skillId);
+            } else {
+                return [...prev, skillId];
+            }
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -136,23 +162,46 @@ export default function EditJob() {
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">{t("company")} *</label>
-                                        <select
-                                            name="companyId"
-                                            className="form-select"
-                                            required
-                                            value={formData.companyId}
-                                            onChange={handleChange}
-                                            disabled={companiesLoading}
-                                        >
-                                            <option value="">
-                                                {companiesLoading ? t("loading_companies") : t("select_company")}
-                                            </option>
-                                            {companies.map(company => (
-                                                <option key={company.id} value={company.id}>
-                                                    {company.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        {companyLoading ? (
+                                            <div className="form-control d-flex align-items-center">
+                                                <div className="spinner-border spinner-border-sm me-2" role="status">
+                                                    <span className="visually-hidden">Loading...</span>
+                                                </div>
+                                                {t("loading_company")}
+                                            </div>
+                                        ) : company ? (
+                                            <div className="input-group">
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={company.name}
+                                                    disabled
+                                                    style={{ backgroundColor: '#f8f9fa' }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-secondary"
+                                                    onClick={() => navigate('/profile')}
+                                                    title={t("edit_company_profile")}
+                                                >
+                                                    <i className="bi bi-pencil"></i>
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="border rounded p-3 bg-light text-center">
+                                                <div className="text-muted mb-2">
+                                                    <i className="bi bi-building me-2"></i>
+                                                    {t("no_company_profile")}
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => navigate('/profile')}
+                                                >
+                                                    {t("create_company_profile")}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">{t("job_location")}</label>
@@ -249,6 +298,41 @@ export default function EditJob() {
                                 </div>
 
                                 <div className="mb-4">
+                                    <label className="form-label">{t("required_skills")}</label>
+                                    <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                        {skillsLoading ? (
+                                            <div className="text-center">
+                                                <small className="text-muted">Loading skills...</small>
+                                            </div>
+                                        ) : skills.length === 0 ? (
+                                            <small className="text-muted">No skills available</small>
+                                        ) : (
+                                            <div className="row">
+                                                {skills.map(skill => (
+                                                    <div key={skill.id} className="col-md-6 col-lg-4 mb-2">
+                                                        <div className="form-check">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                id={`skill-${skill.id}`}
+                                                                checked={skillIds.includes(skill.id)}
+                                                                onChange={() => handleSkillChange(skill.id)}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`skill-${skill.id}`}>
+                                                                {skill.name}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <small className="text-muted">
+                                        {skillIds.length > 0 ? `${skillIds.length} skills selected` : "Select skills required for this job"}
+                                    </small>
+                                </div>
+
+                                <div className="mb-4">
                                     <label className="form-label">{t("job_description")} *</label>
                                     <textarea
                                         name="description"
@@ -273,7 +357,7 @@ export default function EditJob() {
                                     <button 
                                         type="submit" 
                                         className="btn btn-primary" 
-                                        disabled={saving || companiesLoading}
+                                        disabled={saving || companyLoading || skillsLoading || !company}
                                     >
                                         {saving ? t("updating") : t("update_job")}
                                     </button>

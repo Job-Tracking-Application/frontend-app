@@ -120,7 +120,7 @@ export default function JobDetails() {
                                     <h1 className="h3 mb-2">{job.title}</h1>
                                     <div className="text-muted mb-3">
                                         <i className="fas fa-building me-2"></i>
-                                        {t("company_id")}: {job.companyId}
+                                        {job.companyName || t("company_not_specified")}
                                         {job.location && (
                                             <>
                                                 <i className="fas fa-map-marker-alt ms-3 me-2"></i>
@@ -167,6 +167,24 @@ export default function JobDetails() {
                                     </p>
                                 </div>
                             </div>
+
+                            {/* Skills Section */}
+                            {job.skills && job.skills.length > 0 && (
+                                <div className="mb-4">
+                                    <h5>{t("required_skills")}</h5>
+                                    <div className="d-flex flex-wrap gap-2">
+                                        {job.skills.map((skill, index) => (
+                                            <span 
+                                                key={skill.id || index} 
+                                                className="badge bg-primary-subtle text-primary px-3 py-2"
+                                                style={{ fontSize: "0.9rem" }}
+                                            >
+                                                {skill.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="row mb-4">
                                 <div className="col-md-6">

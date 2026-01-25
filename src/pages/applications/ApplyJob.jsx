@@ -27,6 +27,7 @@ export default function ApplyJob() {
         coverLetter: "",
         portfolioUrl: "",
         linkedinUrl: "",
+        githubUrl: "",
         additionalNotes: ""
     });
 
@@ -105,6 +106,10 @@ export default function ApplyJob() {
             errors.linkedinUrl = t("apply_job_invalid_url");
         }
 
+        if (formData.githubUrl && !validateResumeUrl(formData.githubUrl).isValid) {
+            errors.githubUrl = t("apply_job_invalid_url");
+        }
+
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -122,7 +127,11 @@ export default function ApplyJob() {
 
             const applicationData = {
                 resume: formData.resumeUrl.trim(),
-                coverLetter: formData.coverLetter.trim() || null
+                coverLetter: formData.coverLetter.trim() || null,
+                portfolioUrl: formData.portfolioUrl.trim() || null,
+                linkedinUrl: formData.linkedinUrl.trim() || null,
+                githubUrl: formData.githubUrl.trim() || null,
+                additionalNotes: formData.additionalNotes.trim() || null
             };
 
             await applyForJob(id, applicationData);
@@ -206,6 +215,7 @@ export default function ApplyJob() {
                                         name="resumeUrl"
                                         value={formData.resumeUrl}
                                         onChange={handleInputChange}
+                                        placeholder="https://drive.google.com/file/d/..."
                                         required
                                     />
                                     {formErrors.resumeUrl && (
@@ -231,7 +241,69 @@ export default function ApplyJob() {
                                         name="coverLetter"
                                         value={formData.coverLetter}
                                         onChange={handleInputChange}
+                                        placeholder={t("apply_job_cover_letter_placeholder")}
                                     />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">{t("apply_job_portfolio_url")}</label>
+                                    <input
+                                        type="url"
+                                        className={`form-control ${formErrors.portfolioUrl ? "is-invalid" : ""}`}
+                                        name="portfolioUrl"
+                                        value={formData.portfolioUrl}
+                                        onChange={handleInputChange}
+                                        placeholder="https://yourportfolio.com"
+                                    />
+                                    {formErrors.portfolioUrl && (
+                                        <div className="invalid-feedback">{formErrors.portfolioUrl}</div>
+                                    )}
+                                    <small className="form-text text-muted">{t("apply_job_portfolio_help")}</small>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">{t("apply_job_linkedin_url")}</label>
+                                    <input
+                                        type="url"
+                                        className={`form-control ${formErrors.linkedinUrl ? "is-invalid" : ""}`}
+                                        name="linkedinUrl"
+                                        value={formData.linkedinUrl}
+                                        onChange={handleInputChange}
+                                        placeholder="https://linkedin.com/in/yourprofile"
+                                    />
+                                    {formErrors.linkedinUrl && (
+                                        <div className="invalid-feedback">{formErrors.linkedinUrl}</div>
+                                    )}
+                                    <small className="form-text text-muted">{t("apply_job_linkedin_help")}</small>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">{t("apply_job_github_url")}</label>
+                                    <input
+                                        type="url"
+                                        className={`form-control ${formErrors.githubUrl ? "is-invalid" : ""}`}
+                                        name="githubUrl"
+                                        value={formData.githubUrl}
+                                        onChange={handleInputChange}
+                                        placeholder="https://github.com/yourusername"
+                                    />
+                                    {formErrors.githubUrl && (
+                                        <div className="invalid-feedback">{formErrors.githubUrl}</div>
+                                    )}
+                                    <small className="form-text text-muted">{t("apply_job_github_help")}</small>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">{t("apply_job_additional_notes")}</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="3"
+                                        name="additionalNotes"
+                                        value={formData.additionalNotes}
+                                        onChange={handleInputChange}
+                                        placeholder={t("apply_job_additional_notes_placeholder")}
+                                    />
+                                    <small className="form-text text-muted">{t("apply_job_additional_notes_help")}</small>
                                 </div>
 
                                 <Button

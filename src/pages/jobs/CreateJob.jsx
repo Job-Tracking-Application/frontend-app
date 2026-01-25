@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { addJob } from "../../services/jobService";
-import { getCompanies } from "../../services/companyService";
+import { getMyCompanyProfile } from "../../services/companyService";
+import { getSkills } from "../../services/skillService";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useLanguage } from "../../context/useLanguage";
 
 export default function CreateJob() {
     const navigate = useNavigate();
     const { t } = useLanguage();
-    const [companies, setCompanies] = useState([]);
+    const [company, setCompany] = useState(null); // Single company instead of array
+    const [skills, setSkills] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -18,28 +20,57 @@ export default function CreateJob() {
         minExperience: "",
         maxExperience: "",
         jobType: t("full_time"),
-        companyId: "",
+        companyId: "", // Will be set automatically
         deadline: ""
     });
-    const [skillIds] = useState([]);
+    const [skillIds, setSkillIds] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [companiesLoading, setCompaniesLoading] = useState(true);
+    const [companyLoading, setCompanyLoading] = useState(true);
+    const [skillsLoading, setSkillsLoading] = useState(true);
 
     useEffect(() => {
-        loadCompanies();
+        loadCompany();
+        loadSkills();
     }, []);
 
-    const loadCompanies = async () => {
+    const loadCompany = async () => {
         try {
-            setCompaniesLoading(true);
-            const response = await getCompanies();
-            setCompanies(response.data || []);
+            setCompanyLoading(true);
+            const response = await getMyCompanyProfile();
+            
+            if (response && response.data && response.data.data) {
+                const companyData = response.data.data;
+                setCompany(companyData);
+                // Automatically set the company ID in form data
+                setFormData(prev => ({ ...prev, companyId: companyData.id }));
+            } else {
+                setCompany(null);
+            }
         } catch (error) {
-            console.error("Error loading companies:", error);
-            showErrorToast(t("load_companies_error"));
-            setCompanies([]);
+            console.error("Error loading company:", error);
+            setCompany(null);
+            
+            if (error.response?.status === 401) {
+                showErrorToast("Authentication required. Please login again.");
+            } else {
+                showErrorToast("Error loading company profile");
+            }
         } finally {
-            setCompaniesLoading(false);
+            setCompanyLoading(false);
+        }
+    };
+
+    const loadSkills = async () => {
+        try {
+            setSkillsLoading(true);
+            const response = await getSkills();
+            setSkills(response.data || []);
+        } catch (error) {
+            console.error("Error loading skills:", error);
+            showErrorToast("Error loading skills");
+            setSkills([]);
+        } finally {
+            setSkillsLoading(false);
         }
     };
 
@@ -48,12 +79,22 @@ export default function CreateJob() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleSkillChange = (skillId) => {
+        setSkillIds(prev => {
+            if (prev.includes(skillId)) {
+                return prev.filter(id => id !== skillId);
+            } else {
+                return [...prev, skillId];
+            }
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Validation
-        if (!formData.companyId) {
-            showErrorToast(t("select_company_error"));
+        if (!company) {
+            showErrorToast(t("no_company_profile_error"));
             return;
         }
         
@@ -70,7 +111,7 @@ export default function CreateJob() {
                 maxSalary: parseFloat(formData.maxSalary),
                 minExperience: formData.minExperience ? parseInt(formData.minExperience) : null,
                 maxExperience: formData.maxExperience ? parseInt(formData.maxExperience) : null,
-                companyId: parseInt(formData.companyId),
+                companyId: company.id, // Use the company ID directly
                 deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null
             };
             
@@ -110,28 +151,48 @@ export default function CreateJob() {
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">{t("company")} *</label>
-                                        <select
-                                            name="companyId"
-                                            className="form-select"
-                                            required
-                                            value={formData.companyId}
-                                            onChange={handleChange}
-                                            disabled={companiesLoading}
-                                        >
-                                            <option value="">
-                                                {companiesLoading ? t("loading_companies") : t("select_company")}
-                                            </option>
-                                            {companies.map(company => (
-                                                <option key={company.id} value={company.id}>
-                                                    {company.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {companiesLoading && (
-                                            <small className="text-muted">{t("loading_companies_hint")}</small>
-                                        )}
-                                        {!companiesLoading && companies.length === 0 && (
-                                            <small className="text-danger">{t("no_companies_error")}</small>
+                                        {companyLoading ? (
+                                            <div className="form-control d-flex align-items-center">
+                                                <div className="spinner-border spinner-border-sm me-2" role="status">
+                                                    <span className="visually-hidden">Loading...</span>
+                                                </div>
+                                                {t("loading_company")}
+                                            </div>
+                                        ) : company ? (
+                                            <>
+                                                <div className="input-group">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={company.name}
+                                                        disabled
+                                                        style={{ backgroundColor: '#f8f9fa' }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-outline-secondary"
+                                                        onClick={() => navigate('/profile')}
+                                                        title={t("edit_company_profile")}
+                                                    >
+                                                        <i className="bi bi-pencil"></i>
+                                                    </button>
+                                                </div>
+                                                <small className="text-muted">{t("company_profile_edit_hint")}</small>
+                                            </>
+                                        ) : (
+                                            <div className="border rounded p-3 bg-light text-center">
+                                                <div className="text-muted mb-2">
+                                                    <i className="bi bi-building me-2"></i>
+                                                    {t("no_company_profile")}
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => navigate('/profile')}
+                                                >
+                                                    {t("create_company_profile")}
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                     <div className="col-md-6 mb-3">
@@ -229,6 +290,41 @@ export default function CreateJob() {
                                 </div>
 
                                 <div className="mb-4">
+                                    <label className="form-label">{t("required_skills")}</label>
+                                    <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                        {skillsLoading ? (
+                                            <div className="text-center">
+                                                <small className="text-muted">Loading skills...</small>
+                                            </div>
+                                        ) : skills.length === 0 ? (
+                                            <small className="text-muted">No skills available</small>
+                                        ) : (
+                                            <div className="row">
+                                                {skills.map(skill => (
+                                                    <div key={skill.id} className="col-md-6 col-lg-4 mb-2">
+                                                        <div className="form-check">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                id={`skill-${skill.id}`}
+                                                                checked={skillIds.includes(skill.id)}
+                                                                onChange={() => handleSkillChange(skill.id)}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`skill-${skill.id}`}>
+                                                                {skill.name}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <small className="text-muted">
+                                        {skillIds.length > 0 ? `${skillIds.length} skills selected` : "Select skills required for this job"}
+                                    </small>
+                                </div>
+
+                                <div className="mb-4">
                                     <label className="form-label">{t("job_description")} *</label>
                                     <textarea
                                         name="description"
@@ -253,7 +349,7 @@ export default function CreateJob() {
                                     <button 
                                         type="submit" 
                                         className="btn btn-primary" 
-                                        disabled={loading || companiesLoading || companies.length === 0}
+                                        disabled={loading || companyLoading || skillsLoading || !company}
                                     >
                                         {loading ? t("posting") : t("post_job")}
                                     </button>

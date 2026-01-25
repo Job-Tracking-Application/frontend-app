@@ -123,6 +123,25 @@ export default function MyJobs() {
 
                                     <p className="text-truncate">{job.description}</p>
 
+                                    {/* Skills Display */}
+                                    {job.skills && job.skills.length > 0 && (
+                                        <div className="mb-3">
+                                            <small className="text-muted d-block mb-1">{t("required_skills")}:</small>
+                                            <div className="d-flex flex-wrap gap-1">
+                                                {job.skills.slice(0, 4).map((skill, index) => (
+                                                    <span key={skill.id || index} className="badge bg-light text-dark border" style={{ fontSize: "0.75rem" }}>
+                                                        {skill.name}
+                                                    </span>
+                                                ))}
+                                                {job.skills.length > 4 && (
+                                                    <span className="badge bg-secondary" style={{ fontSize: "0.75rem" }}>
+                                                        +{job.skills.length - 4} more
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="row mb-3">
                                         <div className="col-6">
                                             <strong>{t("salary")}:</strong><br />

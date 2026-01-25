@@ -1,0 +1,492 @@
+ 
++91 9876543210
+,
+/admin/companies
+/admin/jobs
+/admin/logs
+/admin/reports/matrix
+/admin/reports/summary
+/admin/stats
+/admin/users
+/applications/me
+/auth/login
+/auth/me
+/auth/register
+/dashboard/jobseeker/stats
+/dashboard/recruiter/stats
+/jobs
+/organizations
+/organizations/exists
+/organizations/my
+/organizations/recruiter
+/profile/jobseeker
+/profile/recruiter
+/recruiter/jobs/my-jobs
+/skills
+;
+Access denied. Admin credentials required.
+Action
+Actions
+Activate
+Activate Job
+Active
+Active Jobs
+Active Users
+Activity Logs
+Admin Dashboard
+Admin login successful!
+Admins
+All Statuses
+All Users
+Already have an account?
+An error occurred
+Analytics
+Applicant
+Applicant ID
+Applicant Information
+Application Details
+Application Status
+Application Status Breakdown
+Application deleted successfully
+Applications
+Applied
+Applied Date
+Are you sure you want to delete the application by {{name}} for {{job}}? This action cannot be undone.
+Are you sure you want to delete this job? This action cannot be undone.
+Are you sure you want to {{action}} this job?
+Are you sure you want to {{action}} this user?
+Are you sure you want to {{action}}?
+Audit trail of system activities.
+Authentication required. Please login again.
+Avg Applications per Job
+Avg Jobs per Company
+By Role
+Cancel
+Cannot delete selected applications
+Choose Language
+City
+Close
+Company
+Company {{action}} successfully
+Confirm Status Change
+Create Account
+Create password
+Creating...
+Deactivate
+Deactivate Job
+Delete
+Delete Application
+Delete Job
+Delete abusive application
+Disable
+Disabled
+Download Resume
+Edit
+Email
+Email Address
+Enable
+Enter password
+Error loading company profile
+Error loading skills
+Failed to delete application
+Failed to load applications
+Failed to load companies
+Failed to load dashboard data from backend
+Failed to load jobs
+Failed to load users
+Failed to perform action on job
+Failed to update user role
+Failed to update user status
+Failed to verify company
+Full Name
+Generated at
+I am a...
+Inactive
+Inactive Users
+Interview Completed
+Interview Scheduled
+Job & Applicant
+Job ID
+Job Information
+Job Seeker
+Job Seekers
+Job Title
+Job deleted successfully
+Job {{action}} successfully
+Jobs
+Join us to find your dream job
+Just now
+Language Settings
+Last Updated
+Loading applications...
+Loading dashboard...
+Loading...
+Login failed. Please check your credentials.
+Manage Applications
+Manage Companies
+Manage Jobs
+Manage Users
+Mark Unverified
+N/A
+Name
+New here?
+Next
+No applications found
+No applications match your search criteria
+No companies found
+No jobs found
+No logs available
+No resume
+No resume uploaded
+No users found
+Overview
+Password
+Pending
+Performance
+Phone
+Please fix the errors in the form
+Previous
+Recruiter
+Recruiters
+Registered organizations.
+Registration successful! Please login.
+Rejected
+Resume
+Review and moderate job postings.
+Role
+Save
+Search by job title or applicant...
+Search jobs...
+Search users...
+Select role
+Shortlisted
+Showing {{start}} to {{end}} of {{total}}
+Showing {{start}} to {{end}} of {{total}} applications
+Sign In
+Sign Up
+Sign in to continue
+Signing in...
+Status
+System Logs
+System activities will appear here
+System overview and statistics
+T
+Timeline
+Title
+Top Companies
+Top Jobs by Applications
+Total Applications
+Total Companies
+Total Jobs
+Total Users
+Unable to load admin statistics
+Under Review
+Unverify
+User
+User Breakdown
+User role updated successfully
+User {{action}} successfully
+Username
+Verified
+Verify
+Verify Company
+View
+View Resume
+View and manage system users.
+View and moderate job applications for abuse prevention.
+View application details
+Welcome Back
+Withdrawn
+Yes, Confirm
+Yes, Delete
+about_me
+about_placeholder
+activate
+activated
+active_jobs
+additional_notes
+adjust_search_criteria
+all_experience
+all_job_types
+all_locations
+all_salaries
+application
+application_deadline
+application_status_updated
+applications
+applied_on
+apply_by
+apply_for_job
+apply_job_additional_notes
+apply_job_additional_notes_help
+apply_job_additional_notes_placeholder
+apply_job_already_applied
+apply_job_already_applied_message
+apply_job_already_submitted
+apply_job_cover_letter
+apply_job_cover_letter_placeholder
+apply_job_error
+apply_job_github_help
+apply_job_github_url
+apply_job_invalid_url
+apply_job_linkedin_help
+apply_job_linkedin_url
+apply_job_load_error
+apply_job_load_error_toast
+apply_job_portfolio_help
+apply_job_portfolio_url
+apply_job_resume_required
+apply_job_resume_url
+apply_job_session_expired
+apply_job_submit
+apply_job_success
+apply_job_title
+apply_more_msg
+back_to_jobs
+back_to_my_jobs
+basic_information
+bio
+browse_jobs
+by
+cancel
+city
+clear_all
+college_placeholder
+college_university
+company
+company_id
+company_information
+company_name
+company_not_specified
+company_profile
+company_profile_edit_hint
+company_profile_error
+company_profile_updated
+complete_profile_message
+contact_email
+contract
+cover_letter
+create_company_profile
+create_profile
+created
+dashboard_error
+dashboard_error_backend
+deactivate
+deactivated
+degree
+degree_placeholder
+delete
+delete_job
+delete_job_confirm_message
+delete_job_confirm_title
+delete_job_error
+description
+disable
+disabled
+edit
+edit_company_profile
+edit_job
+edit_job_error
+edit_job_success
+edit_max_salary
+edit_max_salary_placeholder
+edit_min_salary
+edit_min_salary_placeholder
+edit_profile
+education
+eg. Rahul Patil
+eg. rahul.patil@gmail.com
+eg. rahul_patil
+email
+enable
+enabled
+enter_email
+enter_full_name
+enter_phone
+error_load_applications
+error_load_jobs
+error_loading_job
+error_loading_jobs
+error_loading_profile
+error_update_application
+experience
+experience_not_specified
+explore_jobs
+failed_load_profile
+filtered
+full_name
+full_time
+hero_subtitle
+hero_title
+hire
+hired_candidates
+internship
+job_delete_error
+job_delete_success
+job_deleted
+job_description
+job_description_placeholder
+job_id
+job_information
+job_load_error
+job_location
+job_location_placeholder
+job_not_found
+job_post_error
+job_post_success
+job_seeker
+job_seeker_profile_subtitle
+job_seeker_profile_title
+job_title
+job_title_placeholder
+job_type
+last_updated
+latest_openings
+linkedin
+load_apps_error
+load_jobs_error
+load_jobs_error_retry
+load_profile_error
+loading
+loading_company
+location_not_specified
+manage_applications
+manage_applications_subtitle
+manage_apps_subtitle
+mark this company as unverified
+max_experience
+max_experience_placeholder
+max_salary
+min_experience
+min_experience_placeholder
+min_salary
+my_job_postings
+nav_applications
+nav_dashboard
+nav_login
+nav_logout
+nav_manage_apps
+nav_register
+newest_first
+no_applications
+no_applications_msg
+no_apps_yet_title
+no_bio
+no_company_profile
+no_company_profile_error
+no_deadline
+no_description
+no_description_provided
+no_education_details
+no_jobs_at_moment
+no_jobs_found
+no_jobs_posted_msg
+no_jobs_posted_title
+no_resume
+no_resume_uploaded
+no_skills_listed
+not_provided
+not_set
+not_specified
+oldest_first
+part_time
+pending
+pending_applications
+percent_complete
+personal_information
+phone
+portfolio
+post_first_job
+post_job
+post_job_action
+post_new_job
+post_new_job_title
+posted_date
+posted_on
+posting
+profile_complete_message
+profile_completion
+profile_completion_excellent
+profile_completion_good
+profile_completion_needs_work
+profile_links
+profile_not_created
+profile_not_found
+profile_update_error
+profile_update_failed
+profile_update_message
+profile_updated
+profile_updated_success
+quick_actions
+recommended_jobs
+recruiter_dashboard_subtitle
+recruiter_dashboard_title
+recruiter_edit_warning
+recruiter_id
+recruiter_profile_subtitle
+recruiter_profile_title
+refresh_stats
+refreshing
+reject
+required_skills
+resume
+resume_link_helper
+resume_placeholder
+retry
+salary
+salary_high_to_low
+salary_low_to_high
+salary_not_specified
+salary_range
+salary_upto
+salary_validation_error
+save
+save_changes
+saving
+search_filter
+search_placeholder
+see_more
+select_company_error
+select_job
+separate_skills_comma
+shortlist
+show_less
+show_more
+show_more_details
+showing_jobs
+skills
+skills_placeholder
+specialization
+status
+status_active
+status_applied
+status_hired
+status_inactive
+status_interviewed
+status_rejected
+status_shortlisted
+status_under_review
+try_again
+unverified
+up_to
+update_job
+updating
+upto
+username
+username_cannot_change
+verification_status
+verified
+verify this company
+view
+view_details
+view_job
+view_profile
+view_resume
+website
+welcome_message
+year_of_graduation
+year_placeholder
+years
+{{days}} days ago
+{{hours}} hours ago
+{{minutes}} minutes ago

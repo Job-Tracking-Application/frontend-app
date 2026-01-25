@@ -1,8 +1,14 @@
 import api from "./api";
 
-// Get all companies (for job posting dropdown)
-export const getCompanies = async () => {
+// Get all companies (for public access)
+export const getAllCompanies = async () => {
   const response = await api.get("/organizations");
+  return response.data;
+};
+
+// Get recruiter's companies (for job posting dropdown)
+export const getCompanies = async () => {
+  const response = await api.get("/organizations/recruiter");
   return response.data;
 };
 
