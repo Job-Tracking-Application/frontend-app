@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile } from "../../services/userService";
+import { getSkills } from "../../services/skillService";
 import { useAuth } from "../../context/useAuth";
 import { useLanguage } from "../../context/useLanguage";
 import PageHero from "../../components/common/PageHero";
@@ -11,6 +12,7 @@ const JobSeekerProfile = () => {
   const { user: authUser } = useAuth();
   const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
+  const [allSkills, setAllSkills] = useState([]); // All available skills from DB
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -39,33 +41,43 @@ const JobSeekerProfile = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getUserProfile();
-      
-      setProfile(data);
+
+      // Load profile and all available skills in parallel
+      const [profileData, skillsResponse] = await Promise.all([
+        getUserProfile(),
+        getSkills()
+      ]);
+
+      setProfile(profileData);
+
+      // Handle skills response (ApiResponse wrapper)
+      if (skillsResponse && skillsResponse.success) {
+        setAllSkills(skillsResponse.data || []);
+      }
 
       // Handle education data properly
       let educationObj = { degree: "", college: "", year: "" };
-      if (data.education) {
-        if (typeof data.education === 'string') {
+      if (profileData.education) {
+        if (typeof profileData.education === 'string') {
           // If it's a string, put it in the degree field
-          educationObj.degree = data.education;
+          educationObj.degree = profileData.education;
         } else {
           // If it's an object, use the individual fields
           educationObj = {
-            degree: data.education.degree || "",
-            college: data.education.college || "",
-            year: data.education.year ? String(data.education.year) : ""
+            degree: profileData.education.degree || "",
+            college: profileData.education.college || "",
+            year: profileData.education.year ? String(profileData.education.year) : ""
           };
         }
       }
 
       setFormData({
-        fullName: data.fullName || "",
-        email: data.email || "",
-        phone: data.phone || "",
-        skills: data.skills || [],
-        resume: data.resume || "",
-        about: data.about || "",
+        fullName: profileData.fullName || "",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        skills: profileData.skills || [],
+        resume: profileData.resume || "",
+        about: profileData.about || "",
         education: educationObj,
       });
     } catch (error) {
@@ -79,7 +91,7 @@ const JobSeekerProfile = () => {
 
   const calculateProfileCompletion = () => {
     if (!profile) return 0;
-    
+
     const fields = [
       profile.fullName,
       profile.email,
@@ -89,7 +101,7 @@ const JobSeekerProfile = () => {
       profile.resume,
       profile.skills && profile.skills.length > 0
     ];
-    
+
     const completedFields = fields.filter(field => {
       if (field === null || field === undefined) return false;
       if (typeof field === 'string') return field.trim() !== "";
@@ -114,15 +126,21 @@ const JobSeekerProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSkillsChange = (e) => {
-    const skillsArray = e.target.value
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-    setFormData((prev) => ({
-      ...prev,
-      skills: skillsArray,
-    }));
+  const handleSkillToggle = (skillName) => {
+    setFormData(prev => {
+      const currentSkills = prev.skills || [];
+      if (currentSkills.includes(skillName)) {
+        return {
+          ...prev,
+          skills: currentSkills.filter(s => s !== skillName)
+        };
+      } else {
+        return {
+          ...prev,
+          skills: [...currentSkills, skillName]
+        };
+      }
+    });
   };
 
   const handleEducationChange = (e) => {
@@ -140,7 +158,7 @@ const JobSeekerProfile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      
+
       const updateData = {
         fullName: formData.fullName,
         email: formData.email,
@@ -164,7 +182,7 @@ const JobSeekerProfile = () => {
         about: formData.about,
         education: formData.education, // Keep as object for display
       };
-      
+
       setProfile(updatedProfile);
       setIsEditing(false);
       showSuccessToast(t("profile_updated_success"));
@@ -274,10 +292,10 @@ const JobSeekerProfile = () => {
                   <div className="col-md-6">
                     <label className="form-label text-muted small fw-bold">{t("full_name")}</label>
                     {isEditing ? (
-                      <input 
-                        name="fullName" 
-                        value={formData.fullName} 
-                        onChange={handleChange} 
+                      <input
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
                         className="form-control"
                         placeholder={t("enter_full_name")}
                       />
@@ -295,11 +313,11 @@ const JobSeekerProfile = () => {
                   <div className="col-md-6">
                     <label className="form-label text-muted small fw-bold">{t("email")}</label>
                     {isEditing ? (
-                      <input 
-                        name="email" 
+                      <input
+                        name="email"
                         type="email"
-                        value={formData.email} 
-                        onChange={handleChange} 
+                        value={formData.email}
+                        onChange={handleChange}
                         className="form-control"
                         placeholder={t("enter_email")}
                         disabled // Email usually shouldn't be editable
@@ -311,11 +329,11 @@ const JobSeekerProfile = () => {
                   <div className="col-md-6">
                     <label className="form-label text-muted small fw-bold">{t("phone")}</label>
                     {isEditing ? (
-                      <input 
-                        name="phone" 
+                      <input
+                        name="phone"
                         type="tel"
-                        value={formData.phone} 
-                        onChange={handleChange} 
+                        value={formData.phone}
+                        onChange={handleChange}
                         className="form-control"
                         placeholder={t("enter_phone")}
                       />
@@ -336,11 +354,11 @@ const JobSeekerProfile = () => {
               </div>
               <div className="card-body p-4">
                 {isEditing ? (
-                  <textarea 
-                    name="about" 
-                    rows={4} 
-                    value={formData.about} 
-                    onChange={handleChange} 
+                  <textarea
+                    name="about"
+                    rows={4}
+                    value={formData.about}
+                    onChange={handleChange}
                     className="form-control"
                     placeholder={t("about_placeholder")}
                   />
@@ -364,31 +382,31 @@ const JobSeekerProfile = () => {
                   <div className="row g-3">
                     <div className="col-md-6">
                       <label className="form-label">{t("degree")}</label>
-                      <input 
-                        name="degree" 
-                        value={formData.education.degree} 
-                        onChange={handleEducationChange} 
+                      <input
+                        name="degree"
+                        value={formData.education.degree}
+                        onChange={handleEducationChange}
                         className="form-control"
                         placeholder={t("degree_placeholder")}
                       />
                     </div>
                     <div className="col-md-6">
                       <label className="form-label">{t("college_university")}</label>
-                      <input 
-                        name="college" 
-                        value={formData.education.college} 
-                        onChange={handleEducationChange} 
+                      <input
+                        name="college"
+                        value={formData.education.college}
+                        onChange={handleEducationChange}
                         className="form-control"
                         placeholder={t("college_placeholder")}
                       />
                     </div>
                     <div className="col-md-6">
                       <label className="form-label">{t("year_of_graduation")}</label>
-                      <input 
-                        name="year" 
+                      <input
+                        name="year"
                         type="number"
-                        value={formData.education.year} 
-                        onChange={handleEducationChange} 
+                        value={formData.education.year}
+                        onChange={handleEducationChange}
                         className="form-control"
                         placeholder={t("year_placeholder")}
                         min="1950"
@@ -403,8 +421,8 @@ const JobSeekerProfile = () => {
                         <div className="col-md-6">
                           <label className="form-label text-muted small fw-bold">{t("degree")}</label>
                           <p className="fw-medium">
-                            {typeof profile.education === 'string' 
-                              ? profile.education 
+                            {typeof profile.education === 'string'
+                              ? profile.education
                               : (profile.education.degree || t("not_specified"))}
                           </p>
                         </div>
@@ -412,7 +430,7 @@ const JobSeekerProfile = () => {
                           <label className="form-label text-muted small fw-bold">{t("college_university")}</label>
                           <p className="fw-medium">
                             {typeof profile.education === 'object' && profile.education.college && profile.education.college.trim() !== ""
-                              ? profile.education.college 
+                              ? profile.education.college
                               : t("not_specified")}
                           </p>
                         </div>
@@ -420,7 +438,7 @@ const JobSeekerProfile = () => {
                           <label className="form-label text-muted small fw-bold">{t("year_of_graduation")}</label>
                           <p className="fw-medium">
                             {typeof profile.education === 'object' && profile.education.year && profile.education.year > 0
-                              ? profile.education.year 
+                              ? profile.education.year
                               : t("not_specified")}
                           </p>
                         </div>
@@ -453,20 +471,20 @@ const JobSeekerProfile = () => {
                       <div className="d-flex justify-content-between align-items-center mb-2">
                         <span className="fw-medium">{completion}{t("percent_complete")}</span>
                         <span className={`badge bg-${color}`}>
-                          {completion >= 80 ? t("profile_completion_excellent") : 
-                           completion >= 50 ? t("profile_completion_good") : 
-                           t("profile_completion_needs_work")}
+                          {completion >= 80 ? t("profile_completion_excellent") :
+                            completion >= 50 ? t("profile_completion_good") :
+                              t("profile_completion_needs_work")}
                         </span>
                       </div>
-                      <div className="progress mb-3" style={{height: '8px'}}>
-                        <div 
-                          className={`progress-bar bg-${color}`} 
-                          role="progressbar" 
-                          style={{width: `${completion}%`}}
+                      <div className="progress mb-3" style={{ height: '8px' }}>
+                        <div
+                          className={`progress-bar bg-${color}`}
+                          role="progressbar"
+                          style={{ width: `${completion}%` }}
                         ></div>
                       </div>
                       <small className="text-muted">
-                        {completion < 100 ? 
+                        {completion < 100 ?
                           t("complete_profile_message") :
                           t("profile_complete_message")
                         }
@@ -487,26 +505,42 @@ const JobSeekerProfile = () => {
               <div className="card-body p-4">
                 {isEditing ? (
                   <div>
-                    <input 
-                      name="skills" 
-                      value={formData.skills.join(", ")} 
-                      onChange={handleSkillsChange} 
-                      className="form-control" 
-                      placeholder={t("skills_placeholder")}
-                    />
-                    <small className="form-text text-muted">
-                      {t("separate_skills_comma")}
-                    </small>
+                    <div className="skills-selector-container mb-2">
+                      {allSkills.length > 0 ? (
+                        <div className="row g-2">
+                          {allSkills.map((skill) => (
+                            <div key={skill.id} className="col-md-6">
+                              <div className="skill-checkbox-item">
+                                <input
+                                  type="checkbox"
+                                  id={`skill-${skill.id}`}
+                                  checked={formData.skills.includes(skill.name)}
+                                  onChange={() => handleSkillToggle(skill.name)}
+                                />
+                                <label htmlFor={`skill-${skill.id}`}>{skill.name}</label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted small text-center my-3">
+                          {t("no_skills_available")}
+                        </p>
+                      )}
+                    </div>
+                    <span className="skills-help">
+                      {t("select_skills_help")}
+                    </span>
                   </div>
                 ) : (
                   <div>
                     <div className="d-flex flex-wrap gap-2 mb-3">
-                      {profile.skills && profile.skills.length > 0 ? 
+                      {profile.skills && profile.skills.length > 0 ?
                         profile.skills.map((skill, i) => (
                           <span key={i} className="badge bg-light text-dark border">
                             {skill}
                           </span>
-                        )) : 
+                        )) :
                         <span className="text-muted small">
                           {t("no_skills_listed")}
                         </span>
@@ -532,12 +566,12 @@ const JobSeekerProfile = () => {
               <div className="card-body p-4">
                 {isEditing ? (
                   <div>
-                    <input 
+                    <input
                       type="url"
                       name="resume"
                       value={formData.resume}
                       onChange={handleChange}
-                      className="form-control" 
+                      className="form-control"
                       placeholder={t("resume_placeholder")}
                     />
                     <small className="form-text text-muted">
@@ -549,9 +583,9 @@ const JobSeekerProfile = () => {
                     <i className="bi bi-file-earmark-pdf fs-3 text-danger d-block mb-2"></i>
                     {profile.resume ? (
                       <div>
-                        <a 
-                          href={profile.resume} 
-                          target="_blank" 
+                        <a
+                          href={profile.resume}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-outline-primary btn-sm"
                         >
