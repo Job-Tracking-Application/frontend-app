@@ -31,7 +31,6 @@
   "Status": "Status",
   "Active": "Active",
   "Inactive": "Inactive",
-  
   "Manage Users": "Manage Users",
   "View and manage system users.": "View and manage system users.",
   "Failed to load users": "Failed to load users",
@@ -61,7 +60,6 @@
   "Failed to update user role": "Failed to update user role",
   "Yes, Confirm": "Yes, Confirm",
   "Yes, Delete": "Yes, Delete",
-  
   "Manage Companies": "Manage Companies",
   "Registered organizations.": "Registered organizations.",
   "Failed to load companies": "Failed to load companies",
@@ -82,7 +80,6 @@
   "verified": "verified",
   "Company {{action}} successfully": "Company {{action}} successfully",
   "Failed to verify company": "Failed to verify company",
-  
   "Manage Jobs": "Manage Jobs",
   "Review and moderate job postings.": "Review and moderate job postings.",
   "Failed to load jobs": "Failed to load jobs",
@@ -104,7 +101,6 @@
   "Activate": "Activate",
   "Delete": "Delete",
   "No jobs found": "No jobs found",
-  
   "System Logs": "System Logs",
   "Audit trail of system activities.": "Audit trail of system activities.",
   "Activity Logs": "Activity Logs",
@@ -118,11 +114,9 @@
   "{{minutes}} minutes ago": "{{minutes}} minutes ago",
   "{{hours}} hours ago": "{{hours}} hours ago",
   "{{days}} days ago": "{{days}} days ago",
-  
   "Loading...": "Loading...",
   "Loading applications...": "Loading applications...",
   "loading": "Loading",
-  
   "APPLIED": "Applied",
   "UNDER REVIEW": "Under Review",
   "INTERVIEW SCHEDULED": "Interview Scheduled",
@@ -132,7 +126,6 @@
   "WITHDRAWN": "Withdrawn",
   "HIRED": "Hired",
   "PENDING": "Pending",
-  
   "nav_dashboard": "Dashboard",
   "nav_jobs": "Jobs",
   "nav_applications": "Applications",
@@ -149,16 +142,14 @@
   "nav_login": "Login",
   "nav_register": "Register",
   "nav_logout": "Logout",
-  
   "status_applied": "Applied",
-  "status_shortlisted": "Shortlisted", 
+  "status_shortlisted": "Shortlisted",
   "status_rejected": "Rejected",
   "status_hired": "Hired",
   "status_under_review": "Under Review",
   "status_interviewed": "Interviewed",
   "status_active": "Active",
   "status_inactive": "Inactive",
-  
   "skills": "Skills",
   "profile_links": "Profile Links",
   "resume": "Resume",
@@ -173,7 +164,6 @@
   "shortlist": "Shortlist",
   "reject": "Reject",
   "hire": "Hire",
-  
   "Login failed. Please check your credentials.": "Login failed. Please check your credentials.",
   "Welcome Back": "Welcome Back",
   "Sign in to continue": "Sign in to continue",
@@ -201,9 +191,8 @@
   "Creating...": "Creating...",
   "Sign Up": "Sign Up",
   "Already have an account?": "Already have an account?",
-  
   "full_time": "Full-time",
-  "part_time": "Part-time", 
+  "part_time": "Part-time",
   "contract": "Contract",
   "internship": "Internship",
   "no_company_profile_error": "Please create a company profile first",
@@ -235,10 +224,9 @@
   "job_description_placeholder": "Describe the role, responsibilities, and requirements...",
   "cancel": "Cancel",
   "post_job": "Post Job",
-  
   "All Statuses": "All Statuses",
   "Applied": "Applied",
-  "Under Review": "Under Review", 
+  "Under Review": "Under Review",
   "Interview Scheduled": "Interview Scheduled",
   "Interview Completed": "Interview Completed",
   "Shortlisted": "Shortlisted",
@@ -277,7 +265,6 @@
   "Download Resume": "Download Resume",
   "No resume uploaded": "No resume uploaded",
   "Close": "Close",
-  
   "apply_job_load_error": "Error loading job details",
   "apply_job_load_error_toast": "Failed to load job details",
   "apply_job_resume_required": "Resume URL is required",
@@ -320,17 +307,14 @@
   "select_job": "Select Job",
   "application": "application",
   "applications": "applications",
-  
   "load_apps_error": "Error loading applications",
   "manage_apps_subtitle": "Track your job applications and their status",
   "try_again": "Try Again",
   "explore_jobs": "Explore Jobs",
   "view_resume": "View Resume",
   "no_apps_yet_title": "No Applications Yet",
-  
   "Language Settings": "Language Settings",
   "Choose Language": "Choose Language",
-  
   "recruiter_dashboard_title": "Recruiter Dashboard",
   "recruiter_dashboard_subtitle": "Manage your job postings and applications",
   "dashboard_error": "Unable to load dashboard data",
@@ -343,7 +327,6 @@
   "refreshing": "Refreshing...",
   "refresh_stats": "Refresh Stats",
   "retry": "Retry",
-  
   "load_jobs_error": "Error loading jobs",
   "job_deleted": "Job deleted successfully",
   "delete_job_error": "Error deleting job",
@@ -362,7 +345,6 @@
   "delete": "Delete",
   "delete_job_confirm_title": "Delete Job",
   "delete_job_confirm_message": "Are you sure you want to delete '{{title}}'? This action cannot be undone.",
-  
   "job_load_error": "Error loading job details",
   "select_company_error": "Please select a company",
   "edit_job_success": "Job updated successfully",
@@ -373,7 +355,6 @@
   "edit_min_salary_placeholder": "e.g. 50000",
   "edit_max_salary_placeholder": "e.g. 80000",
   "save_changes": "Save Changes",
-  
   "load_profile_error": "Error loading profile",
   "profile_updated": "Profile updated successfully",
   "profile_update_error": "Error updating profile",
@@ -400,9 +381,7 @@
   "description": "Description",
   "verification_status": "Verification Status",
   "pending": "Pending",
-  
   "delete_job": "Delete Job",
-  
   "back_to_my_jobs": "Back to My Jobs",
   "recruiter_edit_warning": "Only you can edit this job posting",
   "salary_range": "Salary Range",
@@ -411,18 +390,15 @@
   "created": "Created",
   "last_updated": "Last Updated",
   "posted_date": "Posted Date",
-  
   "company_id": "Company ID",
-  
   "skills selected": "skills selected",
   "skill selected": "skill selected",
   "update_job": "Update Job",
-  
   "about_me": "About Me",
   "about_placeholder": "Tell us about yourself...",
   "adjust_search_criteria": "Adjust search criteria",
   "all_experience": "All Experience",
-  "all_job_types": "All Job Types", 
+  "all_job_types": "All Job Types",
   "all_locations": "All Locations",
   "all_salaries": "All Salaries",
   "apply_by": "Apply By",
@@ -439,7 +415,7 @@
   "degree_placeholder": "e.g. Bachelor of Engineering",
   "education": "Education",
   "enter_email": "Enter email",
-  "enter_full_name": "Enter full name", 
+  "enter_full_name": "Enter full name",
   "enter_phone": "Enter phone",
   "error_loading_profile": "Error loading profile",
   "failed_load_profile": "Failed to load profile",
@@ -480,7 +456,7 @@
   "resume_link_helper": "Paste your resume link here (Google Drive, Dropbox, etc.)",
   "resume_placeholder": "https://drive.google.com/...",
   "salary_high_to_low": "Salary: High to Low",
-  "salary_low_to_high": "Salary: Low to High", 
+  "salary_low_to_high": "Salary: Low to High",
   "saving": "Saving...",
   "search_filter": "Search & Filter",
   "search_placeholder": "Search jobs by title, company, or skills...",
@@ -495,5 +471,7 @@
   "welcome_message": "Welcome to JobSync",
   "year_of_graduation": "Year of Graduation",
   "year_placeholder": "e.g. 2023",
-  "job_id":"Job ID"
+  "job_id": "Job ID",
+  "no_skills_available": "No skills available in database",
+  "select_skills_help": "Select your skills from the list above"
 }

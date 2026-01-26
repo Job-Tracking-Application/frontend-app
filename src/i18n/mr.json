@@ -30,7 +30,6 @@
   "Status": "स्थिती",
   "Active": "सक्रिय",
   "Inactive": "निष्क्रिय",
-  
   "Manage Users": "वापरकर्ते व्यवस्थापित करा",
   "View and manage system users.": "सिस्टम वापरकर्ते पहा आणि व्यवस्थापित करा.",
   "Failed to load users": "वापरकर्ते लोड करण्यात अयशस्वी",
@@ -58,7 +57,6 @@
   "User role updated successfully": "वापरकर्ता भूमिका यशस्वीरित्या अपडेट केली",
   "Failed to update user role": "वापरकर्ता भूमिका अपडेट करण्यात अयशस्वी",
   "Yes, Confirm": "होय, पुष्टी करा",
-  
   "Manage Companies": "कंपन्या व्यवस्थापित करा",
   "Registered organizations.": "नोंदणीकृत संस्था.",
   "Failed to load companies": "कंपन्या लोड करण्यात अयशस्वी",
@@ -77,7 +75,6 @@
   "unverified": "असत्यापित",
   "Company {{action}} successfully": "कंपनी यशस्वीरित्या {{action}}",
   "Failed to verify company": "कंपनी सत्यापित करण्यात अयशस्वी",
-  
   "Manage Jobs": "नोकऱ्या व्यवस्थापित करा",
   "Review and moderate job postings.": "नोकरी पोस्टिंगचे पुनरावलोकन आणि नियंत्रण करा.",
   "Failed to load jobs": "नोकऱ्या लोड करण्यात अयशस्वी",
@@ -99,7 +96,6 @@
   "Activate": "सक्रिय करा",
   "Delete": "हटवा",
   "No jobs found": "कोणत्याही नोकऱ्या सापडल्या नाहीत",
-  
   "System Logs": "सिस्टम लॉग",
   "Audit trail of system activities.": "सिस्टम क्रियाकलापांचा ऑडिट ट्रेल.",
   "Activity Logs": "क्रियाकलाप लॉग",
@@ -112,9 +108,7 @@
   "{{minutes}} minutes ago": "{{minutes}} मिनिटांपूर्वी",
   "{{hours}} hours ago": "{{hours}} तासांपूर्वी",
   "{{days}} days ago": "{{days}} दिवसांपूर्वी",
-  
   "Loading...": "लोड करत आहे...",
-  
   "APPLIED": "अर्ज केला",
   "UNDER REVIEW": "पुनरावलोकनाधीन",
   "INTERVIEW SCHEDULED": "मुलाखत नियोजित",
@@ -124,7 +118,6 @@
   "WITHDRAWN": "मागे घेतले",
   "HIRED": "नियुक्त केले",
   "PENDING": "प्रलंबित",
-  
   "nav_dashboard": "डॅशबोर्ड",
   "nav_jobs": "नोकऱ्या",
   "nav_applications": "अर्ज",
@@ -141,7 +134,6 @@
   "nav_login": "लॉगिन",
   "nav_register": "नोंदणी",
   "nav_logout": "लॉगआउट",
-  
   "status_shortlisted": "निवडक यादी",
   "skills": "कौशल्ये",
   "profile_links": "प्रोफाइल लिंक्स",
@@ -157,7 +149,6 @@
   "shortlist": "निवडक यादी",
   "reject": "नाकारा",
   "hire": "नियुक्त करा",
-  
   "Login failed. Please check your credentials.": "लॉगिन अयशस्वी. कृपया आपली ओळखपत्रे तपासा.",
   "Welcome Back": "परत स्वागत आहे",
   "Sign in to continue": "सुरू ठेवण्यासाठी साइन इन करा",
@@ -186,7 +177,6 @@
   "Creating...": "तयार करत आहे...",
   "Sign Up": "साइन अप",
   "Already have an account?": "आधीच खाते आहे?",
-  
   "full_time": "पूर्णवेळ",
   "part_time": "अर्धवेळ",
   "contract": "करार",
@@ -218,7 +208,6 @@
   "job_description_placeholder": "भूमिका, जबाबदाऱ्या आणि आवश्यकतांचे वर्णन करा...",
   "cancel": "रद्द करा",
   "post_job": "नोकरी पोस्ट करा",
-  
   "All Statuses": "सर्व स्थिती",
   "Under Review": "पुनरावलोकनाधीन",
   "Interview Scheduled": "मुलाखत नियोजित",
@@ -265,7 +254,6 @@
   "Download Resume": "रेझ्युमे डाउनलोड करा",
   "No resume uploaded": "रेझ्युमे अपलोड केले नाही",
   "Close": "बंद करा",
-  
   "apply_job_load_error": "नोकरीचे तपशील लोड करण्यात त्रुटी",
   "apply_job_load_error_toast": "नोकरीचे तपशील लोड करण्यात अयशस्वी",
   "apply_job_resume_required": "रेझ्युमे URL आवश्यक आहे",
@@ -307,7 +295,6 @@
   "select_job": "नोकरी निवडा",
   "application": "अर्ज",
   "applications": "अर्ज",
-  
   "load_apps_error": "अर्ज लोड करण्यात त्रुटी",
   "status_under_review": "पुनरावलोकनाधीन",
   "status_interviewed": "मुलाखत घेतली",
@@ -319,10 +306,8 @@
   "explore_jobs": "नोकऱ्या एक्सप्लोर करा",
   "view_resume": "रेझ्युमे पहा",
   "no_apps_yet_title": "अजून कोणतेही अर्ज नाहीत",
-  
   "Language Settings": "भाषा सेटिंग्ज",
   "Choose Language": "भाषा निवडा",
-  
   "recruiter_dashboard_title": "भर्तीकर्ता डॅशबोर्ड",
   "recruiter_dashboard_subtitle": "तुमच्या नोकरी पोस्टिंग आणि अर्जांचे व्यवस्थापन करा",
   "dashboard_error": "डॅशबोर्ड डेटा लोड करू शकत नाही",
@@ -336,7 +321,6 @@
   "refreshing": "रिफ्रेश करत आहे...",
   "refresh_stats": "आकडेवारी रिफ्रेश करा",
   "retry": "पुन्हा प्रयत्न करा",
-  
   "load_jobs_error": "नोकऱ्या लोड करण्यात त्रुटी",
   "job_deleted": "नोकरी यशस्वीरित्या हटवली",
   "delete_job_error": "नोकरी हटवण्यात त्रुटी",
@@ -356,7 +340,6 @@
   "delete": "हटवा",
   "delete_job_confirm_title": "नोकरी हटवा",
   "delete_job_confirm_message": "तुम्हाला खात्री आहे की तुम्ही '{{title}}' हटवू इच्छिता? ही कृती पूर्ववत केली जाऊ शकत नाही.",
-  
   "job_load_error": "नोकरीचे तपशील लोड करण्यात त्रुटी",
   "select_company_error": "कृपया कंपनी निवडा",
   "edit_job_success": "नोकरी यशस्वीरित्या अपडेट केली",
@@ -367,7 +350,6 @@
   "edit_min_salary_placeholder": "उदा. 50000",
   "edit_max_salary_placeholder": "उदा. 80000",
   "save_changes": "बदल जतन करा",
-  
   "load_profile_error": "प्रोफाइल लोड करण्यात त्रुटी",
   "profile_updated": "प्रोफाइल यशस्वीरित्या अपडेट केले",
   "profile_update_error": "प्रोफाइल अपडेट करण्यात त्रुटी",
@@ -396,10 +378,8 @@
   "verification_status": "सत्यापन स्थिती",
   "verified": "सत्यापित",
   "pending": "प्रलंबित",
-  
   "back_to_jobs": "नोकऱ्यांकडे परत",
   "delete_job": "नोकरी हटवा",
-  
   "back_to_my_jobs": "माझ्या नोकऱ्यांकडे परत",
   "recruiter_edit_warning": "फक्त तुम्ही ही नोकरी पोस्टिंग संपादित करू शकता",
   "salary_range": "पगार श्रेणी",
@@ -411,13 +391,10 @@
   "status": "स्थिती",
   "posted_date": "पोस्ट केल्याची तारीख",
   "application_deadline": "अर्जाची अंतिम मुदत",
-  
   "company_id": "कंपनी आयडी",
-  
   "skills selected": "कौशल्ये निवडली",
   "skill selected": "कौशल्य निवडले",
   "update_job": "नोकरी अपडेट करा",
-  
   "कौशल्ये": "कौशल्ये",
   "प्रोफाइल लिंक्स": "प्रोफाइल लिंक्स",
   "कव्हर लेटर": "कव्हर लेटर",
@@ -426,7 +403,6 @@
   "रेझ्युमे": "रेझ्युमे",
   "GitHub": "GitHub",
   "LinkedIn": "LinkedIn",
-  
   "about_me": "माझ्याबद्दल",
   "about_placeholder": "आपल्याबद्दल सांगा...",
   "additional_notes": "अतिरिक्त टिप्पण्या",
@@ -505,5 +481,7 @@
   "view_job": "नोकरी पहा",
   "welcome_message": "JobSync मध्ये आपले स्वागत आहे",
   "year_of_graduation": "पदवी प्राप्तीचे वर्ष",
-  "year_placeholder": "उदा. 2023"
+  "year_placeholder": "उदा. 2023",
+  "no_skills_available": "डेटाबेसमध्ये कोणतीही कौशल्ये उपलब्ध नाहीत",
+  "select_skills_help": "वरील सूचितून आपली कौशल्ये निवडा"
 }
