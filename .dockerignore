@@ -1,4 +1,7 @@
 node_modules
-.git
-.env*
 dist
+.git
+.gitignore
+.env
+.env.development
+README.md

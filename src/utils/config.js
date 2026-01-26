@@ -10,7 +10,8 @@ class Config {
 
   // API Configuration
   get apiBaseUrl() {
-    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+    // ❌ Removed hardcoded localhost fallback
+    return import.meta.env.VITE_API_BASE_URL;
   }
 
   get apiTimeout() {
@@ -60,9 +61,7 @@ class Config {
 
   // Validate required environment variables
   validateEnvironment() {
-    const requiredVars = [
-      'VITE_API_BASE_URL'
-    ];
+    const requiredVars = ['VITE_API_BASE_URL'];
 
     const missingVars = requiredVars.filter(varName => {
       const value = import.meta.env[varName];
@@ -72,21 +71,24 @@ class Config {
     if (missingVars.length > 0) {
       const message = `Missing required environment variables: ${missingVars.join(', ')}`;
       console.error(message);
-      
+
       if (this.isProduction) {
         throw new Error(message);
       } else {
-        console.warn('Using default values for missing environment variables');
+        console.warn('Using development defaults for missing environment variables');
       }
     }
 
-    // Validate API URL format
-    try {
-      new URL(this.apiBaseUrl);
-    } catch (error) {
-      const message = `Invalid VITE_API_BASE_URL format: ${this.apiBaseUrl}`;
+    // ✅ UPDATED API BASE URL VALIDATION
+    const apiBaseUrl = this.apiBaseUrl;
+
+    const isAbsoluteUrl = /^https?:\/\//.test(apiBaseUrl);
+    const isRelativeUrl = apiBaseUrl.startsWith('/');
+
+    if (!isAbsoluteUrl && !isRelativeUrl) {
+      const message = `Invalid VITE_API_BASE_URL format: ${apiBaseUrl}. Use absolute URL or relative path like /api`;
       console.error(message);
-      
+
       if (this.isProduction) {
         throw new Error(message);
       }
