@@ -26,10 +26,22 @@ const ManageJobs = () => {
     const fetchJobs = async () => {
       try {
         const res = await getJobs();
-        if (mounted) setJobs(res.data || []);
+        if (mounted) {
+          // Handle ApiResponse wrapper - data is in res.data.data
+          if (res?.data?.data && Array.isArray(res.data.data)) {
+            setJobs(res.data.data);
+          } else if (res?.data && Array.isArray(res.data)) {
+            // Fallback if response is not wrapped
+            setJobs(res.data);
+          } else {
+            // Ensure jobs is always an array
+            setJobs([]);
+          }
+        }
       } catch (err) {
         console.error(err);
         showErrorToast(t("Failed to load jobs"));
+        if (mounted) setJobs([]); // Ensure jobs is always an array
       } finally {
         if (mounted) setLoading(false);
       }
@@ -64,7 +76,7 @@ const ManageJobs = () => {
     try {
       if (confirmModal.action === "delete") {
         await deleteJob(confirmModal.jobId);
-        setJobs(prev => prev.filter(j => j.id !== confirmModal.jobId));
+        setJobs(prev => Array.isArray(prev) ? prev.filter(j => j.id !== confirmModal.jobId) : []);
         showSuccessToast(t("Job deleted successfully"));
       } else if (confirmModal.action === "verify") {
         await verifyJob(confirmModal.jobId);
@@ -85,10 +97,10 @@ const ManageJobs = () => {
     setConfirmModal({ show: false, title: "", message: "", action: null, jobId: null, isActive: null });
   };
 
-  const filteredJobs = jobs.filter(j =>
-    j.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    j.companyName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = Array.isArray(jobs) ? jobs.filter(j =>
+    j.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    j.companyName?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
 
   if (loading) return <div className="text-center py-5">{t("Loading...")}</div>;
 

@@ -33,11 +33,11 @@ const ManageApplications = () => {
     { value: "", label: t("All Statuses") },
     { value: "APPLIED", label: t("Applied") },
     { value: "UNDER_REVIEW", label: t("Under Review") },
-    { value: "INTERVIEW_SCHEDULED", label: t("Interview Scheduled") },
-    { value: "INTERVIEW_COMPLETED", label: t("Interview Completed") },
+    { value: "INTERVIEWED", label: t("Interviewed") },
     { value: "SHORTLISTED", label: t("Shortlisted") },
     { value: "REJECTED", label: t("Rejected") },
-    { value: "WITHDRAWN", label: t("Withdrawn") }
+    { value: "HIRED", label: t("Hired") },
+    { value: "PENDING", label: t("Pending") }
   ];
 
   const fetchApplications = useCallback(
@@ -45,15 +45,25 @@ const ManageApplications = () => {
       try {
         setLoading(true);
         const res = await getApplications(page, pageSize, status);
-        const data = res.data;
+        
+        // Handle ApiResponse wrapper - data might be in res.data.data
+        let data;
+        if (res?.data?.data) {
+          data = res.data.data;
+        } else if (res?.data) {
+          data = res.data;
+        } else {
+          data = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+        }
 
-        setApplications(data.content || []);
+        setApplications(Array.isArray(data.content) ? data.content : []);
         setTotalPages(data.totalPages || 0);
         setTotalElements(data.totalElements || 0);
         setCurrentPage(data.number || 0);
       } catch (err) {
         console.error("Failed to load applications:", err);
         showErrorToast(t("Failed to load applications"));
+        setApplications([]); // Ensure applications is always an array
       } finally {
         setLoading(false);
       }
@@ -65,10 +75,10 @@ const ManageApplications = () => {
     fetchApplications(currentPage, statusFilter || null);
   }, [currentPage, statusFilter, fetchApplications]);
 
-  const filteredApplications = applications.filter(app =>
-    app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.jobSeekerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredApplications = Array.isArray(applications) ? applications.filter(app =>
+    app.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.jobSeekerName?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
 
   const showViewDetails = (application) => {
     setViewModal({ show: true, application });
@@ -108,16 +118,16 @@ const ManageApplications = () => {
     switch (status) {
       case "APPLIED": return "bg-primary";
       case "UNDER_REVIEW": return "bg-warning";
-      case "INTERVIEW_SCHEDULED":
-      case "INTERVIEW_COMPLETED": return "bg-info";
-      case "SELECTED": return "bg-success";
+      case "INTERVIEWED": return "bg-info";
+      case "SHORTLISTED": return "bg-success";
+      case "HIRED": return "bg-success";
       case "REJECTED": return "bg-danger";
-      case "WITHDRAWN": return "bg-secondary";
+      case "PENDING": return "bg-secondary";
       default: return "bg-primary";
     }
   };
 
-  const shouldDisableDelete = (status) => status === "SELECTED";
+  const shouldDisableDelete = (status) => false; // Allow deletion for all statuses
 
   const formatDate = (dateString) => {
     if (!dateString) return t("N/A");

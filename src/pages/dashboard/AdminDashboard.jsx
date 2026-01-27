@@ -23,14 +23,36 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
       try {
-        const [statsRes, summaryRes, matrixRes] = await Promise.all([
-          getAdminStats(),
-          getSummaryReport(),
-          getMatrixReport()
-        ]);
+        // Fetch each API separately to identify which one is failing
+        let statsRes, summaryRes, matrixRes;
+        
+        try {
+          statsRes = await getAdminStats();
+        } catch (err) {
+          console.error("Failed to fetch admin stats:", err);
+          statsRes = { data: { data: { totalUsers: 0, totalJobs: 0, totalCompanies: 0, totalApplications: 0 } } };
+        }
+        
+        try {
+          summaryRes = await getSummaryReport();
+        } catch (err) {
+          console.error("Failed to fetch summary report:", err);
+          summaryRes = null;
+        }
+        
+        try {
+          matrixRes = await getMatrixReport();
+        } catch (err) {
+          console.error("Failed to fetch matrix report:", err);
+          matrixRes = null;
+        }
 
         if (mounted) {
-          if (statsRes?.data) {
+          // Handle ApiResponse wrapper - data is in statsRes.data.data
+          if (statsRes?.data?.data) {
+            setStats(statsRes.data.data);
+          } else if (statsRes?.data) {
+            // Fallback if response is not wrapped
             setStats(statsRes.data);
           }
           setSummaryReport(summaryRes);
@@ -401,11 +423,11 @@ const getStatusColor = (status) => {
   const colors = {
     'APPLIED': '#007bff',
     'UNDER_REVIEW': '#ffc107',
-    'INTERVIEW_SCHEDULED': '#17a2b8',
-    'INTERVIEW_COMPLETED': '#6f42c1',
+    'INTERVIEWED': '#17a2b8',
     'SHORTLISTED': '#28a745',
     'REJECTED': '#dc3545',
-    'WITHDRAWN': '#6c757d'
+    'HIRED': '#28a745',
+    'PENDING': '#6c757d'
   };
   return colors[status] || '#6c757d';
 };

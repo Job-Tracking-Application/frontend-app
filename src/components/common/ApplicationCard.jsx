@@ -20,10 +20,12 @@ const ApplicationCard = ({ application, onStatusUpdate }) => {
   const getStatusBadge = (status) => {
     const statusConfig = {
       'APPLIED': { class: 'bg-primary', text: t('status_applied') },
+      'UNDER_REVIEW': { class: 'bg-info', text: t('status_under_review') },
+      'INTERVIEWED': { class: 'bg-info', text: t('status_interviewed') },
       'SHORTLISTED': { class: 'bg-warning text-dark', text: t('status_shortlisted') },
       'REJECTED': { class: 'bg-danger', text: t('status_rejected') },
       'HIRED': { class: 'bg-success', text: t('status_hired') },
-      'UNDER_REVIEW': { class: 'bg-info', text: t('status_under_review') }
+      'PENDING': { class: 'bg-secondary', text: t('status_pending') }
     };
     
     const config = statusConfig[status] || { class: 'bg-secondary', text: status };
@@ -217,62 +219,195 @@ const ApplicationCard = ({ application, onStatusUpdate }) => {
       {/* Action buttons in footer */}
       <div className="card-footer bg-white">
         <div className="d-flex gap-2 flex-wrap justify-content-center">
-          <button
-            className="btn btn-outline-warning btn-sm"
-            onClick={() => handleStatusUpdate("SHORTLISTED")}
-            disabled={isUpdating || application.status === 'SHORTLISTED'}
-            data-testid={`shortlist-btn-${application.id}`}
-          >
-            {isUpdating ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                {t("loading")}...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-star me-1"></i>
-                {t("shortlist")}
-              </>
-            )}
-          </button>
-          
-          <button
-            className="btn btn-outline-danger btn-sm"
-            onClick={() => handleStatusUpdate("REJECTED")}
-            disabled={isUpdating || application.status === 'REJECTED'}
-            data-testid={`reject-btn-${application.id}`}
-          >
-            {isUpdating ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                {t("loading")}...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-x-circle me-1"></i>
-                {t("reject")}
-              </>
-            )}
-          </button>
-          
-          <button
-            className="btn btn-success btn-sm"
-            onClick={() => handleStatusUpdate("HIRED")}
-            disabled={isUpdating || application.status === 'HIRED'}
-            data-testid={`hire-btn-${application.id}`}
-          >
-            {isUpdating ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                {t("loading")}...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-check-circle me-1"></i>
-                {t("hire")}
-              </>
-            )}
-          </button>
+          {/* Show different buttons based on current status */}
+          {application.status === 'APPLIED' && (
+            <>
+              <button
+                className="btn btn-outline-info btn-sm"
+                onClick={() => handleStatusUpdate("UNDER_REVIEW")}
+                disabled={isUpdating}
+                data-testid={`review-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-eye me-1"></i>
+                    {t("under_review")}
+                  </>
+                )}
+              </button>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={() => handleStatusUpdate("REJECTED")}
+                disabled={isUpdating}
+                data-testid={`reject-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-x-circle me-1"></i>
+                    {t("reject")}
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
+          {application.status === 'UNDER_REVIEW' && (
+            <>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => handleStatusUpdate("INTERVIEWED")}
+                disabled={isUpdating}
+                data-testid={`interview-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-person-video2 me-1"></i>
+                    {t("interview")}
+                  </>
+                )}
+              </button>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={() => handleStatusUpdate("REJECTED")}
+                disabled={isUpdating}
+                data-testid={`reject-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-x-circle me-1"></i>
+                    {t("reject")}
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
+          {application.status === 'INTERVIEWED' && (
+            <>
+              <button
+                className="btn btn-outline-warning btn-sm"
+                onClick={() => handleStatusUpdate("SHORTLISTED")}
+                disabled={isUpdating}
+                data-testid={`shortlist-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-star me-1"></i>
+                    {t("shortlist")}
+                  </>
+                )}
+              </button>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={() => handleStatusUpdate("REJECTED")}
+                disabled={isUpdating}
+                data-testid={`reject-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-x-circle me-1"></i>
+                    {t("reject")}
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
+          {application.status === 'SHORTLISTED' && (
+            <>
+              <button
+                className="btn btn-success btn-sm"
+                onClick={() => handleStatusUpdate("HIRED")}
+                disabled={isUpdating}
+                data-testid={`hire-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-check-circle me-1"></i>
+                    {t("hire")}
+                  </>
+                )}
+              </button>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={() => handleStatusUpdate("REJECTED")}
+                disabled={isUpdating}
+                data-testid={`reject-btn-${application.id}`}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    {t("loading")}...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-x-circle me-1"></i>
+                    {t("reject")}
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
+          {(application.status === 'PENDING' || application.status === 'HIRED' || application.status === 'REJECTED') && (
+            <div className="text-center text-muted">
+              <small>
+                {application.status === 'HIRED' && (
+                  <>
+                    <i className="bi bi-check-circle-fill text-success me-1"></i>
+                    {t("candidate_hired")}
+                  </>
+                )}
+                {application.status === 'REJECTED' && (
+                  <>
+                    <i className="bi bi-x-circle-fill text-danger me-1"></i>
+                    {t("application_rejected")}
+                  </>
+                )}
+                {application.status === 'PENDING' && (
+                  <>
+                    <i className="bi bi-clock-fill text-warning me-1"></i>
+                    {t("status_pending")}
+                  </>
+                )}
+              </small>
+            </div>
+          )}
         </div>
       </div>
     </div>

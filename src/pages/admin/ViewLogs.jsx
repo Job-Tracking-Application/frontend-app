@@ -16,14 +16,37 @@ const ViewLogs = () => {
       try {
         const res = await getLogs();
         if (mounted) {
+          // Handle ApiResponse wrapper - data might be in res.data.data
+          let logsData;
+          if (res?.data?.data) {
+            // Paginated response
+            if (res.data.data.content) {
+              logsData = res.data.data.content;
+            } else {
+              logsData = res.data.data;
+            }
+          } else if (res?.data) {
+            // Direct response
+            if (Array.isArray(res.data)) {
+              logsData = res.data;
+            } else if (res.data.content) {
+              logsData = res.data.content;
+            } else {
+              logsData = [];
+            }
+          } else {
+            logsData = [];
+          }
+          
           // Sort by most recent first (in case backend doesn't sort)
-          const sortedLogs = (res.data || []).sort((a, b) => 
+          const sortedLogs = Array.isArray(logsData) ? logsData.sort((a, b) => 
             new Date(b.performedAt) - new Date(a.performedAt)
-          );
+          ) : [];
           setLogs(sortedLogs);
         }
       } catch (err) {
         console.error(err);
+        if (mounted) setLogs([]); // Ensure logs is always an array
       } finally {
         if (mounted) setLoading(false);
       }

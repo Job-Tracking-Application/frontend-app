@@ -20,12 +20,24 @@ const MyApplications = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getMyApplications();
-      setApplications(data);
+      const response = await getMyApplications();
+      
+      // Handle ApiResponse wrapper structure
+      let applicationsData = [];
+      if (Array.isArray(response)) {
+        applicationsData = response;
+      } else if (response && Array.isArray(response.data)) {
+        applicationsData = response.data;
+      } else if (response && response.success && Array.isArray(response.data)) {
+        applicationsData = response.data;
+      }
+      
+      setApplications(applicationsData);
     } catch (error) {
       console.error("Error loading applications:", error);
       setError(t("load_apps_error"));
       showErrorToast(t("load_apps_error"));
+      setApplications([]); // Ensure applications is always an array
     } finally {
       setLoading(false);
     }
@@ -39,6 +51,8 @@ const MyApplications = () => {
         return 'bg-danger';
       case 'INTERVIEWED':
         return 'bg-info';
+      case 'SHORTLISTED':
+        return 'bg-success';
       case 'UNDER_REVIEW':
         return 'bg-warning';
       case 'APPLIED':
@@ -53,6 +67,8 @@ const MyApplications = () => {
         return t("status_under_review");
       case 'INTERVIEWED':
         return t("status_interviewed");
+      case 'SHORTLISTED':
+        return t("status_shortlisted");
       case 'HIRED':
         return t("status_hired");
       case 'REJECTED':
@@ -91,7 +107,7 @@ const MyApplications = () => {
 
         {!error && (
           <>
-            {applications.length > 0 && (
+            {Array.isArray(applications) && applications.length > 0 && (
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h4 className="mb-0">
                   {applications.length} {applications.length === 1 ? t("application") : t("applications")}
@@ -104,7 +120,7 @@ const MyApplications = () => {
             )}
 
             <div className="row g-4">
-              {applications.map((app) => (
+              {Array.isArray(applications) && applications.map((app) => (
                 <div key={app.id} className="col-lg-6">
                   <div className="card shadow-sm border-0 h-100">
                     <div className="card-body p-4">
@@ -177,7 +193,7 @@ const MyApplications = () => {
                 </div>
               ))}
 
-              {applications.length === 0 && (
+              {(!Array.isArray(applications) || applications.length === 0) && (
                 <div className="col-12 mt-4 text-center">
                   <div className="p-5 bg-light rounded-3">
                     <i className="bi bi-clipboard-x display-4 text-muted mb-3 d-block"></i>

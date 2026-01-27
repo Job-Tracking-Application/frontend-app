@@ -1,8 +1,23 @@
 import api from './api';
 
 export const getMyApplications = async () => {
-  const response = await api.get('/applications/me');
-  return response.data;
+  try {
+    const response = await api.get('/applications/me');
+    
+    // Handle ApiResponse wrapper structure
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else if (response.data && response.data.success === false) {
+      return [];
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Error fetching my applications:', error);
+    throw error;
+  }
 };
 
 export const getApplicationsForJob = async (jobId) => {

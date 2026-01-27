@@ -24,10 +24,22 @@ const ManageCompanies = () => {
     const fetchCompanies = async () => {
       try {
         const res = await getCompanies();
-        if (mounted) setCompanies(res.data || []);
+        if (mounted) {
+          // Handle ApiResponse wrapper - data is in res.data.data
+          if (res?.data?.data && Array.isArray(res.data.data)) {
+            setCompanies(res.data.data);
+          } else if (res?.data && Array.isArray(res.data)) {
+            // Fallback if response is not wrapped
+            setCompanies(res.data);
+          } else {
+            // Ensure companies is always an array
+            setCompanies([]);
+          }
+        }
       } catch (err) {
         console.error(err);
         showErrorToast(t("Failed to load companies"));
+        if (mounted) setCompanies([]); // Ensure companies is always an array
       } finally {
         if (mounted) setLoading(false);
       }
@@ -51,11 +63,11 @@ const ManageCompanies = () => {
     try {
       await verifyCompany(confirmModal.companyId, !confirmModal.verified);
       setCompanies(prev =>
-        prev.map(c =>
+        Array.isArray(prev) ? prev.map(c =>
           c.id === confirmModal.companyId
             ? { ...c, verified: !confirmModal.verified }
             : c
-        )
+        ) : []
       );
       const action = confirmModal.verified ? t("unverified") : t("verified");
       showSuccessToast(t("Company {{action}} successfully", { action }));

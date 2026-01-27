@@ -81,9 +81,12 @@ const ManageApplications = memo(() => {
       
       // Show success message with status
       const statusMessages = {
+        'UNDER_REVIEW': t('status_under_review'),
+        'INTERVIEWED': t('status_interviewed'),
         'SHORTLISTED': t('status_shortlisted'),
         'REJECTED': t('status_rejected'),
-        'HIRED': t('status_hired')
+        'HIRED': t('status_hired'),
+        'PENDING': t('status_pending')
       };
       
       showSuccessToast(`${t("application_status_updated")} - ${statusMessages[status] || status}`);

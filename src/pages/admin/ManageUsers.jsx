@@ -30,10 +30,22 @@ const ManageUsers = () => {
     const fetchUsers = async () => {
       try {
         const res = await getUsers();
-        if (mounted) setUsers(res.data || []);
+        if (mounted) {
+          // Handle ApiResponse wrapper - data is in res.data.data
+          if (res?.data?.data && Array.isArray(res.data.data)) {
+            setUsers(res.data.data);
+          } else if (res?.data && Array.isArray(res.data)) {
+            // Fallback if response is not wrapped
+            setUsers(res.data);
+          } else {
+            // Ensure users is always an array
+            setUsers([]);
+          }
+        }
       } catch (err) {
         console.error("Failed to load users:", err);
         showErrorToast(t("Failed to load users"));
+        if (mounted) setUsers([]); // Ensure users is always an array
       } finally {
         if (mounted) setLoading(false);
       }
@@ -42,10 +54,10 @@ const ManageUsers = () => {
     return () => (mounted = false);
   }, [t]);
 
-  const filteredUsers = users.filter(u =>
-    u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = Array.isArray(users) ? users.filter(u =>
+    u.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
 
   const showStatusConfirmation = (id, active, username) => {
     const action = active ? t("disable") : t("enable");
