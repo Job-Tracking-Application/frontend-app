@@ -38,11 +38,11 @@ const ManageJobs = () => {
     return () => (mounted = false);
   }, [t]);
 
-  const showDeleteConfirmation = (id) => {
+  const showDeleteConfirmation = (id, title) => {
     setConfirmModal({
       show: true,
       title: t("Delete Job"),
-      message: t("Are you sure you want to delete this job? This action cannot be undone."),
+      message: t("Are you sure you want to delete '{{title}}'? This action cannot be undone.", { title }),
       action: "delete",
       jobId: id
     });
@@ -99,61 +99,139 @@ const ManageJobs = () => {
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4">
           <div className="card-header bg-white p-4 border-bottom">
-            <div className="d-flex justify-content-between">
-              <h5 className="fw-bold mb-0">{t("Jobs")} ({filteredJobs.length})</h5>
-              <input
-                className="form-control w-25"
-                placeholder={t("Search jobs...")}
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
+            <div className="row g-3 align-items-center">
+              <div className="col-12 col-md-6">
+                <h5 className="fw-bold mb-0">{t("Jobs")} ({filteredJobs.length})</h5>
+              </div>
+              <div className="col-12 col-md-6">
+                <input
+                  className="form-control"
+                  placeholder={t("Search jobs...")}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
-          <table className="table table-hover align-middle mb-0">
-            <thead className="bg-light">
-              <tr>
-                <th>{t("Title")}</th>
-                <th>{t("Company")}</th>
-                <th>{t("Status")}</th>
-                <th className="text-end">{t("Action")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredJobs.map(j => (
-                <tr key={j.id}>
-                  <td>{j.title}</td>
-                  <td>{j.companyName}</td>
-                  <td>
-                    <span className={`badge ${j.isActive ? "bg-success" : "bg-warning"}`}>
-                      {j.isActive ? t("Active") : t("Inactive")}
-                    </span>
-                  </td>
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-info me-2"
-                      onClick={() => showVerifyConfirmation(j.id, j.isActive)}
-                    >
-                      {j.isActive ? t("Deactivate") : t("Activate")}
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => showDeleteConfirmation(j.id)}
-                    >
-                      {t("Delete")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredJobs.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center py-4 text-muted">
+          {/* Desktop Table View */}
+          <div className="table-responsive-mobile">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="px-3 py-3">{t("Title")}</th>
+                    <th className="px-3 py-3">{t("Company")}</th>
+                    <th className="px-3 py-3">{t("Status")}</th>
+                    <th className="text-end px-3 py-3">{t("Action")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredJobs.map(j => (
+                    <tr key={j.id}>
+                      <td className="px-3 py-3 fw-semibold">{j.title}</td>
+                      <td className="px-3 py-3">{j.companyName}</td>
+                      <td className="px-3 py-3">
+                        <span className={`badge ${j.isActive ? "bg-success" : "bg-warning"}`}>
+                          {j.isActive ? t("Active") : t("Inactive")}
+                        </span>
+                      </td>
+                      <td className="text-end px-3 py-3">
+                        <button
+                          className="btn btn-sm btn-info me-2"
+                          onClick={() => showVerifyConfirmation(j.id, j.isActive)}
+                        >
+                          {j.isActive ? t("Deactivate") : t("Activate")}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => showDeleteConfirmation(j.id, j.title)}
+                        >
+                          {t("Delete")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredJobs.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="text-center py-4 text-muted">
+                        {searchTerm ? (
+                          <>
+                            <i className="bi bi-search mb-2 fs-4 d-block"></i>
+                            {t("No jobs match your search criteria")}
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-briefcase mb-2 fs-4 d-block"></i>
+                            {t("No jobs found")}
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-card-view">
+            {filteredJobs.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                {searchTerm ? (
+                  <>
+                    <i className="bi bi-search mb-2 fs-4 d-block"></i>
+                    {t("No jobs match your search criteria")}
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-briefcase mb-2 fs-4 d-block"></i>
                     {t("No jobs found")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="p-3">
+                {filteredJobs.map((j) => (
+                  <div key={j.id} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="flex-grow-1">
+                        <h6 className="mobile-card-title">{j.title}</h6>
+                        <div className="mobile-card-details">
+                          <div>
+                            <i className="bi bi-building me-1"></i>
+                            {j.companyName}
+                          </div>
+                        </div>
+                      </div>
+                      <span className={`badge ${j.isActive ? "bg-success" : "bg-warning"} ms-2`}>
+                        {j.isActive ? t("Active") : t("Inactive")}
+                      </span>
+                    </div>
+                    
+                    <div className="mobile-card-actions">
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-sm btn-info flex-grow-1 touch-target"
+                          onClick={() => showVerifyConfirmation(j.id, j.isActive)}
+                        >
+                          <i className={`bi ${j.isActive ? 'bi-pause-circle' : 'bi-play-circle'} me-1`}></i>
+                          {j.isActive ? t("Deactivate") : t("Activate")}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger flex-grow-1 touch-target"
+                          onClick={() => showDeleteConfirmation(j.id, j.title)}
+                        >
+                          <i className="bi bi-trash me-1"></i>
+                          {t("Delete")}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -88,14 +88,14 @@ const ViewLogs = () => {
       <div className="container pb-5">
         <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
           <div className="card-header bg-white p-4 border-bottom">
-            <div className="row align-items-center">
-              <div className="col-md-6">
+            <div className="row g-3 align-items-center">
+              <div className="col-12 col-md-6">
                 <h5 className="fw-bold mb-0">
                   {t("Activity Logs")} ({logs.length})
                 </h5>
               </div>
-              <div className="col-md-6 text-end">
-                <small className="text-muted">
+              <div className="col-12 col-md-6 text-md-end text-center">
+                <small className="text-muted text-mobile-sm">
                   {t("Showing {{start}} to {{end}} of {{total}}", {
                     start: indexOfFirstLog + 1,
                     end: Math.min(indexOfLastLog, logs.length),
@@ -110,27 +110,37 @@ const ViewLogs = () => {
             {currentLogs.length > 0 ? (
               <div className="list-group list-group-flush">
                 {currentLogs.map((log) => (
-                  <div key={log.id} className="list-group-item border-0 py-3">
-                    <div className="row align-items-center">
-                      <div className="col-auto">
-                        <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                  <div key={log.id} className="list-group-item border-0 py-3 px-3 px-md-4">
+                    <div className="row align-items-center g-2">
+                      {/* Desktop: Show icon */}
+                      <div className="col-auto desktop-only">
+                        <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
                           <i className={`bi ${getEntityIcon(log.entity)} text-primary`}></i>
                         </div>
                       </div>
+                      
                       <div className="col">
-                        <div className="d-flex align-items-center mb-1">
-                          <span className={`badge ${getActionBadgeClass(log.action)} me-2`}>
-                            {log.action}
-                          </span>
-                          <strong className="text-capitalize">{log.entity}</strong>
-                          {log.entityId && (
-                            <span className="text-muted ms-1">#{log.entityId}</span>
-                          )}
+                        <div className="d-flex flex-mobile-column align-items-start align-items-md-center mb-2 mb-md-1 gap-2">
+                          <div className="d-flex align-items-center flex-wrap gap-2">
+                            {/* Mobile: Show icon inline */}
+                            <i className={`bi ${getEntityIcon(log.entity)} text-primary mobile-only`}></i>
+                            <span className={`badge ${getActionBadgeClass(log.action)}`}>
+                              {log.action}
+                            </span>
+                            <strong className="text-capitalize">{log.entity}</strong>
+                            {log.entityId && (
+                              <span className="text-muted">#{log.entityId}</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="d-flex align-items-center text-muted small">
-                          <i className="bi bi-clock me-1"></i>
-                          <span className="me-3">{formatTimeAgo(log.performedAt)}</span>
-                          <span className="text-muted">
+                        
+                        <div className="d-flex flex-mobile-column align-items-start align-items-md-center text-muted small gap-1 gap-md-2">
+                          <div className="d-flex align-items-center">
+                            <i className="bi bi-clock me-1"></i>
+                            <span>{formatTimeAgo(log.performedAt)}</span>
+                          </div>
+                          <span className="desktop-only">•</span>
+                          <span className="text-muted text-mobile-xs">
                             {new Date(log.performedAt).toLocaleString()}
                           </span>
                         </div>
@@ -140,7 +150,7 @@ const ViewLogs = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-5 text-muted">
+              <div className="text-center py-5 text-muted px-3">
                 <i className="bi bi-journal-text fs-1 mb-3 d-block"></i>
                 <h6>{t("No logs available")}</h6>
                 <p className="small">{t("System activities will appear here")}</p>
@@ -152,10 +162,10 @@ const ViewLogs = () => {
           {totalPages > 1 && (
             <div className="card-footer bg-white p-4 border-top">
               <nav className="d-flex justify-content-center">
-                <ul className="pagination pagination-sm mb-0">
+                <ul className="pagination pagination-sm mb-0 flex-wrap">
                   <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                     <button 
-                      className="page-link"
+                      className="page-link touch-target"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                     >
@@ -178,7 +188,7 @@ const ViewLogs = () => {
                     return (
                       <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
                         <button 
-                          className="page-link"
+                          className="page-link touch-target"
                           onClick={() => handlePageChange(pageNumber)}
                         >
                           {pageNumber}
@@ -189,7 +199,7 @@ const ViewLogs = () => {
                   
                   <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                     <button 
-                      className="page-link"
+                      className="page-link touch-target"
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                     >

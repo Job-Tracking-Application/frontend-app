@@ -99,3 +99,307 @@ body {
     font-weight: 500;
     color: var(--text-main);
 }
+
+/* ========================================
+   PAGE HERO MOBILE OPTIMIZATION
+   ======================================== */
+
+/* Page Hero Mobile Optimization */
+@media (max-width: 767.98px) {
+    .page-hero {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .page-hero .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 100%;
+    }
+}
+
+/* ========================================
+   RESPONSIVE TABLE UTILITIES
+   ======================================== */
+
+/* Mobile: Hide table, show cards */
+@media (max-width: 767.98px) {
+    .table-responsive-mobile {
+        display: none;
+    }
+    
+    .mobile-card-view {
+        display: block;
+    }
+}
+
+/* Desktop: Show table, hide cards */
+@media (min-width: 768px) {
+    .table-responsive-mobile {
+        display: block;
+    }
+    
+    .mobile-card-view {
+        display: none;
+    }
+}
+
+/* Mobile Card Styling */
+.mobile-card-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+.badge{
+    margin-left: 1em ;
+}
+.mobile-card-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-card-item:hover {
+    background: #f8f9fa;
+}
+
+.mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.mobile-card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-main);
+}
+
+.mobile-card-details {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.mobile-card-details > div {
+    margin-bottom: 0.25rem;
+}
+
+.mobile-card-actions {
+    margin-top: 0.75rem;
+}
+
+/* Enhanced Table Styling for Desktop */
+@media (min-width: 768px) {
+    .table thead th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--border-color);
+        padding: 1rem 0.75rem;
+    }
+    
+    .table tbody td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+}
+
+/* Mobile-Optimized Table (Horizontal Scroll) */
+@media (max-width: 767.98px) {
+    .table-scroll-mobile {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table-scroll-mobile table {
+        min-width: 600px;
+    }
+    
+    .table thead th,
+    .table tbody td {
+        font-size: 0.875rem;
+        padding: 0.75rem 0.5rem;
+        white-space: nowrap;
+    }
+}
+
+/* ========================================
+   RESPONSIVE SPACING UTILITIES
+   ======================================== */
+
+/* Mobile spacing adjustments */
+@media (max-width: 767.98px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card {
+        border-radius: 0.5rem;
+    }
+    
+    /* Reduce padding on mobile */
+    .py-mobile-sm {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    .px-mobile-sm {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    /* Full width buttons on mobile */
+    .btn-mobile-full {
+        width: 100%;
+        display: block;
+    }
+}
+
+/* ========================================
+   RESPONSIVE TEXT UTILITIES
+   ======================================== */
+
+/* Responsive font sizes */
+@media (max-width: 767.98px) {
+    h1, .h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2, .h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3, .h3 {
+        font-size: 1.25rem;
+    }
+    
+    .text-mobile-sm {
+        font-size: 0.875rem;
+    }
+    
+    .text-mobile-xs {
+        font-size: 0.75rem;
+    }
+}
+
+/* Text truncation for mobile */
+.text-truncate-mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    .text-break-mobile {
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+}
+
+/* ========================================
+   BADGE & STATUS RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 767.98px) {
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+        margin-left: 1em;
+    }
+}
+
+/* ========================================
+   MODAL RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   FORM RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 767.98px) {
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .input-group-mobile-vertical .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group-mobile-vertical .input-group > * {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Show/Hide based on screen size */
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: block;
+}
+
+@media (max-width: 767.98px) {
+    .mobile-only {
+        display: block;
+    }
+    
+    .desktop-only {
+        display: none;
+    }
+}
+
+/* Flex direction responsive */
+@media (max-width: 767.98px) {
+    .flex-mobile-column {
+        flex-direction: column;
+    }
+}
+
+/* Grid responsive */
+@media (max-width: 767.98px) {
+    .grid-mobile-1 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Touch-friendly sizing */
+@media (max-width: 767.98px) {
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
