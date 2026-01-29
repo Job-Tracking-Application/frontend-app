@@ -67,43 +67,17 @@ export const getAllCookies = () => {
 
 // Authentication-specific cookie functions
 export const setAuthToken = (token, days = 7) => {
-  // For now, use localStorage for better compatibility
-  // TODO: Move to httpOnly cookies for better security
-  try {
-    localStorage.setItem('auth_token', token);
-  } catch (error) {
-    console.error('Failed to store auth token in localStorage:', error);
-    // Fallback to cookie
-    setCookie('auth_token', token, days, {
-      HttpOnly: false, // Can't set HttpOnly from JavaScript
-      Secure: window.location.protocol === 'https:',
-      SameSite: 'Strict'
-    });
-  }
+  setCookie('auth_token', token, days, {
+    Secure: window.location.protocol === 'https:',
+    SameSite: 'Strict'
+  });
 };
 
 export const getAuthToken = () => {
-  try {
-    // Try localStorage first
-    const token = localStorage.getItem('auth_token');
-    if (token) return token;
-    
-    // Fallback to cookie
-    return getCookie('auth_token');
-  } catch (error) {
-    console.error('Failed to retrieve auth token from localStorage:', error);
-    return getCookie('auth_token');
-  }
+  return getCookie('auth_token');
 };
 
 export const removeAuthToken = () => {
-  try {
-    localStorage.removeItem('auth_token');
-  } catch (error) {
-    console.error('Failed to remove auth token from localStorage:', error);
-  }
-  
-  // Also remove from cookies
   deleteCookie('auth_token');
 };
 

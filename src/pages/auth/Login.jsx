@@ -23,8 +23,43 @@ export default function Login() {
             await login({ email, password });
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || t("Login failed. Please check your credentials."));
             console.error("Login error:", err);
+            
+            // Handle different types of errors based on backend responses
+            let errorMessage = t("Login failed. Please check your credentials.");
+            
+            if (err.response) {
+                const { status, data } = err.response;
+                
+                switch (status) {
+                    case 403:
+                        // Backend sends AuthorizationException as 403
+                        if (data?.message?.includes("deactivated")) {
+                            errorMessage = t("Your account has been deactivated. Please contact support.");
+                        } else {
+                            errorMessage = t("Invalid email or password. Please try again.");
+                        }
+                        break;
+                    case 401:
+                        errorMessage = t("Invalid email or password. Please try again.");
+                        break;
+                    case 429:
+                        errorMessage = t("Too many login attempts. Please wait a few minutes and try again.");
+                        break;
+                    case 500:
+                        errorMessage = t("Server error. Please try again later.");
+                        break;
+                    default:
+                        // Use backend message if available, otherwise fallback
+                        errorMessage = data?.message || t("Login failed. Please check your credentials.");
+                }
+            } else if (err.code === 'ERR_NETWORK') {
+                errorMessage = t("Network error. Please check your internet connection and try again.");
+            } else if (err.code === 'ECONNABORTED') {
+                errorMessage = t("Request timeout. Please try again.");
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

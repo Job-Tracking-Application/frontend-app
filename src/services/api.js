@@ -36,16 +36,24 @@ api.interceptors.response.use(
     if (!response) {
       if (request) {
         console.error('Network error - no response received:', message);
-        toast.error('Network error. Please check your connection.');
+        // Don't show toast for auth pages - let components handle it
+        if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+          toast.error('Network error. Please check your connection.');
+        }
       } else {
         console.error('Request setup error:', message);
-        toast.error('Request failed. Please try again.');
+        if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+          toast.error('Request failed. Please try again.');
+        }
       }
       return Promise.reject(error);
     }
 
     // HTTP error responses
     const { status, data } = response;
+    
+    // Don't show automatic toasts for auth pages - let components handle them
+    const isAuthPage = window.location.pathname.includes('/login') || window.location.pathname.includes('/register');
     
     switch (status) {
       case 401:
@@ -54,7 +62,7 @@ api.interceptors.response.use(
         removeAuthToken();
         
         // Don't show toast for auth pages
-        if (!window.location.pathname.includes('/login')) {
+        if (!isAuthPage) {
           toast.error('Session expired. Please login again.');
           // Redirect to login after a short delay
           setTimeout(() => {
@@ -66,47 +74,61 @@ api.interceptors.response.use(
       case 403:
         // Forbidden
         console.warn('Access forbidden:', data?.message);
-        toast.error('Access denied. You don\'t have permission for this action.');
+        if (!isAuthPage) {
+          toast.error('Access denied. You don\'t have permission for this action.');
+        }
         break;
         
       case 404:
         // Not found
         console.warn('Resource not found:', data?.message);
-        toast.error('Requested resource not found.');
+        if (!isAuthPage) {
+          toast.error('Requested resource not found.');
+        }
         break;
         
       case 422:
         // Validation error
         console.warn('Validation error:', data?.message);
-        if (data?.message) {
-          toast.error(data.message);
-        } else {
-          toast.error('Invalid data provided.');
+        if (!isAuthPage) {
+          if (data?.message) {
+            toast.error(data.message);
+          } else {
+            toast.error('Invalid data provided.');
+          }
         }
         break;
         
       case 429:
         // Rate limiting
         console.warn('Rate limit exceeded');
-        toast.error('Too many requests. Please wait a moment.');
+        if (!isAuthPage) {
+          toast.error('Too many requests. Please wait a moment.');
+        }
         break;
         
       case 500:
         // Server error
         console.error('Server error:', data?.message);
-        toast.error('Server error. Please try again later.');
+        if (!isAuthPage) {
+          toast.error('Server error. Please try again later.');
+        }
         break;
         
       case 503:
         // Service unavailable
         console.error('Service unavailable');
-        toast.error('Service temporarily unavailable. Please try again later.');
+        if (!isAuthPage) {
+          toast.error('Service temporarily unavailable. Please try again later.');
+        }
         break;
         
       default:
         // Other errors
         console.error(`HTTP ${status} error:`, data?.message || message);
-        toast.error(data?.message || 'An unexpected error occurred.');
+        if (!isAuthPage) {
+          toast.error(data?.message || 'An unexpected error occurred.');
+        }
     }
 
     return Promise.reject(error);

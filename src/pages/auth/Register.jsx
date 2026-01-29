@@ -25,6 +25,7 @@ export default function Register() {
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(""); // Add this for form-level errors
 
     const navigate = useNavigate();
 
@@ -45,11 +46,12 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitError(""); // Clear previous errors
 
         const validationErrors = getValidationErrors(formData);
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
-            showErrorToast(t("Please fix the errors in the form"));
+            setSubmitError(t("Please fix the errors in the form"));
             return;
         }
 
@@ -65,11 +67,51 @@ export default function Register() {
             showSuccessToast(t("Registration successful! Please login."));
             navigate("/login");
         } catch (error) {
-            showErrorToast(
-                error.response?.data?.message ||
-                error.message ||
-                "Registration failed"
-            );
+            // Handle different types of errors based on backend responses
+            let errorMessage = "Registration failed. Please try again.";
+            
+            if (error.response) {
+                const { status, data } = error.response;
+                
+                switch (status) {
+                    case 409:
+                        // Backend sends DuplicateEntityException as 409 Conflict
+                        if (data?.message?.includes("User already exists:")) {
+                            const identifier = data.message.split(": ")[1];
+                            if (identifier?.includes("@")) {
+                                errorMessage = "This email is already registered. Please use a different email or try logging in.";
+                            } else {
+                                errorMessage = "This username is already taken. Please choose a different username.";
+                            }
+                        } else {
+                            errorMessage = data?.message || "This information is already registered. Please check your details.";
+                        }
+                        break;
+                    case 400:
+                        // Validation errors from backend
+                        errorMessage = data?.message || "Please check your information and try again.";
+                        break;
+                    case 422:
+                        errorMessage = "Please check your information and try again. Make sure all fields are filled correctly.";
+                        break;
+                    case 429:
+                        errorMessage = "Too many registration attempts. Please wait a few minutes and try again.";
+                        break;
+                    case 500:
+                        errorMessage = "Server error. Please try again later.";
+                        break;
+                    default:
+                        errorMessage = data?.message || "Registration failed. Please try again.";
+                }
+            } else if (error.code === 'ERR_NETWORK') {
+                errorMessage = "Network error. Please check your internet connection and try again.";
+            } else if (error.code === 'ECONNABORTED') {
+                errorMessage = "Request timeout. Please try again.";
+            }
+            
+            // Show error both as toast AND in form
+            setSubmitError(errorMessage);
+            showErrorToast(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -93,6 +135,19 @@ export default function Register() {
                             {t("Join us to find your dream job")}
                         </p>
                     </div>
+
+                    {submitError && (
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                            {submitError}
+                            <button 
+                                type="button" 
+                                className="btn-close" 
+                                onClick={() => setSubmitError("")}
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit}>
                         <div className="row g-2">
