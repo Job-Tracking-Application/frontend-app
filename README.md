@@ -2,6 +2,9 @@
 
 A modern React-based web application for job tracking with role-based dashboards, job management, and application tracking.
 
+> [!TIP]
+> **Check out our new [Attractive Landing Page](file:///c:/Users/ASUS/OneDrive/Desktop/project/frontend-app/LANDING_PAGE.md)!**
+
 ## 🚀 Quick Start
 
 ### Prerequisites

@@ -4,17 +4,17 @@ import { useAuth } from "../context/useAuth";
 
 
 // Usage: <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-export default function RoleRoute({ allowedRoles = [] }){
+export default function RoleRoute({ allowedRoles = [] }) {
     const { user } = useAuth();
     const role = user?.role;
-    
-    if(!user) {
-        return <Navigate to="/login" replace />;
+
+    if (!user) {
+        return <Navigate to="/" replace />;
     }
-    
-    if(allowedRoles.length && !allowedRoles.includes(role)){
+
+    if (allowedRoles.length && !allowedRoles.includes(role)) {
         return <Navigate to="/dashboard" replace />;
     }
-    
+
     return <Outlet />;
 }
