@@ -1,9 +1,13 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from "../context/useLanguage";
 import Chatbot from "../components/common/Chatbot";
 import "./LandingPage.css";
 
 const LandingPage = () => {
+    const { t } = useTranslation();
+    const { language, changeLanguage } = useLanguage();
+
     return (
         <div className="landing-container">
             {/* Navigation */}
@@ -13,8 +17,18 @@ const LandingPage = () => {
                         <i className="bi bi-briefcase-fill"></i> JobSync
                     </Link>
                     <div className="d-flex align-items-center gap-3">
-                        <Link to="/login" className="nav-link-landing">Log In</Link>
-                        <Link to="/register" className="cta-button">Sign Up</Link>
+                        {/* Language Switcher */}
+                        <button
+                            className="lang-toggle-btn"
+                            onClick={() => changeLanguage(language === 'en' ? 'mr' : 'en')}
+                            title={t('switch_language', 'Switch Language')}
+                        >
+                            <i className="bi bi-globe me-1"></i>
+                            {language.toUpperCase()}
+                        </button>
+
+                        <Link to="/login" className="nav-link-landing">{t('nav_login')}</Link>
+                        <Link to="/register" className="cta-button">{t('nav_register')}</Link>
                     </div>
                 </div>
             </nav>
@@ -25,16 +39,15 @@ const LandingPage = () => {
                     <div className="row align-items-center">
                         <div className="col-lg-6">
                             <h1 className="hero-title animate-float">
-                                Find Your <span>Dream Job</span>. <br />
-                                Unlock Your Potential.
+                                {t('landing_hero_title')} <span>{t('landing_hero_span')}</span>. <br />
+                                {t('landing_hero_title_line2', 'Unlock Your Potential.')}
                             </h1>
                             <p className="hero-subtitle">
-                                Join JobSync to connect with top employers and fast-track your career.
-                                Our powerful matching tools find the perfect roles for your skills.
+                                {t('landing_hero_subtitle')}
                             </p>
                             <div className="d-flex gap-3">
-                                <Link to="/register" className="cta-button">Get Started</Link>
-                                <Link to="/jobs" className="btn btn-outline-primary rounded-pill px-4 py-2 fw-medium">Explore Jobs</Link>
+                                <Link to="/register" className="cta-button">{t('landing_cta_get_started')}</Link>
+                                <Link to="/jobs" className="btn btn-outline-primary rounded-pill px-4 py-2 fw-medium">{t('landing_cta_browse')}</Link>
                             </div>
                         </div>
                         <div className="col-lg-6 d-none d-lg-block">
@@ -64,22 +77,22 @@ const LandingPage = () => {
                             <div className="feature-icon">
                                 <i className="bi bi-search"></i>
                             </div>
-                            <h3>Smart Search</h3>
-                            <p className="text-muted">Easily find jobs that match your skills and experience with our advanced search filters.</p>
+                            <h3>{t('landing_feature_search_title')}</h3>
+                            <p className="text-muted">{t('landing_feature_search_desc')}</p>
                         </div>
                         <div className="feature-item glass-card">
                             <div className="feature-icon">
                                 <i className="bi bi-building"></i>
                             </div>
-                            <h3>Top Companies</h3>
-                            <p className="text-muted">Direct access to leading tech firms and innovative startups worldwide.</p>
+                            <h3>{t('landing_feature_verified_title')}</h3>
+                            <p className="text-muted">{t('landing_feature_verified_desc')}</p>
                         </div>
                         <div className="feature-item glass-card">
                             <div className="feature-icon">
                                 <i className="bi bi-graph-up-arrow"></i>
                             </div>
-                            <h3>Career Growth</h3>
-                            <p className="text-muted">Resources and tools to help you level up your skills and climb the career ladder.</p>
+                            <h3>{t('landing_feature_apply_title')}</h3>
+                            <p className="text-muted">{t('landing_feature_apply_desc')}</p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +101,7 @@ const LandingPage = () => {
             {/* Footer */}
             <footer className="py-5 text-center text-muted border-top mt-5 bg-light">
                 <div className="container">
-                    <p className="mb-0">&copy; 2026 JobSync Recruitment App. All rights reserved.</p>
+                    <p className="mb-0">&copy; 2026 JobSync Recruitment App. {t('all_rights_reserved', 'All rights reserved.')}</p>
                 </div>
             </footer>
 
