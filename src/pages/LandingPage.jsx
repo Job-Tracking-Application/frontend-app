@@ -62,7 +62,7 @@ const LandingPage = () => {
                                     <div className="text-start">
                                         <div className="badge bg-primary mb-2 shadow-sm">Hot Job</div>
                                         <h4 className="text-dark fw-bold mb-1">Senior Frontend Developer</h4>
-                                        <p className="text-muted small mb-0">Remote • Full-time • $120k+</p>
+                                        <p className="text-muted small mb-0">Remote • Full-time • ₹10L+</p>
                                     </div>
                                 </div>
                                 {/* Decorative elements */}
