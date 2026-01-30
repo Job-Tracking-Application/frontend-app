@@ -33,6 +33,7 @@ import ApplyJob from "../pages/applications/ApplyJob";
 import AdminManageApplications from "../pages/admin/ManageApplications";
 import JobSeekerProfile from "../pages/profile/JobSeekerProfile";
 import RecruiterProfile from "../pages/profile/RecruiterProfile";
+import LandingPage from "../pages/LandingPage";
 
 const DashboardRedirect = () => {
   const { user } = useAuth();
@@ -44,9 +45,10 @@ const DashboardRedirect = () => {
 };
 
 export default function AppRoutes() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   return (
     <Routes>
+      <Route path="/" element={isAuthenticated ? <DashboardRedirect /> : <LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -99,14 +101,11 @@ export default function AppRoutes() {
 
           {/* Settings */}
           <Route path="/settings" element={<LanguageSettings />} />
-
-          {/* Fallback */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Route>
 
       {/* catch-all */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

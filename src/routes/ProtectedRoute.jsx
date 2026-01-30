@@ -9,5 +9,5 @@ export default function ProtectedRoute() {
         return <div className="text-center py-5">Loading...</div>;
     }
 
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
 }
