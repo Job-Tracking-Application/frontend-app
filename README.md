@@ -6,7 +6,7 @@ A modern React-based web application for job tracking with role-based dashboards
 
 ### Prerequisites
 - Node.js 18+ and npm/yarn (for frontend development)
-- Spring Boot backend API running (typically on `http://localhost:8080`)
+- Spring Boot backend API running (typically on `http://localhost:5000`)
 - Modern web browser
 
 ### Installation & Setup
@@ -27,7 +27,7 @@ A modern React-based web application for job tracking with role-based dashboards
 3. **Configure environment**
    ```bash
    # .env file
-   VITE_API_BASE_URL=http://localhost:8080/api
+   VITE_API_BASE_URL=http://localhost:5000/api
    VITE_APP_NAME=JobSync
    ```
 
@@ -40,7 +40,7 @@ A modern React-based web application for job tracking with role-based dashboards
 
 5. **Access the application**
    - Frontend: `http://localhost:5173`
-   - Backend API: `http://localhost:8080` (Spring Boot)
+   - Backend API: `http://localhost:5000` (Spring Boot)
    - Login with demo accounts or register new users
 
 ## 🏗️ Architecture
@@ -194,6 +194,28 @@ src/
 - Required skills
 - Company selection
 - Application deadline
+
+// Enhanced Validation & Error Handling
+- Checks for company profile existence
+- Validates company verification status
+- Provides specific error messages:
+  * "Please create a company profile first before posting jobs"
+  * "Your company 'CompanyName' is not yet verified. Please contact admin for company verification before posting jobs"
+```
+
+#### Company Verification Workflow (Recruiters)
+```jsx
+// Step-by-step process for recruiters
+1. Register as recruiter
+2. Create company profile (/organizations)
+3. System automatically creates RecruiterProfile
+4. Wait for admin to verify company
+5. Once verified, can post jobs
+
+// Error Messages Guide Users:
+- Missing company: "Please create a company profile first..."
+- Unverified company: "Your company 'X' is not yet verified. Please contact admin..."
+- Success: Job posted successfully
 ```
 
 ### Application Management
@@ -638,7 +660,7 @@ docker build -t jobsync-frontend .
 
 # Run the frontend container
 docker run -d -p 3000:80 \
-  -e VITE_API_BASE_URL=http://your-spring-boot-api:8080/api \
+  -e VITE_API_BASE_URL=http://your-spring-boot-api:5000/api \
   --name jobsync-frontend \
   jobsync-frontend
 ```
@@ -652,7 +674,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_API_BASE_URL=http://backend:8080/api
+      - VITE_API_BASE_URL=http://backend:5000/api
     depends_on:
       - backend
     restart: unless-stopped
@@ -660,7 +682,7 @@ services:
   backend:
     image: jobsync-backend:latest  # Your Spring Boot application
     ports:
-      - "8080:8080"
+      - "5000:5000"
     environment:
       - SPRING_PROFILES_ACTIVE=production
       - DATABASE_URL=jdbc:mysql://db:3306/jobsync
@@ -702,7 +724,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ### Environment Variables
 ```bash
 # .env.development
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=http://localhost:5000/api
 VITE_APP_NAME=JobSync
 VITE_DEBUG_MODE=true
 
@@ -765,7 +787,52 @@ const JobList = lazy(() => import('../pages/jobs/JobList'));
 }
 ```
 
-## 🐛 Error Handling
+## 🐛 Error Handling & User Notifications
+
+### Enhanced Toast Notification System
+The application uses **React Toastify** with **top-right positioning** for optimal user experience:
+
+```jsx
+// main.jsx - ToastContainer configuration
+<ToastContainer
+  position="top-right"        // Enhanced positioning
+  autoClose={3000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+  theme="light"
+/>
+```
+
+### Toast Utility Functions
+```javascript
+// utils/toast.js - Consistent toast notifications
+export const showSuccessToast = (message) => {
+  toast.success(message, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+  });
+};
+
+export const showErrorToast = (message) => {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 4000,        // Longer duration for errors
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+  });
+};
+```
 
 ### Global Error Boundary
 ```jsx
@@ -794,20 +861,71 @@ class ErrorBoundary extends Component {
 }
 ```
 
-### API Error Handling
+### Enhanced API Error Handling
 ```javascript
-// services/api.js
+// services/api.js - Comprehensive error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    const { response, request, message } = error;
+    const { status, data } = response || {};
+    
+    // Don't show automatic toasts for auth pages
+    const isAuthPage = window.location.pathname.includes('/login') || 
+                      window.location.pathname.includes('/register');
+    
+    switch (status) {
+      case 401:
+        // Unauthorized - clear token and redirect
+        removeAuthToken();
+        if (!isAuthPage) {
+          toast.error('Session expired. Please login again.');
+          setTimeout(() => window.location.href = '/login', 1500);
+        }
+        break;
+        
+      case 400:
+        // Bad Request - let components handle specific messages
+        console.warn('Bad request:', data?.message);
+        break;
+        
+      case 403:
+        if (!isAuthPage) {
+          toast.error('Access denied. You don\'t have permission for this action.');
+        }
+        break;
+        
+      case 500:
+        if (!isAuthPage) {
+          toast.error('Server error. Please try again later.');
+        }
+        break;
     }
+    
     return Promise.reject(error);
   }
 );
+```
+
+### Component-Level Error Handling
+```jsx
+// Example: CreateJob.jsx - Specific error message display
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await jobService.addJob(jobData);
+    showSuccessToast('Job created successfully!');
+    navigate('/jobs/my-jobs');
+  } catch (error) {
+    console.error('Error creating job:', error);
+    
+    // Extract specific error message from API response
+    const errorMessage = error.response?.data?.message || 
+                        'Failed to create job. Please try again.';
+    
+    showErrorToast(errorMessage);  // Shows in top-right corner
+  }
+};
 ```
 
 ## 📱 Responsive Design
@@ -875,7 +993,7 @@ api.interceptors.response.use(
 
 This project is licensed under the MIT License.
 
-## � Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
@@ -885,11 +1003,11 @@ This project is licensed under the MIT License.
    - Verify all environment variables are set correctly
 
 2. **API Connection Issues**
-   - Verify `VITE_API_BASE_URL` points to your Spring Boot API (usually `http://localhost:8080/api`)
-   - Check Spring Boot backend is running on correct port
+   - Verify `VITE_API_BASE_URL` points to your Spring Boot API (usually `http://localhost:5000/api`)
+   - Check Spring Boot backend is running on correct port (5000)
    - Verify CORS configuration in Spring Boot allows frontend origin
    - Check Spring Boot application logs for errors
-   - Test API endpoints directly: `curl http://localhost:8080/api/health`
+   - Test API endpoints directly: `curl http://localhost:5000/api/auth/login`
 
 3. **Authentication Issues**
    - Check JWT token format and expiration
@@ -897,18 +1015,89 @@ This project is licensed under the MIT License.
    - Clear browser localStorage and cookies
    - Check Spring Boot security configuration
 
-4. **Docker Issues**
+4. **Job Creation Issues (Recruiters)**
+   - **Error**: "Please create a company profile first before posting jobs"
+     - **Solution**: Navigate to Organizations page and create your company profile
+     - **Check**: Ensure you're logged in as a recruiter (roleId: 2)
+   
+   - **Error**: "Your company 'CompanyName' is not yet verified"
+     - **Solution**: Contact admin to verify your company
+     - **Check**: Company verification status in your profile
+     - **Admin Action Required**: Admin must verify company before job posting is allowed
+
+5. **Toast Notifications Not Showing**
+   - **Check**: ToastContainer is properly configured in `main.jsx`
+   - **Verify**: Toast position is set to "top-right"
+   - **Debug**: Check browser console for React errors
+   - **Solution**: Ensure `react-toastify` CSS is imported
+
+6. **Profile Issues**
+   - **Recruiter Profile 404**: Normal for new recruiters without company
+   - **Missing Company**: Create company first, then profile auto-creates
+   - **Profile Update Fails**: Ensure all required fields are provided
+
+7. **Docker Issues**
    - Ensure Docker daemon is running
    - Check port conflicts: `docker ps`
    - View frontend logs: `docker logs jobsync-frontend`
    - View backend logs: `docker logs jobsync-backend`
    - Verify network connectivity between containers
 
+### Company Verification Troubleshooting
+
+#### For Recruiters:
+1. **Cannot Post Jobs**
+   ```
+   Error: "Please create a company profile first before posting jobs"
+   
+   Steps to resolve:
+   1. Go to Organizations page
+   2. Create your company profile
+   3. System automatically creates RecruiterProfile
+   4. Wait for admin verification
+   5. Try posting job again
+   ```
+
+2. **Company Not Verified**
+   ```
+   Error: "Your company 'CompanyName' is not yet verified"
+   
+   Steps to resolve:
+   1. Contact system administrator
+   2. Provide company details for verification
+   3. Wait for admin to verify company
+   4. Check company status in profile
+   5. Retry job posting after verification
+   ```
+
+#### For Admins:
+1. **Verify Companies**
+   ```
+   Admin Dashboard → Manage Companies → Verify Company
+   ```
+
+2. **Check User Setup**
+   ```sql
+   -- Verify complete user setup in backend database
+   SELECT 
+       u.id as user_id,
+       u.email,
+       c.id as company_id,
+       c.name as company_name,
+       c.verified as company_verified,
+       rp.id as profile_id
+   FROM users u
+   LEFT JOIN companies c ON c.recruiter_user_id = u.id
+   LEFT JOIN recruiter_profile rp ON rp.user_id = u.id
+   WHERE u.email = 'recruiter@example.com';
+   ```
+
 ### Health Checks
 
-- **Frontend**: `http://localhost:3000/health`
-- **Spring Boot API**: `http://localhost:8080/actuator/health`
+- **Frontend**: `http://localhost:3000` (Vite dev server) or `http://localhost:5173`
+- **Spring Boot API**: `http://localhost:5000/api/actuator/health`
 - **Database Connection**: Check Spring Boot actuator endpoints
+- **Toast System**: Check browser console for ToastContainer errors
 
 ### Backend Integration
 
