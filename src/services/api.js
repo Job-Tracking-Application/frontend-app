@@ -87,6 +87,12 @@ api.interceptors.response.use(
         }
         break;
         
+      case 400:
+        // Bad Request - let component handle the specific error message
+        console.warn('Bad request:', data?.message);
+        // Don't show automatic toast for 400 errors - let components handle them
+        break;
+        
       case 422:
         // Validation error
         console.warn('Validation error:', data?.message);
