@@ -112,7 +112,7 @@ export default function JobDetails() {
     return (
         <div className="container py-5">
             <div className="row">
-                <div className="col-lg-8">
+                <div className={`${(isRecruiter || user?.role === 'ADMIN') ? 'col-lg-8' : 'col-12'}`}>
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-start mb-4">
@@ -265,33 +265,36 @@ export default function JobDetails() {
                     </div>
                 </div>
 
-                <div className="col-lg-4">
-                    <div className="card shadow-sm">
-                        <div className="card-body">
-                            <h5 className="card-title">{t("job_information")}</h5>
-                            <ul className="list-unstyled">
-                                <li className="mb-2">
-                                    <strong>{t("job_id")}:</strong> {job.id}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>{t("recruiter_id")}:</strong> {job.recruiterUserId}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>{t("created")}:</strong> {formatDate(job.createdAt)}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>{t("last_updated")}:</strong> {formatDate(job.updatedAt)}
-                                </li>
-                                <li className="mb-2">
-                                    <strong>{t("status")}:</strong> 
-                                    <span className={`ms-2 badge ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                                        {job.isActive ? t("status_active") : t("status_inactive")}
-                                    </span>
-                                </li>
-                            </ul>
+                {/* Job Information Panel - Only visible to Recruiters and Admins */}
+                {(isRecruiter || user?.role === 'ADMIN') && (
+                    <div className="col-lg-4">
+                        <div className="card shadow-sm">
+                            <div className="card-body">
+                                <h5 className="card-title">{t("job_information")}</h5>
+                                <ul className="list-unstyled">
+                                    <li className="mb-2">
+                                        <strong>{t("job_id")}:</strong> {job.id}
+                                    </li>
+                                    <li className="mb-2">
+                                        <strong>{t("recruiter_id")}:</strong> {job.recruiterUserId}
+                                    </li>
+                                    <li className="mb-2">
+                                        <strong>{t("created")}:</strong> {formatDate(job.createdAt)}
+                                    </li>
+                                    <li className="mb-2">
+                                        <strong>{t("last_updated")}:</strong> {formatDate(job.updatedAt)}
+                                    </li>
+                                    <li className="mb-2">
+                                        <strong>{t("status")}:</strong> 
+                                        <span className={`ms-2 badge ${job.isActive ? 'bg-success' : 'bg-secondary'}`}>
+                                            {job.isActive ? t("status_active") : t("status_inactive")}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <ConfirmationModal
