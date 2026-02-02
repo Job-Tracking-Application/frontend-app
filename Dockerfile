@@ -3,22 +3,23 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copy dependency files and install
 COPY package*.json ./
-RUN npm install
+RUN npm ci --no-audit --no-fund
 
-# Copy source code and build
 COPY . .
 RUN npm run build
 
+
 # ---- Production Stage ----
-FROM nginx:alpine
+FROM nginx:1.25-alpine
 
-# Copy built frontend files to Nginx html folder
+RUN apk add --no-cache curl
+
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD curl -f http://localhost/ || exit 1
+
 EXPOSE 80
-
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
