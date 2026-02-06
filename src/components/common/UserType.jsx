@@ -1,21 +1,21 @@
 const UserType = ({ role }) => {
   // Role configuration mapping
   const roleConfig = {
-    0: {
+    1: {
       label: 'Admin',
       icon: 'bi-shield-lock',
       bgColor: 'bg-light-purple',
       textColor: 'text-purple',
       borderColor: 'border-purple'
     },
-    1: {
+    2: {
       label: 'Recruiter',
       icon: 'bi-building',
       bgColor: 'bg-light-blue',
       textColor: 'text-primary',
       borderColor: 'border-primary'
     },
-    2: {
+    3: {
       label: 'Job Seeker',
       icon: 'bi-person-circle',
       bgColor: 'bg-light',
@@ -24,8 +24,8 @@ const UserType = ({ role }) => {
     }
   };
 
-  // Get role configuration or default to Job Seeker
-  const config = roleConfig[role] || roleConfig[2];
+  // Get role configuration or default to Admin
+  const config = roleConfig[role] || roleConfig[1];
 
   return (
     <>
