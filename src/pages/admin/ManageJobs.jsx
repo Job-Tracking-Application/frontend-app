@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getJobs, deleteJob, verifyJob } from "../../services/adminService";
+import { getJobs, deleteJob, toggleJobStatus } from "../../services/adminService";
 import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -60,13 +60,13 @@ const ManageJobs = () => {
     });
   };
 
-  const showVerifyConfirmation = (id, isActive) => {
+  const showToggleStatusConfirmation = (id, isActive) => {
     const action = isActive ? t("deactivate") : t("activate");
     setConfirmModal({
       show: true,
       title: isActive ? t("Deactivate Job") : t("Activate Job"),
       message: t("Are you sure you want to {{action}} this job?", { action }),
-      action: "verify",
+      action: "toggle-status",
       jobId: id,
       isActive: isActive
     });
@@ -78,8 +78,8 @@ const ManageJobs = () => {
         await deleteJob(confirmModal.jobId);
         setJobs(prev => Array.isArray(prev) ? prev.filter(j => j.id !== confirmModal.jobId) : []);
         showSuccessToast(t("Job deleted successfully"));
-      } else if (confirmModal.action === "verify") {
-        await verifyJob(confirmModal.jobId);
+      } else if (confirmModal.action === "toggle-status") {
+        await toggleJobStatus(confirmModal.jobId);
         setJobs(prev =>
           prev.map(j =>
             j.id === confirmModal.jobId
@@ -151,7 +151,7 @@ const ManageJobs = () => {
                       <td className="text-end px-3 py-3">
                         <button
                           className="btn btn-sm btn-info me-2"
-                          onClick={() => showVerifyConfirmation(j.id, j.isActive)}
+                          onClick={() => showToggleStatusConfirmation(j.id, j.isActive)}
                         >
                           {j.isActive ? t("Deactivate") : t("Activate")}
                         </button>
@@ -225,7 +225,7 @@ const ManageJobs = () => {
                       <div className="d-flex gap-2">
                         <button
                           className="btn btn-sm btn-info flex-grow-1 touch-target"
-                          onClick={() => showVerifyConfirmation(j.id, j.isActive)}
+                          onClick={() => showToggleStatusConfirmation(j.id, j.isActive)}
                         >
                           <i className={`bi ${j.isActive ? 'bi-pause-circle' : 'bi-play-circle'} me-1`}></i>
                           {j.isActive ? t("Deactivate") : t("Activate")}

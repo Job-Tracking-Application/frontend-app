@@ -20,8 +20,8 @@ export const getJobs = () => {
   return api.get("/admin/jobs");
 };
 
-export const verifyJob = (jobId) => {
-  return api.patch(`/admin/jobs/${jobId}/verify`);
+export const toggleJobStatus = (jobId) => {
+  return api.patch(`/admin/jobs/${jobId}/toggle-status`);
 };
 
 export const deleteJob = (jobId) => {
