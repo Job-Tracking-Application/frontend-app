@@ -37,8 +37,14 @@ export const verifyCompany = (companyId, verified) => {
   return api.patch(`/admin/companies/${companyId}/verify?verified=${verified}`);
 };
 
-export const getLogs = () => {
-  return api.get("/admin/logs");
+export const getLogs = (page = 0, size = 20, entity = null, action = null) => {
+  const params = new URLSearchParams({ 
+    page: page.toString(), 
+    size: size.toString() 
+  });
+  if (entity) params.append('entity', entity);
+  if (action) params.append('action', action);
+  return api.get(`/admin/logs?${params.toString()}`);
 };
 
 // Application management endpoints

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getLogs } from "../../services/adminService";
 import { useTranslation } from "react-i18next";
 import PageHero from "../../components/common/PageHero";
@@ -7,60 +7,51 @@ const ViewLogs = () => {
   const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0); // Backend uses 0-based indexing
   const [logsPerPage] = useState(20);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     let mounted = true;
     const fetchLogs = async () => {
       try {
-        const res = await getLogs();
+        setLoading(true);
+        const res = await getLogs(currentPage, logsPerPage);
         if (mounted) {
-          // Handle ApiResponse wrapper - data might be in res.data.data
-          let logsData;
+          // Handle ApiResponse wrapper with pagination
           if (res?.data?.data) {
-            // Paginated response
-            if (res.data.data.content) {
-              logsData = res.data.data.content;
-            } else {
-              logsData = res.data.data;
-            }
+            const pageData = res.data.data;
+            setLogs(pageData.content || []);
+            setTotalElements(pageData.totalElements || 0);
+            setTotalPages(pageData.totalPages || 0);
           } else if (res?.data) {
-            // Direct response
-            if (Array.isArray(res.data)) {
-              logsData = res.data;
-            } else if (res.data.content) {
-              logsData = res.data.content;
-            } else {
-              logsData = [];
-            }
+            // Fallback for non-paginated response
+            setLogs(Array.isArray(res.data) ? res.data : []);
+            setTotalElements(Array.isArray(res.data) ? res.data.length : 0);
+            setTotalPages(1);
           } else {
-            logsData = [];
+            setLogs([]);
+            setTotalElements(0);
+            setTotalPages(0);
           }
-          
-          // Sort by most recent first (in case backend doesn't sort)
-          const sortedLogs = Array.isArray(logsData) ? logsData.sort((a, b) => 
-            new Date(b.performedAt) - new Date(a.performedAt)
-          ) : [];
-          setLogs(sortedLogs);
         }
       } catch (err) {
-        console.error(err);
-        if (mounted) setLogs([]); // Ensure logs is always an array
+        console.error("Failed to fetch logs:", err);
+        if (mounted) {
+          setLogs([]);
+          setTotalElements(0);
+          setTotalPages(0);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
     };
     fetchLogs();
     return () => (mounted = false);
-  }, []);
+  }, [currentPage, logsPerPage]);
 
-  // Pagination logic
-  const indexOfLastLog = currentPage * logsPerPage;
-  const indexOfFirstLog = indexOfLastLog - logsPerPage;
-  const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
-  const totalPages = Math.ceil(logs.length / logsPerPage);
-
+  // Pagination logic - now using server-side pagination
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     // Scroll to top when changing pages
@@ -114,15 +105,15 @@ const ViewLogs = () => {
             <div className="row g-3 align-items-center">
               <div className="col-12 col-md-6">
                 <h5 className="fw-bold mb-0">
-                  {t("Activity Logs")} ({logs.length})
+                  {t("Activity Logs")} ({totalElements})
                 </h5>
               </div>
               <div className="col-12 col-md-6 text-md-end text-center">
                 <small className="text-muted text-mobile-sm">
                   {t("Showing {{start}} to {{end}} of {{total}}", {
-                    start: indexOfFirstLog + 1,
-                    end: Math.min(indexOfLastLog, logs.length),
-                    total: logs.length
+                    start: currentPage * logsPerPage + 1,
+                    end: Math.min((currentPage + 1) * logsPerPage, totalElements),
+                    total: totalElements
                   })}
                 </small>
               </div>
@@ -130,9 +121,9 @@ const ViewLogs = () => {
           </div>
 
           <div className="card-body p-0">
-            {currentLogs.length > 0 ? (
+            {logs.length > 0 ? (
               <div className="list-group list-group-flush">
-                {currentLogs.map((log) => (
+                {logs.map((log) => (
                   <div key={log.id} className="list-group-item border-0 py-3 px-3 px-md-4">
                     <div className="row align-items-center g-2">
                       {/* Desktop: Show icon */}
@@ -186,11 +177,11 @@ const ViewLogs = () => {
             <div className="card-footer bg-white p-4 border-top">
               <nav className="d-flex justify-content-center">
                 <ul className="pagination pagination-sm mb-0 flex-wrap">
-                  <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
                     <button 
                       className="page-link touch-target"
                       onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
+                      disabled={currentPage === 0}
                     >
                       {t("Previous")}
                     </button>
@@ -199,11 +190,11 @@ const ViewLogs = () => {
                   {[...Array(Math.min(totalPages, 5))].map((_, index) => {
                     let pageNumber;
                     if (totalPages <= 5) {
-                      pageNumber = index + 1;
-                    } else if (currentPage <= 3) {
-                      pageNumber = index + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNumber = totalPages - 4 + index;
+                      pageNumber = index;
+                    } else if (currentPage <= 2) {
+                      pageNumber = index;
+                    } else if (currentPage >= totalPages - 3) {
+                      pageNumber = totalPages - 5 + index;
                     } else {
                       pageNumber = currentPage - 2 + index;
                     }
@@ -214,17 +205,17 @@ const ViewLogs = () => {
                           className="page-link touch-target"
                           onClick={() => handlePageChange(pageNumber)}
                         >
-                          {pageNumber}
+                          {pageNumber + 1}
                         </button>
                       </li>
                     );
                   })}
                   
-                  <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                  <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
                     <button 
                       className="page-link touch-target"
                       onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
+                      disabled={currentPage === totalPages - 1}
                     >
                       {t("Next")}
                     </button>
